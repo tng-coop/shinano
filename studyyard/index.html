@@ -19,24 +19,19 @@
       ...   |
 
       <!-- search -->
-      <form id="search_form" action="search">
+      <form id="search_form" method="GET" action="search.php">
         <div>
-          <label for="search_text"> insert text to search </label>
-          <input type="text" id="search_text" value="" />
+          <input type="text" name="search_text" placeholder="insert text to search" />
         </div>
         <div>
-          <input type="checkbox" id="search_or_seek_job" />
-          <label for="search_or_seek_job"> Job </label>
+          <input type="checkbox" name ="jobp" > Job </input>
         </div>
         <div>
-          <input type="checkbox" id="search_or_seek_worker" />
-          <label for="search_or_seek_worker"> worker </label>
+          <input type="checkbox" name="workerp"> Worker </input>
         </div>
-        <!--
-            <div>
-              <input type="checkbox" name="search_or_seek_system" />
-              <label for="search_or_seek_system" text=""> ask system </label>
-            </div> -->
+        <div>
+          <!-- item for search system here -->
+        </div>
         <div>
           <input type="submit" value="search_search" />
         </div>
