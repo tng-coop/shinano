@@ -1,21 +1,14 @@
 <?php
 
-// # configs
+namespace NAMES;
 
-//echo "$URL hogehoge";
-
-
-$document_root = realpath(__DIR__ . "/../");
-$URL = get_url();
-
-global $document_root;
-global $URL;
 
 
 
 // # functions
 
 function get_url(){
+    // check if secured
     if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')   
         $url = "https://";   
     else  
@@ -26,13 +19,26 @@ function get_url(){
     // Append the requested resource location to the URL   
     $url.= $_SERVER['REQUEST_URI'];    
     
-    echo $url;
+    return $url;
 }
 
-function eval_template($template_file)
-{
-    include($document_root . "./ingredients/template/{$template_file}");
+
+class TemplateAndConfigs{
+
+    // config and config values
+
+    function __construct(){
+        $this->_document_root = realpath(__DIR__ . "/../"); 
+        $this->_URL = get_url();
+    }
+
+    // template
+    function eval_template($template_file){
+        $v = $this;
+        include($this->_document_root . "/./ingredients/template/{$template_file}");
+    }
 }
+
 
 
 ?>
