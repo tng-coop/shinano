@@ -1,0 +1,25 @@
+-- -*- SQL -*-
+
+-- * user
+--    * add user
+--    * delete user
+-- * job listing
+--     * define job listing
+--         * (puiblication range : optional)
+--     * open job listing
+--     * close job listing
+-- * job seeking
+--     * define job seeking
+--         * (puiblication range : optional)
+--     * open job seeking
+--     * close job seeking
+-- * login / logout
+
+
+-- define job listing
+INSERT INTO job_entry(attribute, user, title, description, created_at, updated_at)
+       VALUES ('L', @uid, @title, @description, current_timestamp, current_timestamp);
+
+-- open job listing
+UPDATE job_entry SET opened_at = current_timestamp
+       WHERE attribute = 'L' AND user = @uid AND id = @job_entry_id;
