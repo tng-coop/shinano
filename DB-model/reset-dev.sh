@@ -1,6 +1,9 @@
 #! /bin/sh
 
-admin_mysql=mysql
+admin_mysql="$@"
+if [ x"$admin_mysql" = x ]; then
+	admin_mysql=mysql
+fi
 
 set -x
 $admin_mysql < drop-dev-tables.sql
