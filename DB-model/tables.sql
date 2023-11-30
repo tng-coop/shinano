@@ -21,3 +21,6 @@ CREATE TABLE job_entry
        , opened_at     TIMESTAMP
        , closed_at     TIMESTAMP
        );
+
+CREATE UNIQUE INDEX job_entry_user_opened_created
+       ON job_entry (user, opened_at, created_at, id);
