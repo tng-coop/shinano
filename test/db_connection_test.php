@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // $dsn = "{$sqlclient}:host={$dbhost};dbname={$dbname};charset=...";
 
 $dsn = "mysql:host=localhost;dbname=shinano_dev";
