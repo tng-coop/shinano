@@ -8,13 +8,22 @@
 --         * (puiblication range : optional)
 --     * open job listing
 --     * close job listing
+--     * view job listing
 -- * job seeking
 --     * define job seeking
 --         * (puiblication range : optional)
 --     * open job seeking
 --     * close job seeking
+--     * view job seeking
 -- * login / logout
 
+-------------------------------------------
+
+-- add user
+INSERT INTO user(name, email, passwd_hash, note, created_at, updated_at)
+       VALUES ('Jhon Smith', 'mail@piyomail.com', 'hsah_dwssap', 'Hi! this is my note', current_timestamp, current_timestamp);
+
+-------------------------------------------
 
 -- define job listing
 INSERT INTO job_entry(attribute, user, title, description, created_at, updated_at)
@@ -24,9 +33,12 @@ INSERT INTO job_entry(attribute, user, title, description, created_at, updated_a
 UPDATE job_entry SET opened_at = current_timestamp
        WHERE attribute = 'L' AND user = @uid AND id = @job_entry_id;
 
+-- close job listing
+UPDATE job_entry SET closed_at = current_timestamp
+       WHERE attribute = 'L' AND user = @uid AND id = @job_entry_id;
 
-/*
--- define user
-INSERT INTO user(name, email, passwd_hash, note, created_at, updated_at) 
-       VALUES ('Jhon Smith', 'mail@piyomail.com', 'hsah_dwssap', 'Hi! this is my note', current_timestamp, current_timestamp);
-*/
+-- view job listing
+SELECT id, title, description, created_at, updated_at, opened_at, closed_at FROM job_entry
+       WHERE attribute = 'L' AND user = @uid;
+SELECT id, title, description, created_at, updated_at, opened_at, closed_at FROM job_entry
+       WHERE attribute = 'L' AND user = @uid ORDER BY opened_at IS NULL ASC, created_at ASC;
