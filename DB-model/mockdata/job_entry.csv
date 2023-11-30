@@ -1,0 +1,49 @@
+id , attribute , user , title        , description , created_at          , updated_at          , opened_at , closed_at
+1,L ,1,Support for Shinano,"We are looking for someone whom interests in program, maintenance and develop of Shinano system.
+
+We have released first minimal version of Shinano job matching system ago, 
+but our interests are more in mathematical things than web system maintenance,
+We are looking for someone to maintenance this system.
+
+These are Tools and technics which were used until first release of Shinano.
+PHP / MySQL / Git / Linux / something Web Server / SSH …
+
+If you interest, please ask to <hogehoge_mail@tng.coop>", 2023-11-27 15:00:00 , 2023-11-27 15:00:00 ,NULL,NULL
+2,L ,3,Help!!!, hell'p me   , 2023-11-30 09:39:17 , 2023-11-30 09:39:17 ,NULL,NULL
+3,S,5,Translation? ask me.,"I have 120+ years experiences of letter translating. I can understand and write 4000+ of languages such as
+English / Spanish / French / Chinese / Ainu / Hobyot / 2.5th Atlantic / Prometheus Minor Language / and etc.
+Something ask to me, please message to <email@maryshell6337.com>.
+Thanks!", 2023-12-1 10:12:37 , 2023-12-1 10:12:37 ,NULL,NULL
+4,S,7,なんでもやります。 I do anything,"Matsumoto市に住んています。なんでもやります。 体は元気です。
+I live in Matsumoto-City, I do everything. I’m fine. Thankyou.", 2023-12-1 11:13:44 , 2023-12-1 11:13:44 ,NULL,NULL
+5,L ,3,Help!!! Help!!!,hellp me! Hellp Hellp!, 2023-12-2 00:00:01 , 2023-12-2 00:00:01 ,NULL,NULL
+6,S,4,!!! Hello JS injection !!!,<script>alert(‘JS injection’),</script>, 2023-12-2 00:00:01 , 2023-12-2 00:00:01 ,NULL
+7,S,4,!!! Hello SQL injection !!!,-- Not Implemented, 2023-12-2 00:00:01 , 2023-12-2 00:00:01 ,NULL,NULL
+8,S,4,!!! Hello PHP injection !!!,"<?php echo “check if PHP injection. If <?php … ?> tag text is not appeared here, it is attacked now. ” ?>", 2023-12-2 00:00:01 , 2023-12-2 00:00:01 ,NULL,NULL
+9,L ,11,"林業従事者の募集 – ほげほげ林業 – 長野県大町市,","森林での作業員を募集します。
+作業服は貸与致します。
+運転免許証は必要ありません。
+
+一日の例
+JR周辺の駐車場 6:00 ~ 8:00 頃 (車で送迎します)
+有明山、長峰山、鷹狩山などの作業場 8:30 頃~  (車をお持ちの方は、直接作業場に集まっても良いです。) 作業
+適宣、休憩を挟みます。
+16:00 ~ 18:00 頃 作業終了 (季節により時頃は変わります)
+JR周辺の駐車場 16:30~19:30 頃
+
+
+1日の林業体験から始めてみませんか？
+正社員としての登用の道も用意しております。
+林業体験 日給 金10000円 、
+正社員登用後は 月給 金240000円 ~ 金330000円 程度となります。", 2023-12-3 09:23:05, 2023-12-3 09:23:05,NULL,NULL
+10,L ,2,Dummy Listing a,Dummy Text Dummy Text Dummy Text Dummy Text , 2023-12-4 01:12:34, 2023-12-4 01:12:34,NULL,NULL
+11,L ,2,Dummy Listing b,Dummy Text Dummy Text Dummy Text Dummy Text , 2023-12-4 01:12:35, 2023-12-4 01:12:35,NULL,NULL
+12,L ,2,Dummy Listing c,Dummy Text Dummy Text Dummy Text Dummy Text , 2023-12-4 01:12:36, 2023-12-4 01:12:36,NULL,NULL
+13,L ,2,Dummy Listing d,Dummy Text Dummy Text Dummy Text Dummy Text , 2023-12-4 01:12:37, 2023-12-4 01:12:37,NULL,NULL
+14,L ,2,Dummy Listing e,Dummy Text Dummy Text Dummy Text Dummy Text , 2023-12-4 01:12:38, 2023-12-4 01:12:38,NULL,NULL
+15,L ,2,Dummy Listing f,Dummy Text Dummy Text Dummy Text Dummy Text , 2023-12-4 01:12:39, 2023-12-4 01:12:39,NULL,NULL
+16,S,2,Dummy Seeking a,Dummy Text Dummy Text Dummy Text Dummy Text , 2023-12-4 01:12:40, 2023-12-4 01:12:40,NULL,NULL
+17,S,2,Dummy Seeking b,Dummy Text Dummy Text Dummy Text Dummy Text , 2023-12-4 01:12:41, 2023-12-4 01:12:41,NULL,NULL
+18,S,2,Dummy Seeking c,Dummy Text Dummy Text Dummy Text Dummy Text , 2023-12-4 01:12:42, 2023-12-4 01:12:42,NULL,NULL
+19,S,2,Dummy Seeking d,Dummy Text Dummy Text Dummy Text Dummy Text , 2023-12-4 01:12:43, 2023-12-4 01:12:43,NULL,NULL
+20,S,2,Dummy Seeking e,Dummy Text Dummy Text Dummy Text Dummy Text , 2023-12-4 01:12:44, 2023-12-4 01:12:44,NULL,NULL
