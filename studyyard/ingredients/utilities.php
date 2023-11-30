@@ -3,7 +3,27 @@
 namespace NAMES;
 
 
+/*
++-------------+-------------------------------------------+
+| User        | Password                                  |
++-------------+-------------------------------------------+
+| mariadb.sys |                                           |
+| root        | something password                        |
+| mysql       | invalid                                   |
+| PUBLIC      |                                           |
+|             |                                           |
+|             |                                           |
+| sdev_ro     | Kis0Shinan0DevR0                          |
+| sdev_rw     | Kis0Shinan0DevRW                          |
++-------------+-------------------------------------------+
+*/
 
+// to detect user and password, call after login to sql client,
+// MYSQL [(db)] > SELECT User,Password FROM mysql.user;
+
+[$sql_ro_user, $sql_ro_pass] = ["sdev_ro", "Kis0Shinan0DevR0"];
+[$sql_rw_user, $sql_rw_pass] = ["sdev_rw", "Kis0Shinan0DevRW"];
+            
 
 // # functions
 
