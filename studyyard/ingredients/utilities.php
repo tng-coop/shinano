@@ -6,25 +6,25 @@ namespace NAMES;
 
 
 /*
-+-------------+-------------------------------------------+
-| User        | Password                                  |
-+-------------+-------------------------------------------+
-| mariadb.sys |                                           |
-| root        | something password                        |
-| mysql       | invalid                                   |
-| PUBLIC      |                                           |
-|             |                                           |
-|             |                                           |
-| sdev_ro     | Kis0Shinan0DevR0                          |
-| sdev_rw     | Kis0Shinan0DevRW                          |
-+-------------+-------------------------------------------+
+// -- to detect user and password, call after login to sql client,
+[mysql]> SELECT host,user,password FROM mysql.user; 
++--------------+-------------+-----------------------+
+| Host         | User        | Password              |
++--------------+-------------+-----------------------+
+| localhost    | mariadb.sys |                       | -- or mysql system user maybe.
+... omit ...
+| localhost    | sdev_ro     | Kis0Shinan0DevR0      | -- Password are maybe hashed!
+| localhost    | sdev_rw     | Kis0Shinan0DevRW      | -- Password are maybe hashed!
++--------------+-------------+-----------------------+
 */
-
-// to detect user and password, call after login to sql client,
-// MYSQL [(db)] > SELECT User,Password FROM mysql.user;
 
 [$sql_ro_user, $sql_ro_pass] = ["sdev_ro", "Kis0Shinan0DevR0"];
 [$sql_rw_user, $sql_rw_pass] = ["sdev_rw", "Kis0Shinan0DevRW"];
+
+$dbname = "shinano_dev";
+$dbhost = "localhost";
+$sqlclient = "mysql";
+$data_source_name = "{$sqlclient}:host={$dbhost};dbname={$dbname};charset=UTF8";
 
 
 // # functions
