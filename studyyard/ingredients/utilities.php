@@ -2,8 +2,15 @@
 
 declare(strict_types=1);
 
-namespace NAMES;
 
+namespace UTILS; // namespace was called 'NAMES' before in before versions.
+use \PDO;
+
+
+// # parameters
+
+
+// ### sql parameters
 
 /*
 // -- to detect user and password, call after login to sql client,
@@ -15,6 +22,7 @@ namespace NAMES;
 ... omit ...
 | localhost    | sdev_ro     | Kis0Shinan0DevR0      | -- Password are maybe hashed!
 | localhost    | sdev_rw     | Kis0Shinan0DevRW      | -- Password are maybe hashed!
+... omit ...
 +--------------+-------------+-----------------------+
 */
 
@@ -27,7 +35,49 @@ $sqlclient = "mysql";
 $data_source_name = "{$sqlclient}:host={$dbhost};dbname={$dbname};charset=UTF8";
 
 
-// # functions
+
+// # Wrap SQL connections, WPDO is Wrapped PDO.
+
+class WPDO{
+    function __construct($data_source_name, $sql_user, $sql_password){
+        try {
+            $this->$conn = new PDO($data_source_name, $sql_user, $sql_password);
+        } catch (\PDOException $e) {
+            echo "Server Error";
+            $err_s = "WPDO Error: PDOException was caused when tried to connect DB Server via PDO.";
+            error_log($err_s);
+            error_log("WPDO Error: " . $e->getMessage());
+            exit();
+        } catch (\Error $e) {
+            exit_by_error($e);
+        }
+    }
+
+    
+    function askdb($sql_sentence){
+        try {
+            $stmt = ($this->$conn)->prepare($sql_sentence);
+            $execute = $stmt->execute();
+            if(!$execute){
+                throw new Exception("blah");
+            }
+            return $stmt;
+        } catch (\Exception $e) {
+            exit_by_error($e);
+        }
+    }
+}
+
+
+
+// # utility functions
+
+function exit_by_error($error_){
+    echo "Server Error";
+    error_log("PHP Error: " . $error_->getMessage());
+    exit();
+}
+
 
 function get_url(){
     // check if secured
@@ -44,6 +94,9 @@ function get_url(){
     return $url;
 }
 
+        
+
+// # wrap Template and Configs 
 
 class TemplateAndConfigs{
 
@@ -60,7 +113,5 @@ class TemplateAndConfigs{
         include($this->_document_root . "/./ingredients/template/{$template_file}");
     }
 }
-
-
 
 ?>
