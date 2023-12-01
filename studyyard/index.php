@@ -1,11 +1,10 @@
 <?php
 
-namespace NAMES;
 use PDO;
 include_once(__DIR__ . "/./ingredients/utilities.php");
 
 
-$tpl = new TemplateAndConfigs();
+$tpl = new \NAMES\TemplateAndConfigs();
 
 $tpl->page_title = "index php here";
 
