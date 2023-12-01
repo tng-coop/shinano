@@ -35,22 +35,25 @@ $sqlclient = "mysql";
 $data_source_name = "{$sqlclient}:host={$dbhost};dbname={$dbname};charset=UTF8";
 
 
+function PDO_connect($data_source_name, $sql_user, $sql_password) {
+     try {
+         return new PDO($data_source_name, $sql_user, $sql_password);
+     } catch (\PDOException $e) {
+         echo "Server Error";
+         $err_s = "WPDO Error: PDOException was caused when tried to connect DB Server via PDO.";
+         error_log($err_s);
+         error_log("WPDO Error: " . $e->getMessage());
+         exit();
+     } catch (\Error $e) {
+         exit_by_error($e);
+     }
+}
 
 // # Wrap SQL connections, WPDO is Wrapped PDO.
 
 class WPDO{
     function __construct($data_source_name, $sql_user, $sql_password){
-        try {
-            $this->$conn = new PDO($data_source_name, $sql_user, $sql_password);
-        } catch (\PDOException $e) {
-            echo "Server Error";
-            $err_s = "WPDO Error: PDOException was caused when tried to connect DB Server via PDO.";
-            error_log($err_s);
-            error_log("WPDO Error: " . $e->getMessage());
-            exit();
-        } catch (\Error $e) {
-            exit_by_error($e);
-        }
+        $this->$conn = PDO_connect($data_source_name, $sql_user, $sql_password);
     }
 
 
