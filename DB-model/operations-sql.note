@@ -45,56 +45,81 @@ INSERT INTO user(name, email, passwd_hash, note, created_at, updated_at)
 COMMIT;
 
 -- -----------------------------------------
--- job listing
+-- job listing/seeking
 
--- define job listing
+-- define job listing/seeking
 -- --------
 -- candidate 1
 --   input params
-SET @email = 'mail@piyomail.com', @title = 'Jhon job listing', @description = 'example job description 1';
+SET @attribute = 'L', @email = 'mail@piyomail.com', @title = 'Jhon job listing', @description = 'example job description 1';
 --   Two statements transaction
 START TRANSACTION;
 
 SELECT @user_id := id FROM user WHERE email = @email FOR UPDATE;
 INSERT INTO job_entry(attribute, user, title, description, created_at, updated_at)
-       VALUES ('L', @user_id, @title, @description, current_timestamp, current_timestamp);
+       VALUES (@attribute, @user_id, @title, @description, current_timestamp, current_timestamp);
 
 COMMIT;
 -- --------
 -- candidate 2
 --   input params
-SET @email = 'tony@morris.com', @title = 'Tony job listing', @description = 'example job description 2';
+SET @attribute = 'L', @email = 'tony@morris.com', @title = 'Tony job listing', @description = 'example job description 2';
 --   One INSERT ... SELECT statement
 START TRANSACTION;
 
 INSERT INTO job_entry(attribute, user, title, description, created_at, updated_at)
-       SELECT 'L', U.id, @title, @description, current_timestamp, current_timestamp FROM user AS U WHERE U.email = @email;
+       SELECT @attribute, U.id, @title, @description, current_timestamp, current_timestamp FROM user AS U WHERE U.email = @email;
+
+COMMIT;
+-- --------
+-- example 1
+--   input params
+SET @attribute = 'S', @email = 'mail@piyomail.com', @title = 'John job seeking', @description = 'example job seeking content 1';
+--   Two statements transaction
+START TRANSACTION;
+
+SELECT @user_id := id FROM user WHERE email = @email FOR UPDATE;
+INSERT INTO job_entry(attribute, user, title, description, created_at, updated_at)
+       VALUES (@attribute, @user_id, @title, @description, current_timestamp, current_timestamp);
 
 COMMIT;
 
--- open job listing
+
+-- open job listing/seeking
 -- --------
 -- candidate 1
 --   input params
-SET @email = 'tony@morris.com', @job_entry_id = 2;
+SET @attribute = 'L', @email = 'tony@morris.com', @job_entry_id = 2;
 --   Two statements transaction
 START TRANSACTION;
 
 SELECT @user_id := U.id FROM user AS U WHERE U.email = @email FOR UPDATE;
 UPDATE job_entry AS J SET opened_at = current_timestamp
-       WHERE attribute = 'L' AND id = @job_entry_id AND user = @user_id;
+       WHERE attribute = @attribute AND id = @job_entry_id AND user = @user_id;
 
 COMMIT;
 -- --------
 -- candidate 2
 --   input params
-SET @email = 'mail@piyomail.com', @job_entry_id = 1;
+SET @attribute = 'L', @email = 'mail@piyomail.com', @job_entry_id = 1;
 --   One UPDATE statement uses a correlation query to specify a specific user from email
 START TRANSACTION;
 
 UPDATE job_entry AS J SET opened_at = current_timestamp
-       WHERE attribute = 'L' AND id = @job_entry_id
+       WHERE attribute = @attribute AND id = @job_entry_id
        AND user = (SELECT U.id FROM user AS U WHERE U.email = @email);
+
+COMMIT;
+-- --------
+-- example 1
+--   input params
+SET @attribute = 'S', @email = 'mail@piyomail.com', @job_entry_id = 3;
+--   Two statements transaction
+START TRANSACTION;
+
+SELECT @user_id := U.id FROM user AS U WHERE U.email = @email FOR UPDATE;
+UPDATE job_entry AS J SET opened_at = current_timestamp
+       WHERE attribute = @attribute AND id = @job_entry_id AND user = @user_id;
 
 COMMIT;
 
@@ -103,45 +128,57 @@ COMMIT;
 -- --------
 -- candidate 1
 --   input params
-SET @email = 'tony@morris.com', @job_entry_id = 2;
+SET @attribute = 'L', @email = 'tony@morris.com', @job_entry_id = 2;
 --   Two statements transaction
 START TRANSACTION;
 
 SELECT @user_id := U.id FROM user AS U WHERE U.email = @email FOR UPDATE;
 UPDATE job_entry AS J SET closed_at = current_timestamp
-       WHERE attribute = 'L' AND id = @job_entry_id AND user = @user_id;
+       WHERE attribute = @attribute AND id = @job_entry_id AND user = @user_id;
 
 COMMIT;
 -- --------
 -- candidate 2
 --   input params
-SET @email = 'mail@piyomail.com', @job_entry_id = 1;
+SET @attribute = 'L', @email = 'mail@piyomail.com', @job_entry_id = 1;
 --   The UPDATE statement uses a correlation query to specify a specific user from email
 START TRANSACTION;
 
 UPDATE job_entry SET closed_at = current_timestamp
-       WHERE attribute = 'L' AND id = @job_entry_id
+       WHERE attribute = @attribute AND id = @job_entry_id
        AND user = (SELECT U.id FROM user AS U WHERE U.email = @email);
 
 COMMIT;
+-- --------
+-- example 1
+--   input params
+SET @attribute = 'S', @email = 'mail@piyomail.com', @job_entry_id = 3;
+--   Two statements transaction
+START TRANSACTION;
 
--- view job listing
+SELECT @user_id := U.id FROM user AS U WHERE U.email = @email FOR UPDATE;
+UPDATE job_entry AS J SET closed_at = current_timestamp
+       WHERE attribute = @attribute AND id = @job_entry_id AND user = @user_id;
+
+COMMIT;
+
+-- view job listing/seeking
 -- --------
 -- example 1
 --   input params
 SET @email := 'mail@piyomail.com';
 --   specify set from email
-SELECT U.name, J.title, J.description, J.created_at, J.updated_at, J.opened_at, J.closed_at
+SELECT U.name, J.attribute, J.title, J.description, J.created_at, J.updated_at, J.opened_at, J.closed_at
        FROM user as U INNER JOIN job_entry AS J
        ON U.id = J.user
-       WHERE attribute = 'L' AND U.email = @email;
+       WHERE U.email = @email;
 -- --------
 -- example 2
 --   input params
 SET @email := 'mail@piyomail.com';
 --   sepecify set from email, ordered, opened first
-SELECT U.name, J.title, J.description, J.created_at, J.updated_at, J.opened_at, J.closed_at
+SELECT U.name, J.attribute, J.title, J.description, J.created_at, J.updated_at, J.opened_at, J.closed_at
        FROM user as U INNER JOIN job_entry AS J
        ON U.id = J.user
-       WHERE attribute = 'L' AND U.email = @email
-       ORDER BY opened_at IS NULL ASC, created_at ASC;
+       WHERE U.email = @email
+       ORDER BY J.attribute, J.opened_at IS NULL ASC, J.created_at ASC;
