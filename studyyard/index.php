@@ -14,14 +14,14 @@ $dbname = "shinano_dev";
 $dbhost = "localhost";
 $sqlclient = "mysql";
 
-//$data_source_name = "{$sqlclient}:host={$dbhost};dbname={$dbname};charset=UTF8";
+$data_source_name = "{$sqlclient}:host={$dbhost};dbname={$dbname};charset=UTF8";
 
 
 //$dbconn_ro = new PDO("{$sqlclient}:dbname={$dbname};host={$dbhost}", $sql_ro_user, $sql_ro_pass);
 
 
 try {
-    //$dbconn_ro = new PDO($data_source_name, $sql_ro_user, $sql_ro_pass);
+    $dbconn_ro = new PDO($data_source_name, $sql_ro_user, $sql_ro_pass);
     //echo "aaa";
 
 } catch (Exception $e){
@@ -29,7 +29,7 @@ try {
 }
 
 
-
+$show_conn_ro = print_r($dbconn_ro, true);
 
 $debug_area = <<<DEBUGAREA
 <hr />
@@ -37,7 +37,7 @@ $debug_area = <<<DEBUGAREA
 Debug Area's text:
 ro_user: {$sql_ro_user}, pass: {$sql_ro_pass}
 ro_user: {$sql_rw_user}, pass: {$sql_rw_pass}
-conn: {$dbconn_ro}
+conn: {$show_conn_ro}
 </pre>
 "{$sqlclient}:dbname={$dbname};host={$dbhost}", $sql_ro_user, $sql_ro_pass
 <hr />
