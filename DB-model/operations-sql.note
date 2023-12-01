@@ -15,6 +15,7 @@
 --     * open job seeking
 --     * close job seeking
 --     * view job seeking
+-- * all job listing / seeking
 -- * login / logout
 
 -- -----------------------------------------
@@ -182,3 +183,11 @@ SELECT U.name, J.attribute, J.title, J.description, J.created_at, J.updated_at, 
        ON U.id = J.user
        WHERE U.email = @email
        ORDER BY J.attribute, J.opened_at IS NULL ASC, J.created_at ASC;
+
+
+-- all job listing/seeking
+--   no input params
+SELECT U.name, J.attribute, J.title, J.description, J.created_at, J.updated_at, J.opened_at, J.closed_at
+       FROM user as U INNER JOIN job_entry AS J
+       ON U.id = J.user
+       ORDER BY J.attribute, J.user, J.opened_at IS NULL ASC, J.created_at ASC;
