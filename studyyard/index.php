@@ -1,6 +1,5 @@
 <?php
 
-use PDO;
 include_once(__DIR__ . "/./ingredients/utilities.php");
 
 
