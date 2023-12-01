@@ -23,7 +23,7 @@ $sqlclient = "mysql";
 try {
     //$dbconn_ro = new PDO($data_source_name, $sql_ro_user, $sql_ro_pass);
     //echo "aaa";
-    
+
 } catch (Exception $e){
     echo $e->getMessage();
 }
@@ -44,7 +44,7 @@ conn: {$dbconn_ro}
 DEBUGAREA;
 
 
-// $debug_area=""; // 
+// $debug_area=""; //
 
 // Todo: SQL contents selecting and show them
 $tpl->content_actual = <<<CONTENTINDEX
