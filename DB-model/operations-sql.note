@@ -24,7 +24,7 @@
 -- --------
 -- example 1
 --   input params
-SET @name = 'Jhon Smith', @email = 'mail@piyomail.com', @passwd_hash = 'hsah_dwssap', @note = 'Hi! this is my note';
+SET @name = 'John Smith', @email = 'mail@piyomail.com', @passwd_hash = 'hsah_dwssap', @note = 'Hi! this is my note';
 --
 START TRANSACTION;
 
@@ -51,7 +51,7 @@ COMMIT;
 -- --------
 -- candidate 1
 --   input params
-SET @attribute = 'L', @email = 'mail@piyomail.com', @title = 'Jhon job listing', @description = 'example job description 1';
+SET @attribute = 'L', @email = 'mail@piyomail.com', @title = 'John job listing', @description = 'example job description 1';
 --   Two statements transaction
 START TRANSACTION;
 
