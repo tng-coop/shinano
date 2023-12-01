@@ -21,8 +21,10 @@
 -- user
 
 -- add user
---   2 examples
-SET @name = 'Jhon Smith', @email = 'mail@piyomail.com', @passwd_hash = 'hsah_dwssap', @note = 'Hi! this is my note'; -- params
+-- --------
+-- example 1
+--   input params
+SET @name = 'Jhon Smith', @email = 'mail@piyomail.com', @passwd_hash = 'hsah_dwssap', @note = 'Hi! this is my note';
 --
 START TRANSACTION;
 
@@ -31,7 +33,9 @@ INSERT INTO user(name, email, passwd_hash, note, created_at, updated_at)
 
 COMMIT;
 -- --------
-SET @name = 'Tony Morris', @email = 'tony@morris.com', @passwd_hash = 'hsah_dwssap', @note = 'Tony''s note example'; -- params
+-- example 2
+--   input params
+SET @name = 'Tony Morris', @email = 'tony@morris.com', @passwd_hash = 'hsah_dwssap', @note = 'Tony''s note example';
 --
 START TRANSACTION;
 
@@ -44,9 +48,11 @@ COMMIT;
 -- job listing
 
 -- define job listing
---   2 candidates
-SET @email = 'mail@piyomail.com', @title = 'Jhon job listing', @description = 'example job description 1'; -- params
--- Two stmt transaction
+-- --------
+-- candidate 1
+--   input params
+SET @email = 'mail@piyomail.com', @title = 'Jhon job listing', @description = 'example job description 1';
+--   Two statements transaction
 START TRANSACTION;
 
 SELECT @user_id := id FROM user WHERE email = @email FOR UPDATE;
@@ -55,8 +61,10 @@ INSERT INTO job_entry(attribute, user, title, description, created_at, updated_a
 
 COMMIT;
 -- --------
-SET @email = 'tony@morris.com', @title = 'Tony job listing', @description = 'example job description 2'; -- params
--- One INSERT ... SELECT stmt
+-- candidate 2
+--   input params
+SET @email = 'tony@morris.com', @title = 'Tony job listing', @description = 'example job description 2';
+--   One INSERT ... SELECT statement
 START TRANSACTION;
 
 INSERT INTO job_entry(attribute, user, title, description, created_at, updated_at)
@@ -65,9 +73,11 @@ INSERT INTO job_entry(attribute, user, title, description, created_at, updated_a
 COMMIT;
 
 -- open job listing
---   2 candidates
+-- --------
+-- candidate 1
+--   input params
 SET @email = 'tony@morris.com', @job_entry_id = 2;
--- Two stmt transaction
+--   Two statements transaction
 START TRANSACTION;
 
 SELECT @user_id := U.id FROM user AS U WHERE U.email = @email FOR UPDATE;
@@ -76,8 +86,10 @@ UPDATE job_entry AS J SET opened_at = current_timestamp
 
 COMMIT;
 -- --------
+-- candidate 2
+--   input params
 SET @email = 'mail@piyomail.com', @job_entry_id = 1;
--- One UPDATE statement uses a correlation query to specify a specific user from email
+--   One UPDATE statement uses a correlation query to specify a specific user from email
 START TRANSACTION;
 
 UPDATE job_entry AS J SET opened_at = current_timestamp
@@ -88,9 +100,11 @@ COMMIT;
 
 
 -- close job listing
---   2 candidates of transaction sequence
+-- --------
+-- candidate 1
+--   input params
 SET @email = 'tony@morris.com', @job_entry_id = 2;
--- Two stmt transaction
+--   Two statements transaction
 START TRANSACTION;
 
 SELECT @user_id := U.id FROM user AS U WHERE U.email = @email FOR UPDATE;
@@ -99,8 +113,10 @@ UPDATE job_entry AS J SET closed_at = current_timestamp
 
 COMMIT;
 -- --------
+-- candidate 2
+--   input params
 SET @email = 'mail@piyomail.com', @job_entry_id = 1;
--- The UPDATE statement uses a correlation query to specify a specific user from email
+--   The UPDATE statement uses a correlation query to specify a specific user from email
 START TRANSACTION;
 
 UPDATE job_entry SET closed_at = current_timestamp
@@ -110,15 +126,20 @@ UPDATE job_entry SET closed_at = current_timestamp
 COMMIT;
 
 -- view job listing
---   2 example
+-- --------
+-- example 1
+--   input params
 SET @email := 'mail@piyomail.com';
--- specify set
+--   specify set from email
 SELECT U.name, J.title, J.description, J.created_at, J.updated_at, J.opened_at, J.closed_at
        FROM user as U INNER JOIN job_entry AS J
        ON U.id = J.user
        WHERE attribute = 'L' AND U.email = @email;
 -- --------
--- sepecify set and order
+-- example 2
+--   input params
+SET @email := 'mail@piyomail.com';
+--   sepecify set from email, ordered, opened first
 SELECT U.name, J.title, J.description, J.created_at, J.updated_at, J.opened_at, J.closed_at
        FROM user as U INNER JOIN job_entry AS J
        ON U.id = J.user
