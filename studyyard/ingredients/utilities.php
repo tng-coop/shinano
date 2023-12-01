@@ -23,22 +23,22 @@ namespace NAMES;
 
 [$sql_ro_user, $sql_ro_pass] = ["sdev_ro", "Kis0Shinan0DevR0"];
 [$sql_rw_user, $sql_rw_pass] = ["sdev_rw", "Kis0Shinan0DevRW"];
-            
+
 
 // # functions
 
 function get_url(){
     // check if secured
-    if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')   
-        $url = "https://";   
-    else  
-        $url = "http://";   
-    // Append the host(domain name, ip) to the URL.   
-    $url.= $_SERVER['HTTP_HOST'];   
-    
-    // Append the requested resource location to the URL   
-    $url.= $_SERVER['REQUEST_URI'];    
-    
+    if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')
+        $url = "https://";
+    else
+        $url = "http://";
+    // Append the host(domain name, ip) to the URL.
+    $url.= $_SERVER['HTTP_HOST'];
+
+    // Append the requested resource location to the URL
+    $url.= $_SERVER['REQUEST_URI'];
+
     return $url;
 }
 
@@ -48,7 +48,7 @@ class TemplateAndConfigs{
     // config and config values
 
     function __construct(){
-        $this->_document_root = realpath(__DIR__ . "/../"); 
+        $this->_document_root = realpath(__DIR__ . "/../");
         $this->_URL = get_url();
     }
 
