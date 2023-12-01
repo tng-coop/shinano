@@ -14,7 +14,7 @@ use \PDO;
 
 /*
 // -- to detect user and password, call after login to sql client,
-[mysql]> SELECT host,user,password FROM mysql.user; 
+[mysql]> SELECT host,user,password FROM mysql.user;
 +--------------+-------------+-----------------------+
 | Host         | User        | Password              |
 +--------------+-------------+-----------------------+
@@ -53,7 +53,7 @@ class WPDO{
         }
     }
 
-    
+
     function askdb($sql_sentence){
         try {
             $stmt = ($this->$conn)->prepare($sql_sentence);
@@ -94,9 +94,9 @@ function get_url(){
     return $url;
 }
 
-        
 
-// # wrap Template and Configs 
+
+// # wrap Template and Configs
 
 class TemplateAndConfigs{
 
