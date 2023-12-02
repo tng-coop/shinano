@@ -9,7 +9,7 @@
 --     * open job listing / seeking
 --     * close job listing / seeking
 --     * view job listing / seeking
--- * view all job listing / seeking
+-- * search job listing / seeking
 -- * login / logout
 
 -- -----------------------------------------
@@ -178,10 +178,11 @@ SELECT U.name, J.attribute, J.title, J.description, J.created_at, J.updated_at, 
        WHERE U.email = @email
        ORDER BY J.attribute, J.opened_at IS NULL ASC, J.created_at ASC;
 
-
--- all job listing / seeking
+-- search job listing / seeking
 --   no input params
+SET @search_pat := 'job';
 SELECT U.name, J.attribute, J.title, J.description, J.created_at, J.updated_at, J.opened_at, J.closed_at
        FROM user as U INNER JOIN job_entry AS J
        ON U.id = J.user
+       WHERE J.title LIKE CONCAT('%', @search_pat, '%')
        ORDER BY J.attribute, J.user, J.opened_at IS NULL ASC, J.created_at ASC;
