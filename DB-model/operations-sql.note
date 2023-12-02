@@ -3,18 +3,12 @@
 -- * user
 --    * add user
 --    * delete user
--- * job listing
---     * define job listing
+-- * job listing / seeking
+--     * add job listing / seeking
 --         * (puiblication range : optional)
---     * open job listing
---     * close job listing
---     * view job listing
--- * job seeking
---     * define job seeking
---         * (puiblication range : optional)
---     * open job seeking
---     * close job seeking
---     * view job seeking
+--     * open job listing / seeking
+--     * close job listing / seeking
+--     * view job listing / seeking
 -- * all job listing / seeking
 -- * login / logout
 
@@ -46,9 +40,9 @@ INSERT INTO user(name, email, passwd_hash, note, created_at, updated_at)
 COMMIT;
 
 -- -----------------------------------------
--- job listing/seeking
+-- job listing / seeking
 
--- define job listing/seeking
+-- add job listing / seeking
 -- --------
 -- candidate 1
 --   input params
@@ -86,7 +80,7 @@ INSERT INTO job_entry(attribute, user, title, description, created_at, updated_a
 COMMIT;
 
 
--- open job listing/seeking
+-- open job listing / seeking
 -- --------
 -- candidate 1
 --   input params
@@ -163,7 +157,7 @@ UPDATE job_entry AS J SET closed_at = current_timestamp
 
 COMMIT;
 
--- view job listing/seeking
+-- view job listing / seeking
 -- --------
 -- example 1
 --   input params
@@ -185,7 +179,7 @@ SELECT U.name, J.attribute, J.title, J.description, J.created_at, J.updated_at, 
        ORDER BY J.attribute, J.opened_at IS NULL ASC, J.created_at ASC;
 
 
--- all job listing/seeking
+-- all job listing / seeking
 --   no input params
 SELECT U.name, J.attribute, J.title, J.description, J.created_at, J.updated_at, J.opened_at, J.closed_at
        FROM user as U INNER JOIN job_entry AS J
