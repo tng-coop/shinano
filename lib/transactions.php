@@ -1,0 +1,182 @@
+<?php
+
+declare(strict_types=1);
+
+#----------------------------------------------------------------
+
+# lib to provide transaction sequence
+namespace Tx {
+
+use \PDO;
+
+class Exception extends \RuntimeException {
+}
+
+function with_connection(string $data_source_name, string $sql_user, string $sql_password) {
+    return function($tx) use($data_source_name, $sql_user, $sql_password) {
+        $conn = new PDO($data_source_name, $sql_user, $sql_password,
+                        array(
+                            /* connection pooling
+                               mysqlドライバでは prepared-statement の leak を防ぐ仕組みは担保されているか? */
+                            PDO::ATTR_PERSISTENT => true,
+                            PDO::ATTR_TIMEOUT => 600,
+                            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                            /* default is buffering all result of query*/
+                            PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => false)
+                        );
+        try {
+            return $tx($conn);
+        } catch(Throwable $e) {
+            $conn->rollBack();
+            throw $e;
+        }
+    };
+}
+
+function block(PDO $conn, string $tag) {
+    return function($body) use($conn, $tag) {
+        try {
+            if (!($conn->beginTransaction())) {
+                throw new \Tx\Exception('Tx.block: beginTrascaction failed: ' . $tag);
+            }
+            $result = $body();
+            if (!($conn->commit())) {
+                throw new \Tx\Exception('Tx.block: commit failed: ' . $tag);
+            }
+            return $result;
+        } catch(Throwable $e) {
+            $conn->rollBack();
+            throw $e;
+        }
+    };
+}
+
+} ## end of namesapce Tx
+
+#----------------------------------------------------------------
+
+# transaction definitions for shinano
+namespace TxSnn {
+
+use \PDO;
+
+function add_user(PDO $conn, string $name, string $email, string $passwd_hash, string $note) {
+    \Tx\block($conn, "add_user")(
+        function() use($conn, $name, $email, $passwd_hash, $note) {
+            $stmt = $conn->prepare(<<<SQL
+INSERT INTO user(name, email, passwd_hash, note, created_at, updated_at)
+    VALUES (:name, :email, :passwd_hash, :note, current_timestamp, current_timestamp)
+SQL
+            );
+            $stmt->execute(array(':name' => $name, ':email' => $email, ':passwd_hash' => $passwd_hash, ':note' => $note));
+        });
+}
+
+function add_job_listing(PDO $conn, string $email, string $title, string $description) {
+    return add_job_things('L')($conn, $email, $title, $description);
+}
+
+function add_job_seeking(PDO $conn, string $email, string $title, string $description) {
+    return add_job_things('S')($conn, $email, $title, $description);
+}
+
+function add_job_things(string $attribute) {
+    return function(PDO $conn, string $email, string $title, string $description) use($attribute) {
+        \Tx\block($conn, "add_job_things:" . $attribute)(
+            function() use($attribute, $conn, $email, $title, $description) {
+                $user_id = user_id_lock_by_email($conn, $email);
+                $stmt = $conn->prepare(<<<SQL
+INSERT INTO job_entry(attribute, user, title, description, created_at, updated_at)
+    VALUES (:attribute, :user_id, :title, :desc, current_timestamp, current_timestamp)
+SQL
+                );
+                $stmt->execute(array(':attribute' => $attribute, ':user_id' => $user_id, ':title' => $title, ':desc' => $description));
+            }
+        );
+    };
+}
+
+function open_job_listing(PDO $conn, string $email, int $job_entry_id) {
+    return open_job_things('L')($conn, $email, $job_entry_id);
+}
+
+function open_job_seeking(PDO $conn, string $email, int $job_entry_id) {
+    return open_job_things('S')($conn, $email, $job_entry_id);
+}
+
+function open_job_things(string $attribute) {
+    return function(PDO $conn, string $email, int $job_entry_id) use ($attribute) {
+        \Tx\block($conn, "open_job_things:" . $attribute)(
+            function() use($attribute, $conn, $email, $job_entry_id) {
+                $user_id = user_id_lock_by_email($conn, $email);
+                $stmt = $conn->prepare(<<<SQL
+UPDATE job_entry AS J SET opened_at = current_timestamp
+       WHERE attribute = :attribute AND id = :job_entry_id AND user = :user_id
+SQL
+                );
+                $stmt->execute(array(':attribute' => $attribute, ':job_entry_id' => $job_entry_id, ':user_id' => $user_id));
+            }
+        );
+    };
+}
+
+function close_job_listing(PDO $conn, string $email, int $job_entry_id) {
+    return close_job_things('L')($conn, $email, $job_entry_id);
+}
+
+function close_job_seeking(PDO $conn, string $email, int $job_entry_id) {
+    return close_job_things('S')($conn, $email, $job_entry_id);
+}
+
+function close_job_things(string $attribute) {
+    return function(PDO $conn, string $email, int $job_entry_id) use ($attribute) {
+        \Tx\block($conn, "close_job_things:" . $attribute)(
+            function() use($attribute, $conn, $email, $job_entry_id) {
+                $user_id = user_id_lock_by_email($conn, $email);
+                $stmt = $conn->prepare(<<<SQL
+UPDATE job_entry AS J SET closed_at = current_timestamp
+       WHERE attribute = :attribute AND id = :job_entry_id AND user = :user_id
+SQL
+                );
+                $stmt->execute(array(':attribute' => $attribute, ':job_entry_id' => $job_entry_id, ':user_id' => $user_id));
+            }
+        );
+    };
+}
+
+function user_id_lock_by_email(PDO $conn, string $email) {
+    $stmt = $conn->prepare('SELECT id FROM user WHERE email = ? FOR UPDATE');
+    $stmt->execute(array($email));
+    // カーソル位置で user テーブルのレコードをロック
+    return ($stmt->fetch(PDO::FETCH_NUM))[0];
+}
+
+function view_job_things(PDO $conn, string $email) {
+    $stmt = $conn->prepare(<<<SQL
+SELECT U.name, J.attribute, J.title, J.description, J.created_at, J.updated_at, J.opened_at, J.closed_at
+       FROM user as U INNER JOIN job_entry AS J
+       ON U.id = J.user
+       WHERE U.email = ?
+       ORDER BY J.attribute, J.opened_at IS NULL ASC, J.created_at ASC;
+SQL
+            );
+    $stmt->execute(array($email));
+    return $stmt;
+}
+
+function search_job_things(PDO $conn, string $search_pat) {
+    $stmt = $conn->prepare(<<<SQL
+SELECT U.name, J.attribute, J.title, J.description, J.created_at, J.updated_at, J.opened_at, J.closed_at
+       FROM user as U INNER JOIN job_entry AS J
+       ON U.id = J.user
+       WHERE J.title LIKE CONCAT('%', ?, '%')
+       ORDER BY J.attribute, J.user, J.opened_at IS NULL ASC, J.created_at ASC;
+SQL
+    );
+    $stmt->execute(array($search_pat));
+    return $stmt;
+}
+
+} ## end of namesapce TxSnn
+
+?>
