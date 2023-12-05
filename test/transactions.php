@@ -31,9 +31,15 @@ function show_records($stmt) {
 
 \Tx\with_connection($dsn, 'sdev_rw', 'Kis0Shinan0DevRW')(
     function($conn_rw) {
-        \TxSnn\add_user($conn_rw, 'Taro Yamada', 'yamada@example.com', 'abcd', 'taro\'s note');
-        check_record1($conn_rw, 'SELECT * FROM user',
+        $emails_user_id=\TxSnn\user_id_lock_by_email($conn_rw, 'yamada@example.com');
+        if(!$emails_user_id){
+            echo "Mr Taro Yamada is not exist. \nThen, I make new user.\n";
+            \TxSnn\add_user($conn_rw, 'Taro Yamada', 'yamada@example.com', 'abcd', 'taro\'s note');
+            check_record1($conn_rw, 'SELECT * FROM user',
                       fn($row) => $row['email'] == 'yamada@example.com');
+        }else{
+            echo "Mr Taro Yamada is already exist. \n";
+        }
         \TxSnn\add_job_listing($conn_rw, 'yamada@example.com', 'taro job listing', 'taro job description ...');
         check_record1($conn_rw, "SELECT * FROM job_entry WHERE attribute = 'L'",
                       fn($row) => preg_match('/^taro job l/', $row['title']) && is_null($row['opened_at']));
