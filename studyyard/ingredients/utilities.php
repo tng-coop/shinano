@@ -98,6 +98,31 @@ function get_url(){
 }
 
 
+function text_char_all_1byte_p ($text){
+    $len = mb_strlen($text, "UTF-8");
+    $wdt = mb_strwidth($text, "UTF-8");
+    return $len == $wdt;
+}
+
+// check whether request method is GET of POST
+
+function is_GET(){
+    if ($_SERVER['REQUEST_METHOD']=='GET'){
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function is_POST(){
+    if ($_SERVER['REQUEST_METHOD']=='POST'){
+        return true;
+    } else {
+        return false;
+    }
+}
+
+
 
 // # wrap Template and Configs
 
