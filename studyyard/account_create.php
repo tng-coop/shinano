@@ -174,11 +174,13 @@ if($request_method == "POST"){
     = check_for_user_post($post_name, $post_email, $post_password_check, $post_password_first);
 
     // reigster to user table if good POST.
-    if($checked_name!=null && $checked_email!=null && $checked_password!=null){        
+    if($checked_name!=null && $checked_email!=null && $checked_password!=null){
+        $checked_hashed_password = password_hash($checked_password, PASSWORD_DEFAULT);
         global $data_source_name, $sql_rw_user, $sql_rw_pass;
         $new_user_id = \Tx\with_connection($data_source_name, $sql_rw_user, $sql_rw_pass)(
-            function($conn_rw) use($checked_name, $checked_email, $checked_password) {
-                \TxSnn\add_user($conn_rw, $checked_name, $checked_email, $checked_password, "");
+            function($conn_rw) use($checked_name, $checked_email, $checked_hashed_password) {
+                \TxSnn\add_user
+                    ($conn_rw, $checked_name, $checked_email, $checked_hashed_password, "");
                 return \TxSnn\user_id_lock_by_email($conn_rw, $checked_email);
             }
         );
@@ -186,7 +188,7 @@ if($request_method == "POST"){
         if($new_user_id){
             $state_create_account="just_created";
         }else{
-            $db_message_tml = "<pre> somewhy failed to regist you.<pre> <br />\n";
+            $db_message_tml = "<pre> somewhy failed to regist you.</pre> <br />\n";
         }
     }
 }
@@ -210,9 +212,9 @@ $tpl->page_title = "Account Create - Shinano -";
 // make contents
 
 if($state_create_account=="just_created"){
-    $login_form_html = "you have registered.\n";
+    $account_create_form_html = "you have registered.\n";
 }elseif($state_create_account=="creating"){
-    $login_form_html = <<<ACCOUNT_CREATE_FORM
+    $account_create_form_html = <<<ACCOUNT_CREATE_FORM
 ${db_message_tml}
 To create account, name, email and password are needed. <br />
 <form action="" method="post">
@@ -236,11 +238,9 @@ ACCOUNT_CREATE_FORM;
 
 
 $tpl->content_actual = <<<CONTENT_CREATE_ACCOUNT
-
 ${debug_tml}
 <h3> Create Account </h3>
-{$login_form_html}
-
+{$account_create_form_html}
 CONTENT_CREATE_ACCOUNT;
 
 
