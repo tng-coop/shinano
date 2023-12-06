@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace PostCheck;
+namespace FormCheck;
 
 include_once(__DIR__ . "/./utilities.php");
 include_once(__DIR__ . '/../../lib/transactions.php');
@@ -13,7 +13,7 @@ include_once(__DIR__ . '/../../lib/transactions.php');
 $preg_str_of_marks = preg_quote(' !"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~', '/'); // Ascii code
 
 
-function check_if_filled_and_safe_text($formed_string){
+function check_if_post_is_safe($formed_string){
     $form_check_message = "";
     if(!isset($formed_string)) {
         return [null, "please use form. \n"];
@@ -26,7 +26,7 @@ function check_if_filled_and_safe_text($formed_string){
     }
 }
 
-function check_user_id($string_user_id){
+function check_user_id_safe($string_user_id){
     /*
     // format cheker for string typed user_id
     if(preg_match('/[^\w\ \_\-]/', $name)){
@@ -37,12 +37,12 @@ function check_user_id($string_user_id){
     return [null, "post_format_checker for strring_user_id is not implemented"];
 }
 
-function check_user_name($name){
+function check_user_name_safe($name){
     // check value for user
     $form_check_message = "";
     
     // post check
-    [$check_safe_post_p, $check_safe_post_text] = check_if_filled_and_safe_text($name);
+    [$check_safe_post_p, $check_safe_post_text] = check_if_post_is_safe($name);
     if(! $check_safe_post_p){
         return [null, $check_safe_post_text];
     }
@@ -67,9 +67,14 @@ function check_user_name($name){
     }
 }
 
-function check_user_email_and_unique($email){
+
+function check_user_email_safe(){
+    return null;
+}
+
+function check_user_email_safe_and_unique($email){
     // post check
-    [$check_safe_post_p, $check_safe_post_text] = check_if_filled_and_safe_text($email);
+    [$check_safe_post_p, $check_safe_post_text] = check_if_post_is_safe($email);
     if(! $check_safe_post_p){
         return [null, $check_safe_post_text];
     }
@@ -108,12 +113,12 @@ function check_user_email_and_unique($email){
     }
 }
 
-function check_user_password($password1, $password2){
+function check_user_password_safe($password1, $password2){
     $form_check_message = "";
     
     // post check
-    [$check_safe_post_p_1, $check_safe_post_text_1] = check_if_filled_and_safe_text($password1);
-    [$check_safe_post_p_2, $check_safe_post_text_2] = check_if_filled_and_safe_text($password2);
+    [$check_safe_post_p_1, $check_safe_post_text_1] = check_if_post_is_safe($password1);
+    [$check_safe_post_p_2, $check_safe_post_text_2] = check_if_post_is_safe($password2);
     if(! $check_safe_post_p_1 || ! $check_safe_post_p_2){
         return [null, $check_safe_post_text_1 . $check_safe_post_text_2];
     }

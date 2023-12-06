@@ -17,9 +17,9 @@ $post_data = array_map(fn($accessor) => $_POST[$accessor], $form_accessors);
 // Insert DataBase of new user. If POST is safe and unique_email.
 
 function check_for_user_post($name, $email, $password1, $password2){
-    return  [\PostCheck\check_user_name($name), 
-             \PostCheck\check_user_email_and_unique($email),
-             \PostCheck\check_user_password($password1, $password2)];
+    return  [\FormCheck\check_user_name_safe($name), 
+             \FormCheck\check_user_email_safe_and_unique($email),
+             \FormCheck\check_user_password_safe($password1, $password2)];
 }
 
 
