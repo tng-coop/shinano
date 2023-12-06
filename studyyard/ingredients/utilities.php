@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 
 namespace UTILS; // namespace was called 'NAMES' before in before versions.
-use \PDO;
 
+use \PDO;
 
 // # parameters
 
@@ -35,6 +35,17 @@ $sqlclient = "mysql";
 $data_source_name = "{$sqlclient}:host={$dbhost};dbname={$dbname};charset=UTF8";
 
 
+// ### request_method
+
+if(is_GET()){
+    $request_method = "GET";
+}elseif(is_POST()){
+    $request_method = "POST";
+}
+
+
+// # Wrap SQL connections, WPDO is Wrapped PDO.
+
 function PDO_connect($data_source_name, $sql_user, $sql_password) {
      try {
          return new PDO($data_source_name, $sql_user, $sql_password);
@@ -48,8 +59,6 @@ function PDO_connect($data_source_name, $sql_user, $sql_password) {
          exit_by_error($e);
      }
 }
-
-// # Wrap SQL connections, WPDO is Wrapped PDO.
 
 class WPDO{
     function __construct($data_source_name, $sql_user, $sql_password){
@@ -121,7 +130,6 @@ function is_POST(){
         return false;
     }
 }
-
 
 
 // # wrap Template and Configs
