@@ -7,55 +7,115 @@ connections between those initiating projects and seeking collaborative partners
 and between employers and contractors looking for opportunities. We are committed
 to fostering autonomous, cooperative, and sustainable work practices, with the goal
 of spreading the principles of worker cooperatives and the solidarity economy in
-society.
+society.  [* *Worker Cooperatives and Solidarity Economy*](#-worker-cooperatives-and-solidarity-economy)
 
 ## Purpose of Shinano Software and Web Service
 
-The Shinano software and web service are tailored to address both sides of the
-collaborative and employment spectrum. For individuals or groups with new ideas or
-specific projects, it offers a platform to post their intentions and find
-enthusiastic collaborators. Simultaneously, it provides a venue for contractors
-seeking employment opportunities and employers looking for skilled contractors.
-This system is dedicated to encouraging collaborative and equitable economic
-activities by entirely eliminating intermediaries and margins. Our aim is to
-ensure open and equal opportunities for all participants, fostering an environment
-of equal contribution and participation in projects and decision-making processes.
+The Shinano software and web service are designed to cover the full range of
+collaboration/joint venture and employment needs.
+For individuals or groups with new ideas or
+specific projects, it offers a platform to share their plans and connect with
+interested, engaged collaborators. Additionally, it serves as a resource for
+contractors seeking employment and for employers looking for skilled
+contractors. This system is focused on promoting collaborative and equitable
+economic activities by completely eliminating margins and intermediaries. Our
+aim is to create an open and democratic environment, ensuring equal
+opportunities for all participants.
+
+```mermaid
+graph TD
+    A[Project Initiators] -->|Initiate| C[Matching System]
+    B[Employers] -->|Initiate| C
+    C -->|Browse| D[Collaborative Partners]
+    C -->|Browse| E[Contractors]
+
+```
 
 ## Organizational Structure & Policy
 
-The Shinano Project and its system are currently established and managed by the
-TNG Workers' Cooperative in Yugawara, Japan. The future goal is to evolve into a
-more democratic structure, forming an organization collectively with its users.
-Initially, the system is offered completely free of charge. TNG Cooperative
-finds significant value in the system for its own use, and this motivates the
-decision to offer it for free. Additionally, the experience gained in system
-development is used as a reference to promote the cooperative itself. The
-matching system primarily serves as a replacement for traditional phone
-communication and does not engage in any individual labor or other contract
-negotiations. These contracts should be directly managed between the involved
-parties. However, if postings not in line with the platform's goals are found,
-the operating body, adhering to our democratic principles, may reach out to
-those involved for appropriate discussion and resolution.
+The Shinano Project and its system are currently developed and run by the
+TNG Worker Cooperative in Yugawara, Japan, with an eye toward evolving into a
+more democratically structured organization that includes its users.
+The system is offered free of charge, with TNG recognizing its
+significant value for internal use as a participant.
+
+The matching system is designed as an alternative to traditional phone
+communication and does not involve itself in individual labor or other contract
+negotiations, which are managed directly by the involved parties. In line with
+our flexible content policy, if postings are found that may not fully align with
+the platform's primary objectives, our approach is to engage in open dialogue.
+The operating body, committed to democratic principles, prefers to discuss
+constructively with those involved to find amicable solutions or adjustments,
+rather than enforce strict compliance. This approach allows for a wider range of
+expressions and interactions on our platform, fostering a diverse and dynamic
+community.
+
+### * Worker Cooperatives and Solidarity Economy
+
+#### ** Worker Cooperatives
+
+Worker cooperatives are democratically-run businesses owned by their worker/owners.
+Each member has an equal vote in the highest enterprise decision-making bodies.
+
+#### ** Solidarity Economy
+
+The solidarity economy emphasizes meeting human and environmental needs over profit.
+It values mutual aid, cooperation, economic democracy, sustainability, and social justice.
+This approach aims to create an inclusive, equitable society that respects both people and the planet.
 
 ## はじめに
 
 信濃プロジェクトへようこそ。起業・企画の発案者と参加者、または雇用者と請負業者の間の
-直接的なマッチングを促進することに注力している当プラットフォームは、自律的、協調的、持続的な
-働き方を促進し、労働者協同組合と連帯経済の理念を社会に広めることを目指しています。
+直接的なマッチングを促進することに注力している当プラットフォームは、自律的、協調的、
+持続的な働き方を促進し、労働者協同組合と連帯経済の理念を社会に広めることを目指してい
+ます。[* *労働者協同組合と連帯経済*](#-労働者協同組合と連帯経済)
 
-## 信濃プラットフォームの目的
+## 信濃プラットフォームとウェブサービスの目的
 
-信濃のソフトウェアとウェブサービスは、新しいアイデアや特定のプロジェクトのための人材を求める人々に対し、
-その意向を投稿し、関心を持つ当事者が応募や参加できる共同事業と請負業者のマッチングシステムです。
-このシステムは、中間業者やマージンをゼロにすることを奨励し、協力的で公正な経済活動を促進します。
-また、すべての人に開かれた平等な機会の提供を目指しています。参加者は、プロジェクトや意思決定において
-平等な貢献と参加が奨励されます。
+信濃のソフトウェアとウェブサービスは、協力と雇用の両面に対応するように設計されています。
+新しいアイデアや特定のプロジェクトを持つ個人またはグループには、その計画を共有し、共感を
+持つ協力者と繋がるためのプラットフォームを提供します。
+また、契約を探している請負業者や
+技能を求める雇用者にも、 このプラットフォームは有益です。
+このシステムは、中間業者や余分なコストを排除することで、
+協力的で公正な経済活動を促進することを目指しています。
+
+```mermaid
+graph TD
+    A[プロジェクト発起人] -->|提案| C[マッチングシステム]
+    B[雇用主] -->|提案| C
+    C -->|閲覧| D[共同パートナー]
+    C -->|閲覧| E[契約業者]
+```
+
 
 ## 運営母体・運営方針
 
-信濃プロジエクトとそのシステムは、神奈川県湯河原町にあるTNG労働者協同組合が当初設立・運営をしていますが、将来的にはシステムの利用者と団体を形成し、より民主的な運営に移行する方針です。システムの利用料金は少なくとも当初は完全に無料で、その理由は我々TNG組合も参加者として自己の利用価値を見出しているのと、システム開発の経験そのものを組合の営業に活かしたいからです。
-当マッチングシステムはあくまでも「電話の代わり」であり、個々の労働・その他契約などに一切関与しません。契約は当事者同士でお願いします。
-ただし、本プラットフォームの目的にそぐわない掲示などがあった場合は、お知らせください。また、運営体からご連絡させていただく可能性もございます。
+信濃プロジエクトとそのシステムは、神奈川県湯河原町にあるTNG労働者協同組合が当初設立・
+運営をしていますが、将来的にはシステムの利用者と団体を形成し、より民主的な運営に移行
+する方針です。システムの利用は無料で、その理由は我々TNG組合も参加者としての利用
+価値を見出しているからです。
+当マッチングシステムはあくまでも「電話の代わり」であり、個々の労働・その他契約などに
+一切関与しません。契約は当事者同士でお願いします。
+ただし、本プラットフォームの目的にそぐわない掲示などがあった場合、運営方針は柔軟に
+対応することを重視しています。当組合は、民主的な原則に従い、対話と協力を通じて、
+問題や調整に取り組むことを望んでいます。この方針により、
+プラットフォーム上での表現の多様性や交流が促進され、活動的で包括的なコミュニティが
+育まれることを目指しています。
+
+### * 労働者協同組合と連帯経済
+
+#### ** 労働者協同組合
+
+労働者協同組合は、従業員/所有者によって所有され、民主的に運営される組合です。
+各組合員は企業の最高意思決定機関で平等な投票権を持っています。
+
+#### ** 連帯経済
+
+連帯経済は、利益よりも人間と環境のニーズを満たすことを重視します。
+相互扶助、協力、経済民主主義、持続可能性、
+社会正義を価値観としています。このアプローチは、
+人々と地球の両方を尊重する包括的で公平な社会を創造することを目指しています。
 
 ## Technical Dependencies and Standards
 
