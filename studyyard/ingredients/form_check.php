@@ -68,11 +68,7 @@ function check_user_name_safe($name){
 }
 
 
-function check_user_email_safe(){
-    return null;
-}
-
-function check_user_email_safe_and_unique($email){
+function check_user_email_safe($email){
     // post check
     [$check_safe_post_p, $check_safe_post_text] = check_if_post_is_safe($email);
     if(! $check_safe_post_p){
@@ -92,18 +88,35 @@ function check_user_email_safe_and_unique($email){
        !checkdnsrr($domain_part, 'AAAA')){
         return [null, "Please use exists email.\n"];
     }
+    
+    // return
+    if(false){
+        return [null, ""];
+    } elseif(true){
+        return [$email, ""];
+    }
+}
 
-    // check database
+function check_user_email_safe_and_unique($email){
+    
+    // post check, and email format check
+    [$safe_email_p, $safe_email_p_message] = check_user_email_safe($email);
+    if(! $safe_email_p){
+        return [null, $safe_email_p_message];
+    }
+
+    // check database for unique detection.
     global $data_source_name, $sql_ro_user, $sql_ro_pass;
     $id_exists = \Tx\with_connection($data_source_name, $sql_ro_user, $sql_ro_pass)(
         function($conn_rw) use ($email){
-            $emails_user_id = \TxSnn\user_id_lock_by_email($conn_rw, $email);
-            return $emails_user_id;
+            return \TxSnn\user_id_lock_by_email($conn_rw, $email); // email'ed user id if exists.
         }
     );
+    
     if($id_exists) {
         return [null, "email's user is already exists."];
     }
+
     
     // return
     if(false){
