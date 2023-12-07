@@ -2,12 +2,11 @@
 
 ## Introduction
 
-Welcome to the Shinano Project. Our platform is designed to facilitate direct
-connections between those initiating projects and seeking collaborative partners,
-and between employers and contractors looking for opportunities. We are committed
-to fostering autonomous, cooperative, and sustainable work practices, with the goal
-of spreading the principles of worker cooperatives and the solidarity economy in
-society.  [* *Worker Cooperatives and Solidarity Economy*](#-worker-cooperatives-and-solidarity-economy)
+Welcome to the Shinano Project. 
+Our platform is specifically designed to create direct connections: connecting those initiating projects with collaborative partners, and linking employers with contractors seeking opportunities.
+
+Our mission is to nurture autonomous, collaborative, and sustainable work practices. We aim to spread the principles of economic democracy in society, exemplified by such concepts as
+[ *Worker Cooperatives and Solidarity Economy*](#-worker-cooperatives-and-solidarity-economy)
 
 ## Purpose of Shinano Software and Web Service
 
@@ -46,9 +45,7 @@ our flexible content policy, if postings are found that may not fully align with
 the platform's primary objectives, our approach is to engage in open dialogue.
 The operating body, committed to democratic principles, prefers to discuss
 constructively with those involved to find amicable solutions or adjustments,
-rather than enforce strict compliance. This approach allows for a wider range of
-expressions and interactions on our platform, fostering a diverse and dynamic
-community.
+rather than enforce strict compliance.
 
 ### * Worker Cooperatives and Solidarity Economy
 
@@ -67,8 +64,7 @@ This approach aims to create an inclusive, equitable society that respects both 
 
 信濃プロジェクトへようこそ。起業・企画の発案者と参加者、または雇用者と請負業者の間の
 直接的なマッチングを促進することに注力している当プラットフォームは、自律的、協調的、
-持続的な働き方を促進し、労働者協同組合と連帯経済の理念を社会に広めることを目指してい
-ます。[* *労働者協同組合と連帯経済*](#-労働者協同組合と連帯経済)
+持続的な働き方を促進し、経済の民主主義、具体的には[ *労働者協同組合、連帯経済*](#-労働者協同組合と連帯経済)などと呼ばれる概念を社会に広めることを目指しています。
 
 ## 信濃プラットフォームとウェブサービスの目的
 
@@ -76,8 +72,8 @@ This approach aims to create an inclusive, equitable society that respects both 
 新しいアイデアや特定のプロジェクトを持つ個人またはグループには、その計画を共有し、共感を
 持つ協力者と繋がるためのプラットフォームを提供します。
 また、契約を探している請負業者や
-技能を求める雇用者にも、 このプラットフォームは有益です。
-このシステムは、中間業者や余分なコストを排除することで、
+技能を求める発注者のマッチを行います。
+このシステムは、中間業者、参加費用などを排除することで、
 協力的で公正な経済活動を促進することを目指しています。
 
 ```mermaid
@@ -88,7 +84,6 @@ graph TD
     C -->|閲覧| E[契約業者]
 ```
 
-
 ## 運営母体・運営方針
 
 信濃プロジエクトとそのシステムは、神奈川県湯河原町にあるTNG労働者協同組合が当初設立・
@@ -98,10 +93,8 @@ graph TD
 当マッチングシステムはあくまでも「電話の代わり」であり、個々の労働・その他契約などに
 一切関与しません。契約は当事者同士でお願いします。
 ただし、本プラットフォームの目的にそぐわない掲示などがあった場合、運営方針は柔軟に
-対応することを重視しています。当組合は、民主的な原則に従い、対話と協力を通じて、
-問題や調整に取り組むことを望んでいます。この方針により、
-プラットフォーム上での表現の多様性や交流が促進され、活動的で包括的なコミュニティが
-育まれることを目指しています。
+対応することを重視しています。当組合は、民主的な原則に従い、対話と協力を通じて
+調整することを望んでいます。
 
 ### * 労働者協同組合と連帯経済
 
@@ -109,8 +102,9 @@ graph TD
 
 労働者協同組合は、従業員/所有者によって所有され、民主的に運営される組合です。
 各組合員は企業の最高意思決定機関で平等な投票権を持っています。
+(非常にわかりやすい例：　個人事業主が集団でラーメン屋をやる。当て言えば「集団事業主」)
 
-#### ** 連帯経済
+#### ** 連帯経済（つながりの経済・ふれあい経済）
 
 連帯経済は、利益よりも人間と環境のニーズを満たすことを重視します。
 相互扶助、協力、経済民主主義、持続可能性、
