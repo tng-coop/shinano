@@ -171,7 +171,7 @@ COMMIT;
 --   input params
 SET @email := 'mail@piyomail.com';
 --   specify set from email
-SELECT U.name, J.attribute, J.title, J.description, J.created_at, J.updated_at, J.opened_at, J.closed_at
+SELECT U.public_uid, U.name, J.attribute, J.title, J.description, J.created_at, J.updated_at, J.opened_at, J.closed_at
        FROM user as U INNER JOIN job_entry AS J
        ON U.id = J.user
        WHERE U.email = @email;
@@ -180,7 +180,7 @@ SELECT U.name, J.attribute, J.title, J.description, J.created_at, J.updated_at, 
 --   input params
 SET @email := 'mail@piyomail.com';
 --   sepecify set from email, ordered, opened first
-SELECT U.name, J.attribute, J.title, J.description, J.created_at, J.updated_at, J.opened_at, J.closed_at
+SELECT U.public_uid, U.name, J.attribute, J.title, J.description, J.created_at, J.updated_at, J.opened_at, J.closed_at
        FROM user as U INNER JOIN job_entry AS J
        ON U.id = J.user
        WHERE U.email = @email
@@ -189,7 +189,7 @@ SELECT U.name, J.attribute, J.title, J.description, J.created_at, J.updated_at, 
 -- search job listing / seeking
 --   no input params
 SET @search_pat := 'job';
-SELECT U.name, J.attribute, J.title, J.description, J.created_at, J.updated_at, J.opened_at, J.closed_at
+SELECT U.public_uid, U.name, J.attribute, J.title, J.description, J.created_at, J.updated_at, J.opened_at, J.closed_at
        FROM user as U INNER JOIN job_entry AS J
        ON U.id = J.user
        WHERE J.title LIKE CONCAT('%', @search_pat, '%')
