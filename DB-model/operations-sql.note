@@ -23,8 +23,8 @@ SET @email = 'mail@piyomail.com', @passwd_hash = 'hsah_dwssap', @name = 'John Sm
 --
 START TRANSACTION;
 
-INSERT INTO user(name, email, passwd_hash, note, created_at, updated_at)
-       VALUES (@name, @email, @passwd_hash, @note, current_timestamp, current_timestamp);
+INSERT INTO user(email, passwd_hash, name, note, created_at, updated_at)
+       VALUES (@email, @passwd_hash, @name, @note, current_timestamp, current_timestamp);
 
 COMMIT;
 -- --------
@@ -34,8 +34,8 @@ SET @email = 'tony@morris.com', @passwd_hash = 'hsah_dwssap', @name = 'Tony Morr
 --
 START TRANSACTION;
 
-INSERT INTO user(name, email, passwd_hash, note, created_at, updated_at)
-       VALUES (@name, @email, @passwd_hash, @note, current_timestamp, current_timestamp);
+INSERT INTO user(email, passwd_hash, name, note, created_at, updated_at)
+       VALUES (@email, @passwd_hash, @name, @note, current_timestamp, current_timestamp);
 
 COMMIT;
 
