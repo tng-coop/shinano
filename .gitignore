@@ -703,3 +703,4 @@ dist
 .pnp.*
 
 *.pdf
+config.ini
