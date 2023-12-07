@@ -58,17 +58,32 @@ function block(PDO $conn, string $tag) {
 # transaction definitions for shinano
 namespace TxSnn {
 
+include_once(__DIR__ . '/finite_field.php');
+
 use \PDO;
 
 function add_user(PDO $conn, string $name, string $email, string $passwd_hash, string $note) {
     \Tx\block($conn, "add_user")(
         function() use($conn, $name, $email, $passwd_hash, $note) {
+            $pstate = $conn->prepare('SELECT last_uid FROM public_uid_state LIMIT 1 FOR UPDATE');
+            $pstate->execute();
+            // カーソル位置でテーブルのレコードをロック
+            $state_ref = $pstate->fetch(PDO::FETCH_NUM);
+            if (!$state_ref) {
+                new \Tx\Exception('TxSnn.add_user: internal error. wrong system initialization');
+            }
+            $last_public_uid = $state_ref[0];
+            $public_uid = \FF\galois_next24($last_public_uid);
+            $stmt = $conn->prepare('UPDATE public_uid_state SET last_uid = ?');
+            $pstate->fetchAll(); ## UGLY HACK for MySQL!! breaks critical section for Cursor Solid isolation RDBMs
+            $stmt->execute(array($public_uid));
+
             $stmt = $conn->prepare(<<<SQL
-INSERT INTO user(email, passwd_hash, name, note, created_at, updated_at)
-    VALUES (:email, :passwd_hash, :name, :note, current_timestamp, current_timestamp)
+INSERT INTO user(email, passwd_hash, public_uid, name, note, created_at, updated_at)
+    VALUES (:email, :passwd_hash, :public_uid, :name, :note, current_timestamp, current_timestamp)
 SQL
             );
-            $stmt->execute(array(':email' => $email, ':passwd_hash' => $passwd_hash,
+            $stmt->execute(array(':email' => $email, ':passwd_hash' => $passwd_hash, 'public_uid' => $public_uid,
                                  ':name' => $name, ':note' => $note));
         });
 }
