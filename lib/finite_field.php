@@ -30,6 +30,8 @@ x²⁴ + x²³ + x²² + x¹⁷ + 1
 
  */
 
+namespace FF {
+
 ## From https://docs.xilinx.com/v/u/en-US/xapp052
 ## 24次原始多項式 x^24 + x^23 + x^22 + x^17 + 1
 $irreducible = 0x1c20001;
@@ -43,5 +45,7 @@ function galois_next24(int $lfsr) : int {
     $lfsr1 = ($lfsr >> 1) ^ ( (- ($lfsr & 1)) & $prim_inv ); ## 24bit原始元の逆元を参照
     return $lfsr1;
 }
+
+} ## end of namesapce FF
 
 ?>
