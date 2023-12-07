@@ -2,8 +2,7 @@
 
 declare(strict_types=1);
 
-include_once(__DIR__ . "/./ingredients/utilities.php");
-include_once(__DIR__ . "/./ingredients/form_check.php");
+include_once(__DIR__ . "/../lib/form_check.php");
 include_once(__DIR__ . '/../lib/transactions.php');
 
 
@@ -62,7 +61,7 @@ DEBUG_TML;
 
 // prepare template
 
-$tpl = new \UTILS\TemplateAndConfigs();
+$tpl = new TemplateAndConfigs();
 
 $tpl->page_title = "Account Create - Shinano -";
 

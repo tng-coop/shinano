@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace FormCheck;
 
-include_once(__DIR__ . "/./utilities.php");
-include_once(__DIR__ . '/../../lib/transactions.php');
-
+include_once(__DIR__ . '/./common.php');
 
 // # check for post values
 
@@ -154,7 +152,7 @@ function check_user_password_safe($password1, $password2){
         $form_check_message .= "password needs more than 1 each of [a-z] or [A-Z], [0-9], marks\n";
     }
     
-    if(! \UTILS\text_char_all_1byte_p($password1)){
+    if(! text_char_all_1byte_p($password1)){
         $form_check_message .= "password need to be half-width characters only.\n";
     }
     

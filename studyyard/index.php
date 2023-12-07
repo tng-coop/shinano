@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-include_once(__DIR__ . "/./ingredients/utilities.php");
+include_once(__DIR__ . "/../lib/common.php");
 
 // prepare template
 
-$tpl = new \UTILS\TemplateAndConfigs();
+$tpl = new TemplateAndConfigs();
 
 $tpl->page_title = "index php here";
 
 // parepare and execute DB and SQL
 
-$wconn_ro = new \UTILS\WPDO($data_source_name, $sql_ro_user, $sql_ro_pass);
-//$wconn_ro = new \UTILS\WPDO($data_source_name, $sql_ro_user, "fial_pssaowrd"); // the case of password failure
+$wconn_ro = new WPDO($data_source_name, $sql_ro_user, $sql_ro_pass);
+//$wconn_ro = new WPDO($data_source_name, $sql_ro_user, "fial_pssaowrd"); // the case of password failure
 
 $sql1 = "SELECT name,email,passwd_hash FROM shinano_dev.user;";
 

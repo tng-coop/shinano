@@ -3,8 +3,6 @@
 declare(strict_types=1);
 
 
-namespace UTILS; // namespace was called 'NAMES' before in before versions.
-
 use \PDO;
 
 // # parameters
@@ -146,7 +144,8 @@ class TemplateAndConfigs{
     // template
     function eval_template($template_file){
         $v = $this;
-        include($this->_document_root . "/./ingredients/template/{$template_file}");
+        //include($this->_document_root . "/./template/{$template_file}");
+        include(__DIR__ . "/./template/{$template_file}");
     }
 }
 

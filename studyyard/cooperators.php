@@ -2,13 +2,12 @@
 
 declare(strict_types=1);
 
-include_once(__DIR__ . "/./ingredients/utilities.php");
-
+include_once(__DIR__ . "/../lib/common.php");
 
 
 // parepare and execute DB and SQL
 
-$wconn_ro = new \UTILS\WPDO($data_source_name, $sql_ro_user, $sql_ro_pass);
+$wconn_ro = new WPDO($data_source_name, $sql_ro_user, $sql_ro_pass);
 
 $sql1 = "SELECT name,email,note,created_at FROM shinano_dev.user;";
 
@@ -48,7 +47,7 @@ $cooperators_tml = html_text_of_cooperators($stmt);
 
 // prepare template
 
-$tpl = new \UTILS\TemplateAndConfigs();
+$tpl = new TemplateAndConfigs();
 
 $tpl->page_title = "index php here";
 

@@ -2,10 +2,8 @@
 
 declare(strict_types=1);
 
-include_once(__DIR__ . "/./ingredients/utilities.php");
-include_once(__DIR__ . "/./ingredients/form_check.php");
-include_once(__DIR__ . '/../lib/transactions.php');
-
+include_once(__DIR__ . "/../lib/form_check.php");
+include_once(__DIR__ . '/../lib/common.php');
 
 // fill variables by POSTed values
 
@@ -36,7 +34,7 @@ if($request_method == "POST"){
 
         // ask database
         global $data_source_name, $sql_rw_user, $sql_rw_pass;
-        $conn = \UTILS\PDO_connect($data_source_name, $sql_ro_user, $sql_ro_pass);
+        $conn = PDO_connect($data_source_name, $sql_ro_user, $sql_ro_pass);
         $stmt = $conn->prepare("SELECT id,name,email,passwd_hash FROM user" .
                                "  WHERE lower(email)=lower(:email);");
         $stmt->execute(['email' => $checked_email]);
@@ -65,7 +63,7 @@ if($request_method == "POST"){
 
 // prepare template
 
-$tpl = new \UTILS\TemplateAndConfigs();
+$tpl = new TemplateAndConfigs();
 
 $tpl->page_title = "Account Login - Shinano - ";
 

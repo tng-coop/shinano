@@ -10,9 +10,9 @@
 //
 //
 
-
 declare(strict_types=1);
 
+namespace CSRF;
 
 // session start if not started.
 if (session_status() === PHP_SESSION_NONE) {
