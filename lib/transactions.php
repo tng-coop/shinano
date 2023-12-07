@@ -64,11 +64,12 @@ function add_user(PDO $conn, string $name, string $email, string $passwd_hash, s
     \Tx\block($conn, "add_user")(
         function() use($conn, $name, $email, $passwd_hash, $note) {
             $stmt = $conn->prepare(<<<SQL
-INSERT INTO user(name, email, passwd_hash, note, created_at, updated_at)
-    VALUES (:name, :email, :passwd_hash, :note, current_timestamp, current_timestamp)
+INSERT INTO user(email, passwd_hash, name, note, created_at, updated_at)
+    VALUES (:email, :passwd_hash, :name, :note, current_timestamp, current_timestamp)
 SQL
             );
-            $stmt->execute(array(':name' => $name, ':email' => $email, ':passwd_hash' => $passwd_hash, ':note' => $note));
+            $stmt->execute(array(':email' => $email, ':passwd_hash' => $passwd_hash,
+                                 ':name' => $name, ':note' => $note));
         });
 }
 
