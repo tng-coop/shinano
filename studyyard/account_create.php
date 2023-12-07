@@ -6,6 +6,10 @@ include_once(__DIR__ . "/../lib/form_check.php");
 include_once(__DIR__ . '/../lib/transactions.php');
 
 
+// CSRF
+//$csrf->getToken();
+
+
 // fill variables by POSTed values
 
 $form_accessors = ["name", "email", "password_first", "password_check"];
@@ -25,31 +29,39 @@ function check_for_user_post($name, $email, $password1, $password2){
 $state_create_account = "creating";
 
 if($request_method == "POST"){
-    // check POSTed form's values
-    [[$checked_name, $form_message_name],
-     [$checked_email, $form_message_email],
-     [$checked_password, $form_message_password]]
-    = check_for_user_post($post_name, $post_email, $post_password_check, $post_password_first);
-
-    // reigster to user table if good POST.
-    if($checked_name!=null && $checked_email!=null && $checked_password!=null){
-        $checked_hashed_password = password_hash($checked_password, PASSWORD_DEFAULT);
-        global $data_source_name, $sql_rw_user, $sql_rw_pass;
-        $new_user_id = \Tx\with_connection($data_source_name, $sql_rw_user, $sql_rw_pass)(
-            function($conn_rw) use($checked_name, $checked_email, $checked_hashed_password) {
-                \TxSnn\add_user
-                    ($conn_rw, $checked_name, $checked_email, $checked_hashed_password, "");
-                return \TxSnn\user_id_lock_by_email($conn_rw, $checked_email);
+    // check CSRF
+    if(!$csrf->checkToken()){
+        $csrf_message = "invalid token. use form.\n";
+        
+    } else {
+        // check POSTed form's values
+        [[$checked_name, $form_message_name],
+         [$checked_email, $form_message_email],
+         [$checked_password, $form_message_password]]
+        = check_for_user_post($post_name, $post_email, $post_password_check, $post_password_first);
+        
+        // reigster to user table if good POST.
+        if($checked_name!=null && $checked_email!=null && $checked_password!=null){
+            $checked_hashed_password = password_hash($checked_password, PASSWORD_DEFAULT);
+            global $data_source_name, $sql_rw_user, $sql_rw_pass;
+            $new_user_id = \Tx\with_connection($data_source_name, $sql_rw_user, $sql_rw_pass)(
+                function($conn_rw) use($checked_name, $checked_email, $checked_hashed_password) {
+                    \TxSnn\add_user
+                        ($conn_rw, $checked_name, $checked_email, $checked_hashed_password, "");
+                    return \TxSnn\user_id_lock_by_email($conn_rw, $checked_email);
+                }
+            );
+            
+            if($new_user_id){
+                $state_create_account="just_created";
+            }else{
+                $db_message_tml = "<pre> somewhy failed to regist you.</pre> <br />\n";
             }
-        );
-
-        if($new_user_id){
-            $state_create_account="just_created";
-        }else{
-            $db_message_tml = "<pre> somewhy failed to regist you.</pre> <br />\n";
         }
     }
 }
+
+
 
 /*
 $debug_tml=<<<DEBUG_TML
@@ -72,10 +84,15 @@ $tpl->page_title = "Account Create - Shinano -";
 if($state_create_account=="just_created"){
     $account_create_form_html = "you have registered.\n";
 }elseif($state_create_account=="creating"){
+    // CSRF inserting html
+    $csrf_html = $csrf->hiddenInputHTML();
+    // actual content
     $account_create_form_html = <<<ACCOUNT_CREATE_FORM
 ${db_message_tml}
 To create account, name, email and password are needed. <br />
+<pre> {$csrf_message} </pre>
 <form action="" method="post">
+  ${csrf_html}
   <dl>
     <dt> name </dt>
     <dd> <input type="text" name="name" required value="${post_name}"> </input> </dd>

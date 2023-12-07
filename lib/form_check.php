@@ -10,9 +10,7 @@ include_once(__DIR__ . '/./common.php');
 
 $preg_str_of_marks = preg_quote(' !"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~', '/'); // Ascii code
 
-
 function check_if_post_is_safe($formed_string){
-    $form_check_message = "";
     if(!isset($formed_string)) {
         return [null, "please use form. \n"];
     } elseif ($formed_string === false) {
@@ -20,7 +18,7 @@ function check_if_post_is_safe($formed_string){
     } elseif ($formed_string === "") {
         return [null, "please input into form. \n"];
     } else {
-        return [true, ""];
+        return [$formed_string, ""];
     }
 }
 

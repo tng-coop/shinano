@@ -82,12 +82,15 @@ class WPDO{
 
 // # utility functions
 
+function h($string){
+    return htmlspecialchars($string);
+}
+
 function exit_by_error($error_){
     echo "Server Error";
     error_log("PHP Error: " . $error_->getMessage());
     exit();
 }
-
 
 function get_url(){
     // check if secured
