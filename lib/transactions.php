@@ -109,6 +109,9 @@ function open_job_things(string $attribute) {
         \Tx\block($conn, "open_job_things:" . $attribute)(
             function() use($attribute, $conn, $email, $job_entry_id) {
                 $user_id = user_id_lock_by_email($conn, $email);
+                if (!$user_id) {
+                    return;
+                }
                 $stmt = $conn->prepare(<<<SQL
 UPDATE job_entry AS J SET opened_at = current_timestamp
        WHERE attribute = :attribute AND id = :job_entry_id AND user = :user_id
@@ -133,6 +136,9 @@ function close_job_things(string $attribute) {
         \Tx\block($conn, "close_job_things:" . $attribute)(
             function() use($attribute, $conn, $email, $job_entry_id) {
                 $user_id = user_id_lock_by_email($conn, $email);
+                if (!$user_id) {
+                    return;
+                }
                 $stmt = $conn->prepare(<<<SQL
 UPDATE job_entry AS J SET closed_at = current_timestamp
        WHERE attribute = :attribute AND id = :job_entry_id AND user = :user_id
@@ -148,7 +154,11 @@ function user_id_lock_by_email(PDO $conn, string $email) {
     $stmt = $conn->prepare('SELECT id FROM user WHERE email = ? FOR UPDATE');
     $stmt->execute(array($email));
     // カーソル位置で user テーブルのレコードをロック
-    return ($stmt->fetch(PDO::FETCH_NUM))[0];
+    $aref = $stmt->fetch(PDO::FETCH_NUM);
+    if ($aref) {
+        return $aref[0];
+    }
+    return false;
 }
 
 function view_job_things(PDO $conn, string $email) {
