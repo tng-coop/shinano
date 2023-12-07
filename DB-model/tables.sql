@@ -1,8 +1,15 @@
 
+CREATE TABLE public_uid_state
+       ( last_uid      BIGINT NOT NULL
+       );
+
+INSERT INTO public_uid_state(last_uid) VALUES (1);
+
 CREATE TABLE user
        ( id            BIGINT AUTO_INCREMENT PRIMARY KEY
        , email         VARCHAR(255) NOT NULL UNIQUE
        , passwd_hash   VARCHAR(512) NOT NULL
+       , public_uid    BIGINT NOT NULL UNIQUE
        , name          VARCHAR(255) NOT NULL
        , note          TEXT NOT NULL
        , created_at    TIMESTAMP NOT NULL
