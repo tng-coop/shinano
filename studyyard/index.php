@@ -4,6 +4,19 @@ declare(strict_types=1);
 
 include_once(__DIR__ . "/../lib/common.php");
 
+$config = parse_ini_file(__DIR__ . "/../config.ini", true);
+if ($config === false) {
+    // Handle the error - the file may not exist or is not readable
+    echo "Error: Unable to read the configuration file.";
+    exit;
+}
+
+// Accessing values from the 'database' section
+echo "Read-Only User: " . $config['database']['readonly_user'] . "<br>";
+echo "Read-Only Password: " . $config['database']['readonly_password'] . "<br>";
+echo "Read-Write User: " . $config['database']['readwrite_user'] . "<br>";
+echo "Read-Write Password: " . $config['database']['readwrite_password'] . "<br>";
+
 // prepare template
 
 $tpl = new TemplateAndConfigs();
