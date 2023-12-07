@@ -38,6 +38,7 @@ function show_records($stmt) {
             check_record1($conn_rw, 'SELECT * FROM user',
                       fn($row) => $row['email'] == 'yamada@example.com');
         }else{
+            $conn_rw->rollBack();
             echo "Mr Taro Yamada is already exist. \n";
         }
         \TxSnn\add_job_listing($conn_rw, 'yamada@example.com', 'taro job listing', 'taro job description ...');
