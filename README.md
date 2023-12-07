@@ -161,3 +161,23 @@ The front-end is designed to be wget friendly and compatible with text-based web
 ## Feedback and Contributions
 
 We encourage users to provide feedback and suggestions for improvements. Your input is valuable in refining and enhancing the Shinano software and its supporting elements.
+
+#### Converting This Document to PDF
+
+To convert markdown documents to PDF, use the `md-to-pdf` command. Run the following command in your terminal:
+
+```bash
+npx md-to-pdf
+```
+
+When you run the command, you can expect the following output:
+
+```bash
+nodePath: /home/yasu/co/shinano/node_modules/md-mermaid-to-pdf/lib
+mermaidCode: 3524456
+is mermaid
+is mermaid
+  ✔ generating PDF from README.md
+```
+
+[NPX command above comes with NPM](https://nodejs.org).

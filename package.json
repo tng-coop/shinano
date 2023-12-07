@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "md-mermaid-to-pdf": "^2.9.6"
+  }
+}
