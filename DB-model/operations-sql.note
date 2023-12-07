@@ -19,7 +19,7 @@
 -- --------
 -- example 1
 --   input params
-SET @name = 'John Smith', @email = 'mail@piyomail.com', @passwd_hash = 'hsah_dwssap', @note = 'Hi! this is my note';
+SET @email = 'mail@piyomail.com', @passwd_hash = 'hsah_dwssap', @name = 'John Smith', @note = 'Hi! this is my note';
 --
 START TRANSACTION;
 
@@ -30,7 +30,7 @@ COMMIT;
 -- --------
 -- example 2
 --   input params
-SET @name = 'Tony Morris', @email = 'tony@morris.com', @passwd_hash = 'hsah_dwssap', @note = 'Tony''s note example';
+SET @email = 'tony@morris.com', @passwd_hash = 'hsah_dwssap', @name = 'Tony Morris', @note = 'Tony''s note example';
 --
 START TRANSACTION;
 
