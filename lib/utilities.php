@@ -111,6 +111,18 @@ function is_POST(){
     }
 }
 
+// public_uid
+
+function to_public_uid(string $ustr) : int {
+    list ($hi4, $lo4) = sscanf($ustr, "%04u-%04u");
+    return $hi4 * 10000 + $lo4;
+}
+
+function from_public_uid(int $public_uid) : string {
+    $hi4 = intdiv($public_uid, 10000);
+    $lo4 = $public_uid % 10000;
+    return sprintf("%04u-%04u", $hi4, $lo4);
+}
 
 // # wrap Template and Configs
 
