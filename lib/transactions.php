@@ -190,7 +190,20 @@ function user_public_uid_get_by_email(PDO $conn, string $email){
     return false;
 }
 
-function view_job_things(PDO $conn, string $email) {
+function view_job_things_by_public_uid(PDO $conn, int $public_uid) {
+    $stmt = $conn->prepare(<<<SQL
+SELECT U.public_uid, U.name, J.attribute, J.title, J.description, J.created_at, J.updated_at, J.opened_at, J.closed_at
+       FROM user as U INNER JOIN job_entry AS J
+       ON U.id = J.user
+       WHERE U.public_uid = ?
+       ORDER BY J.attribute, J.opened_at IS NULL ASC, J.created_at ASC;
+SQL
+            );
+    $stmt->execute(array($public_uid));
+    return $stmt;
+}
+
+function view_job_things_by_email(PDO $conn, string $email) {
     $stmt = $conn->prepare(<<<SQL
 SELECT U.public_uid, U.name, J.attribute, J.title, J.description, J.created_at, J.updated_at, J.opened_at, J.closed_at
        FROM user as U INNER JOIN job_entry AS J

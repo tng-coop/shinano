@@ -36,6 +36,12 @@ function show_records($stmt) {
     $stmt->closeCursor();
 }
 
+function public_uid_from_email(PDO $conn, string $email) : int {
+    $stmt = $conn->prepare("SELECT public_uid FROM user WHERE email = ?");
+    $stmt->execute(array($email));
+    return ($stmt->fetch(PDO::FETCH_NUM))[0];
+}
+
 \Tx\with_connection($dsn, $config['database']['readwrite_user'], $config['database']['readwrite_password'])(
     function($conn_rw) {
         $emails_user_id=\TxSnn\user_id_lock_by_email($conn_rw, 'yamada@example.com');
@@ -71,7 +77,9 @@ function show_records($stmt) {
 
 \Tx\with_connection($dsn, $config['database']['readonly_user'], $config['database']['readonly_password'])(
     function($conn_ro) {
-        show_records(\TxSnn\view_job_things($conn_ro, 'yamada@example.com'));
+        $public_uid = public_uid_from_email($conn_ro, 'yamada@example.com');
+        show_records(\TxSnn\view_job_things_by_public_uid($conn_ro, $public_uid));
+        show_records(\TxSnn\view_job_things_by_email($conn_ro, 'yamada@example.com'));
         show_records(\TxSnn\search_job_things($conn_ro, 'taro'));
     }
 );
