@@ -142,9 +142,9 @@ The front-end is designed to be wget friendly and compatible with text-based web
 ## Usage
 
 1. **PHP**:
-   - To start the PHP server, navigate to the document index at './studyyard' and use the following command:
+   - To start the PHP server, navigate to the document index at './pubroot' and use the following command:
      ```
-     $ php -S localhost:5000 -t ./studyyard/ -a
+     $ php -S localhost:5000 -t ./pubroot/ -a
      ```
    - Access localhost:5000 to view content and interact with PHP request handlers.
 
