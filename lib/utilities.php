@@ -135,7 +135,7 @@ function text_char_all_1byte_p ($text){
 // check whether request method is GET of POST
 
 function is_GET(){
-    if ($_SERVER['REQUEST_METHOD']=='GET'){
+    if (key_exists('REQUEST_METHOD', $_SERVER) && $_SERVER['REQUEST_METHOD']=='GET'){
         return true;
     } else {
         return false;
@@ -143,7 +143,7 @@ function is_GET(){
 }
 
 function is_POST(){
-    if ($_SERVER['REQUEST_METHOD']=='POST'){
+    if (key_exists('REQUEST_METHOD', $_SERVER) && $_SERVER['REQUEST_METHOD']=='POST'){
         return true;
     } else {
         return false;
