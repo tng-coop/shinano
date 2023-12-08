@@ -43,8 +43,12 @@
       if(! $login->user()){
           echo("");
       } else {
-          echo("Hello!" . $login->user("name"));
-          echo("<a href='./account_logout.php'>logout</a> , ");
+          global $csrf;
+          echo("Hello! " . $login->user("name"));
+          echo("<form action='./account_logout.php' method='post'>" . 
+               $csrf->hiddenInputHTML() .
+               "<input type='submit' value='logout'>" .
+               "</form>");
       }
       ?>
       <a href='./account_login.php'>login</a> ,
