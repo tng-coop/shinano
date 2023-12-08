@@ -177,8 +177,8 @@ function user_id_lock_by_email(PDO $conn, string $email) {
     return false;
 }
 
-function user_public_uid_lock_by_email(PDO $conn, string $email){
-    $stmt = $conn->prepare('SELECT public_uid FROM user WHERE email = ? FOR UPDATE');
+function user_public_uid_get_by_email(PDO $conn, string $email){
+    $stmt = $conn->prepare('SELECT public_uid FROM user WHERE email = ?');
     $stmt->execute(array($email));
     // カーソル位置で user テーブルのレコードをロック
     $aref = $stmt->fetch(PDO::FETCH_NUM);

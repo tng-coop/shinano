@@ -43,16 +43,19 @@ if($request_method == "POST"){
         // reigster to user table if good POST.
         if($checked_name!=null && $checked_email!=null && $checked_password!=null){
             $checked_hashed_password = password_hash($checked_password, PASSWORD_DEFAULT);
+
+            // register user to DB.
             global $data_source_name, $sql_rw_user, $sql_rw_pass;
-            
-            $new_user_public_uid
-            = \Tx\with_connection($data_source_name, $sql_rw_user, $sql_rw_pass)(
+            \Tx\with_connection($data_source_name, $sql_rw_user, $sql_rw_pass)(
                 function($conn_rw) use($checked_name, $checked_email, $checked_hashed_password) {
                     \TxSnn\add_user
-                    ($conn_rw, $checked_name, $checked_email, $checked_hashed_password, "");
-                    return \TxSnn\user_public_uid_lock_by_email($conn_rw, $checked_email);
-                });
-            
+                    ($conn_rw, $checked_name, $checked_email, $checked_hashed_password, "");});
+            // ask user's public_uid to (newer) DB.
+            $new_user_public_uid
+            = \Tx\with_connection($data_source_name, $sql_rw_user, $sql_rw_pass)(
+                function($conn_rw) use($checked_email) {
+                    return \TxSnn\user_public_uid_get_by_email($conn_rw, $checked_email);});
+
             if($new_user_public_uid){
                 $login->login($new_user_public_uid);
                 $state_create_account="just_created";
