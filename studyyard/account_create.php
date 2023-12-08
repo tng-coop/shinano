@@ -44,15 +44,17 @@ if($request_method == "POST"){
         if($checked_name!=null && $checked_email!=null && $checked_password!=null){
             $checked_hashed_password = password_hash($checked_password, PASSWORD_DEFAULT);
             global $data_source_name, $sql_rw_user, $sql_rw_pass;
-            $new_user_id = \Tx\with_connection($data_source_name, $sql_rw_user, $sql_rw_pass)(
+            
+            $new_user_public_uid
+            = \Tx\with_connection($data_source_name, $sql_rw_user, $sql_rw_pass)(
                 function($conn_rw) use($checked_name, $checked_email, $checked_hashed_password) {
                     \TxSnn\add_user
-                        ($conn_rw, $checked_name, $checked_email, $checked_hashed_password, "");
-                    return \TxSnn\user_id_lock_by_email($conn_rw, $checked_email);
-                }
-            );
+                    ($conn_rw, $checked_name, $checked_email, $checked_hashed_password, "");
+                    return \TxSnn\user_public_uid_lock_by_email($conn_rw, $checked_email);
+                });
             
-            if($new_user_id){
+            if($new_user_public_uid){
+                $login->login($new_user_public_uid);
                 $state_create_account="just_created";
             }else{
                 $db_message_tml = "<pre> somewhy failed to regist you.</pre> <br />\n";
@@ -64,12 +66,12 @@ if($request_method == "POST"){
 
 
 /*
-$debug_tml=<<<DEBUG_TML
-name  : ${checked_name} , ${form_message_name} <br />
-email : ${checked_email} , ${form_message_email} <br />
-password: ${checked_password} , ${form_message_password} <br />
-DEBUG_TML;
-*/
+   $debug_tml=<<<DEBUG_TML
+   name  : ${checked_name} , ${form_message_name} <br />
+   email : ${checked_email} , ${form_message_email} <br />
+   password: ${checked_password} , ${form_message_password} <br />
+   DEBUG_TML;
+ */
 
 // prepare template
 

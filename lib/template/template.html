@@ -38,12 +38,19 @@
       </form>
       
       <!-- account login/create -->
-      account
-      <a href="./account_login.php"> login </a> ,
-      <a href="./account_create.php"> create </a>
+      <?php 
+      global $login;
+      if(! $login->user()){
+          echo("");
+      } else {
+          echo("Hello!" . $login->user("name"));
+          echo("<a href='./account_logout.php'>logout</a> , ");
+      }
+      ?>
+      <a href='./account_login.php'>login</a> ,
+      <a href='./account_create.php'>create</a>
 
-      
-    </div>
+    </div> <!-- /id: head_line -->
 
     <hr />
     

@@ -177,6 +177,17 @@ function user_id_lock_by_email(PDO $conn, string $email) {
     return false;
 }
 
+function user_public_uid_lock_by_email(PDO $conn, string $email){
+    $stmt = $conn->prepare('SELECT public_uid FROM user WHERE email = ? FOR UPDATE');
+    $stmt->execute(array($email));
+    // カーソル位置で user テーブルのレコードをロック
+    $aref = $stmt->fetch(PDO::FETCH_NUM);
+    if ($aref) {
+        return $aref[0];
+    }
+    return false;
+}
+
 function view_job_things(PDO $conn, string $email) {
     $stmt = $conn->prepare(<<<SQL
 SELECT U.public_uid, U.name, J.attribute, J.title, J.description, J.created_at, J.updated_at, J.opened_at, J.closed_at

@@ -42,6 +42,18 @@ if(is_GET()){
 }
 
 
+// # database connection
+
+function db_connect_ro(){
+    global $data_source_name, $sql_ro_user, $sql_ro_pass;
+    return new PDO ($data_source_name,
+                    $sql_ro_user, $sql_ro_pass,
+                    [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]
+    );
+}   
+
+
 // # Wrap SQL connections, WPDO is Wrapped PDO.
 
 function PDO_connect($data_source_name, $sql_user, $sql_password) {
@@ -139,7 +151,6 @@ function is_POST(){
 class TemplateAndConfigs{
 
     // config and config values
-
     function __construct(){
         $this->_document_root = realpath(__DIR__ . "/../");
         $this->_URL = get_url();

@@ -33,6 +33,7 @@ if($request_method == "POST"){
         $csrf_message = "invalid token. use form.\n";
         
     } else {
+        // check posted data's safety
         [[$checked_email, $form_message_email],
          [$checked_password, $form_message_password]]
         = check_for_user_post($post_email, $post_password);
@@ -43,7 +44,7 @@ if($request_method == "POST"){
             // ask database
             global $data_source_name, $sql_rw_user, $sql_rw_pass;
             $conn = PDO_connect($data_source_name, $sql_ro_user, $sql_ro_pass);
-            $stmt = $conn->prepare("SELECT id,name,email,passwd_hash FROM user" .
+            $stmt = $conn->prepare("SELECT id,name,email,public_uid,passwd_hash FROM user" .
                                    "  WHERE lower(email)=lower(:email);");
             $stmt->execute(['email' => $checked_email]);
             
@@ -57,12 +58,18 @@ if($request_method == "POST"){
                 $doing_login_user = null;
             }
 
+            // login to user if valified
+            if($doing_login_user){
+                $login->login($doing_login_user['public_uid']);
+                print_r($login->user('name'));
+            }
+
             // html by login state
             if($doing_login_user) {
                 $db_message_tml = "";
             }else{
                 $db_message_tml = "<pre> failed to login. </pre> <br />";
-            }   
+            }
         }
     }
 }
