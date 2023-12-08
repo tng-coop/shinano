@@ -59,14 +59,15 @@ function PDO_connect($data_source_name, $sql_user, $sql_password) {
 }
 
 class WPDO{
-    function __construct($data_source_name, $sql_user, $sql_password){
-        $this->$conn = PDO_connect($data_source_name, $sql_user, $sql_password);
-    }
+    public $conn;
 
+    function __construct($data_source_name, $sql_user, $sql_password){
+        $this->conn = PDO_connect($data_source_name, $sql_user, $sql_password);
+    }
 
     function askdb($sql_sentence){
         try {
-            $stmt = ($this->$conn)->prepare($sql_sentence);
+            $stmt = ($this->conn)->prepare($sql_sentence);
             $execute = $stmt->execute();
             if(!$execute){
                 throw new Exception("blah");
