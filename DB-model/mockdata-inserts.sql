@@ -1,5 +1,6 @@
 -- INSERT Dummy datas into aleady exist table of shinano_*.
 
+/*
 -- INSERT mocks of user
 LOAD DATA LOCAL INFILE './mockdata/user.csv' 
      INTO TABLE user
@@ -7,6 +8,7 @@ LOAD DATA LOCAL INFILE './mockdata/user.csv'
      LINES TERMINATED BY '\n'
      IGNORE 1 ROWS
      (@dummy, name, email, passwd_hash, note, created_at, updated_at);
+*/
 
 
 -- INSERT mocks of job listing
