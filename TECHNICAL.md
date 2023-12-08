@@ -40,10 +40,10 @@ The front-end is designed to be wget friendly and compatible with text-based web
 
 ## Branch Information
 
-| Name    | Purpose                                              |
-| ------- | ---------------------------------------------------- |
-| main    | Current stable software version and its source code. |
-| develop | Branch used for development.                         |
+| Name       | Purpose                                 |
+|------------|-----------------------------------------|
+| main       | Developing version and its source code. |
+| production | Stable Production.                      |
 
 ## Feedback and Contributions
 
