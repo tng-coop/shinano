@@ -2,9 +2,6 @@
 
 declare(strict_types=1);
 
-
-use \PDO;
-
 // # parameters
 
 
@@ -59,7 +56,7 @@ function db_connect_ro(){
                     [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                      PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]
     );
-}   
+}
 
 
 // # Wrap SQL connections, WPDO is Wrapped PDO.
@@ -138,7 +135,7 @@ function text_char_all_1byte_p ($text){
 // check whether request method is GET of POST
 
 function is_GET(){
-    if ($_SERVER['REQUEST_METHOD']=='GET'){
+    if (key_exists('REQUEST_METHOD', $_SERVER) && $_SERVER['REQUEST_METHOD']=='GET'){
         return true;
     } else {
         return false;
@@ -146,7 +143,7 @@ function is_GET(){
 }
 
 function is_POST(){
-    if ($_SERVER['REQUEST_METHOD']=='POST'){
+    if (key_exists('REQUEST_METHOD', $_SERVER) && $_SERVER['REQUEST_METHOD']=='POST'){
         return true;
     } else {
         return false;
