@@ -18,14 +18,22 @@ use \PDO;
 +--------------+-------------+-----------------------+
 | localhost    | mariadb.sys |                       | -- or mysql system user maybe.
 ... omit ...
-| localhost    | sdev_ro     | Kis0Shinan0DevR0      | -- Password are maybe hashed!
-| localhost    | sdev_rw     | Kis0Shinan0DevRW      | -- Password are maybe hashed!
+| localhost    | sdev_ro     | xxxxxxxxxxxxxxxs      | -- Password are maybe hashed!
+| localhost    | sdev_rw     | xxxxxxxxxxxxxxxx      | -- Password are maybe hashed!
 ... omit ...
 +--------------+-------------+-----------------------+
 */
 
-[$sql_ro_user, $sql_ro_pass] = ["sdev_ro", "Kis0Shinan0DevR0"];
-[$sql_rw_user, $sql_rw_pass] = ["sdev_rw", "Kis0Shinan0DevRW"];
+$config = parse_ini_file(__DIR__ . "/../config.ini", true);
+if ($config === false) {
+    // Handle the error - the file may not exist or is not readable
+    echo "Error: Unable to read the configuration file.";
+    exit;
+}
+
+// Get read-only and read-write SQL credentials
+[$sql_ro_user, $sql_ro_pass] = [$config['database']['readonly_user'], $config['database']['readonly_password']];
+[$sql_rw_user, $sql_rw_pass] = [$config['database']['readwrite_user'], $config['database']['readwrite_password']];
 
 $dbname = "shinano_dev";
 $dbhost = "localhost";

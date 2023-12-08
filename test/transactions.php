@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 include_once(__DIR__ . '/../lib/transactions.php');
 
+// Include the configuration file from DATA1
+$config = parse_ini_file(__DIR__ . "/../config.ini", true);
+if ($config === false) {
+    echo "Error: Unable to read the configuration file.";
+    exit;
+}
+
 $dsn = 'mysql:host=localhost;dbname=shinano_dev';
 
 function check_record1(PDO $conn, string $sql, $pred) {
@@ -29,7 +36,7 @@ function show_records($stmt) {
     $stmt->closeCursor();
 }
 
-\Tx\with_connection($dsn, 'sdev_rw', 'Kis0Shinan0DevRW')(
+\Tx\with_connection($dsn, $config['database']['readwrite_user'], $config['database']['readwrite_password'])(
     function($conn_rw) {
         $emails_user_id=\TxSnn\user_id_lock_by_email($conn_rw, 'yamada@example.com');
         if(!$emails_user_id){
