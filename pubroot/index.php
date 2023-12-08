@@ -32,7 +32,7 @@ $tpl->page_title = "index php here";
 $wconn_ro = new WPDO($data_source_name, $sql_ro_user, $sql_ro_pass);
 //$wconn_ro = new WPDO($data_source_name, $sql_ro_user, "fial_pssaowrd"); // the case of password failure
 
-$sql1 = "SELECT name,email,id,public_uid,passwd_hash FROM shinano_dev.user;";
+$sql1 = "SELECT name,email,id,public_uid,passwd_hash FROM user;";
 
 $stmt = $wconn_ro->askdb($sql1);
 

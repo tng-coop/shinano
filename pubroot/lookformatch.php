@@ -9,7 +9,7 @@ include_once(__DIR__ . "/../lib/common.php");
 
 $wconn_ro = new WPDO($data_source_name, $sql_ro_user, $sql_ro_pass);
 
-$sql1 = "SELECT attribute,user,title,description,created_at,opened_at,closed_at FROM shinano_dev.job_entry;";
+$sql1 = "SELECT attribute,user,title,description,created_at,opened_at,closed_at FROM job_entry;";
 
 
 $stmt = $wconn_ro->askdb($sql1);
