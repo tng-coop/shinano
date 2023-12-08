@@ -66,9 +66,13 @@ function show_records($stmt) {
         \TxSnn\close_job_seeking($conn_rw, 'yamada@example.com', 2);
         check_record1($conn_rw, "SELECT * FROM job_entry WHERE attribute = 'S'",
                       fn($row) => !is_null($row['closed_at']));
+    }
+);
 
-        show_records(\TxSnn\view_job_things($conn_rw, 'yamada@example.com'));
-        show_records(\TxSnn\search_job_things($conn_rw, 'taro'));
+\Tx\with_connection($dsn, $config['database']['readonly_user'], $config['database']['readonly_password'])(
+    function($conn_ro) {
+        show_records(\TxSnn\view_job_things($conn_ro, 'yamada@example.com'));
+        show_records(\TxSnn\search_job_things($conn_ro, 'taro'));
     }
 );
 
