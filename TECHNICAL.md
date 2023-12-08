@@ -1,0 +1,70 @@
+## Technical Dependencies and Standards
+
+Our software relies on the following technologies and standards:
+
+1. **HTTP Server**: Essential for handling web requests.
+
+2. **PHP (Version 8.2.13)**:
+   - Utilized for server-side application development.
+   - Currently in PHP, with plans to transition to Haskell for enhanced functionality.
+
+3. **MySQL (Version XX.XX)**:
+   - Our chosen database management system.
+   - Reliable and efficient for handling data requirements.
+
+4. **HTML + CSS**:
+   - Follows MDN standards ([HTML](https://developer.mozilla.org/en-US/docs/Web/HTML) and [CSS](https://developer.mozilla.org/en-US/docs/Web/CSS)).
+   - Essential for designing a responsive and visually appealing user interface.
+
+5. **Javascript**:
+   - Adheres to the standard of XXXX (Link).
+   - Primarily used for browser-completed animations.
+   - Not utilized for server communication or content text calculations.
+
+The front-end is designed to be wget friendly and compatible with text-based web browsers, with a static approach.
+
+## Usage
+
+1. **PHP**:
+   - To start the PHP server, navigate to the document index at './studyyard' and use the following command:
+     ```
+     $ php -S localhost:5000 -t ./studyyard/ -a
+     ```
+   - Access localhost:5000 to view content and interact with PHP request handlers.
+
+2. **SQL**:
+   - [Details about SQL usage and commands]
+
+3. **Deployment Server**:
+   - [Instructions for server deployment]
+
+## Branch Information
+
+| Name    | Purpose                                              |
+| ------- | ---------------------------------------------------- |
+| main    | Current stable software version and its source code. |
+| develop | Branch used for development.                         |
+
+## Feedback and Contributions
+
+We encourage users to provide feedback and suggestions for improvements. Your input is valuable in refining and enhancing the Shinano software and its supporting elements.
+
+#### Converting This Document to PDF
+
+To convert markdown documents to PDF, use the `md-to-pdf` command. Run the following command in your terminal:
+
+```bash
+npx md-to-pdf
+```
+
+When you run the command, you can expect the following output:
+
+```bash
+nodePath: /home/yasu/co/shinano/node_modules/md-mermaid-to-pdf/lib
+mermaidCode: 3524456
+is mermaid
+is mermaid
+  ✔ generating PDF from README.md
+```
+
+[NPX command above comes with NPM](https://nodejs.org).
