@@ -70,7 +70,7 @@ function add_user(PDO $conn, string $name, string $email, string $passwd_hash, s
             // カーソル位置でテーブルのレコードをロック
             $state_ref = $pstate->fetch(PDO::FETCH_NUM);
             if (!$state_ref) {
-                new \Tx\Exception('TxSnn.add_user: internal error. wrong system initialization');
+                throw new \Tx\Exception('TxSnn.add_user: internal error. wrong system initialization');
             }
             $last_public_uid = $state_ref[0];
             $public_uid = \FF\galois_next24($last_public_uid);
@@ -100,7 +100,7 @@ function add_job_things(string $attribute) {
     return function(PDO $conn, string $email, string $title, string $description) use($attribute) {
         \Tx\block($conn, "add_job_things:" . $attribute)(
             function() use($attribute, $conn, $email, $title, $description) {
-                $user_id = user_id_lock_by_email($conn, $email);
+                $user_id = user_id_lock_by_email_or_raise('TxSnn.add_job_things: ', $conn, $email);
                 $stmt = $conn->prepare(<<<SQL
 INSERT INTO job_entry(attribute, user, title, description, created_at, updated_at)
     VALUES (:attribute, :user_id, :title, :desc, current_timestamp, current_timestamp)
@@ -124,10 +124,7 @@ function open_job_things(string $attribute) {
     return function(PDO $conn, string $email, int $job_entry_id) use ($attribute) {
         \Tx\block($conn, "open_job_things:" . $attribute)(
             function() use($attribute, $conn, $email, $job_entry_id) {
-                $user_id = user_id_lock_by_email($conn, $email);
-                if (!$user_id) {
-                    return;
-                }
+                $user_id = user_id_lock_by_email_or_raise('TxSnn.open_job_things: ', $conn, $email);
                 $stmt = $conn->prepare(<<<SQL
 UPDATE job_entry AS J SET opened_at = current_timestamp
        WHERE attribute = :attribute AND id = :job_entry_id AND user = :user_id
@@ -151,10 +148,7 @@ function close_job_things(string $attribute) {
     return function(PDO $conn, string $email, int $job_entry_id) use ($attribute) {
         \Tx\block($conn, "close_job_things:" . $attribute)(
             function() use($attribute, $conn, $email, $job_entry_id) {
-                $user_id = user_id_lock_by_email($conn, $email);
-                if (!$user_id) {
-                    return;
-                }
+                $user_id = user_id_lock_by_email_or_raise('TxSnn.close_job_things: ', $conn, $email);
                 $stmt = $conn->prepare(<<<SQL
 UPDATE job_entry AS J SET closed_at = current_timestamp
        WHERE attribute = :attribute AND id = :job_entry_id AND user = :user_id
@@ -164,6 +158,14 @@ SQL
             }
         );
     };
+}
+
+function user_id_lock_by_email_or_raise(string $prefix, PDO $conn, string $email) {
+    $user_id = user_id_lock_by_email($conn, $email);
+    if (!$user_id) {
+        throw new \Tx\Exception($prefix . 'wrong input email: ' . $email);
+    }
+    return $user_id;
 }
 
 function user_id_lock_by_email(PDO $conn, string $email) {
