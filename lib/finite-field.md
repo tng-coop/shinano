@@ -63,7 +63,7 @@ F(n) = { aₙ₋₁ xⁿ⁻¹ + aₙ₋₂ xⁿ⁻² + aₙ₋₃ xⁿ⁻³ + ..
    (x² + x + 1)·(x + 1)
  = x³ + x² + x + x² + x + 1 = x³ + 1
 
-   (x³ + 1)·(x + 1)   ( F(3) 上の積 )
+   (x³ + 1)·(x + 1)   ( F(2⁴) 上の積 )
  = x⁴ + x + x³ + 1
  = x⁴ + x³ + x + 1
  = x                  ( ここで 4次原始多項式は x⁴ + x³ + 1 )
@@ -115,9 +115,9 @@ unsigned input, lsb, tmp, output;
 lsb =  input & 1u;          /* Get LSB */
 tmp =  input >> 1           /* Unsigned right shift */
 if (lsb) {                  /* If the output bit is 1, */
-   output =  tmp;           /* noop */
-} else {
    output =  tmp ^ hmask;   /* apply toggle mask. */
+} else {
+   output =  tmp;           /* noop */
 }
 ```
 
