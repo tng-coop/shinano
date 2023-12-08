@@ -96,7 +96,7 @@ class WPDO{
 // # utility functions
 
 function h($string){
-    return htmlspecialchars($string);
+    return htmlspecialchars(strval($string));
 }
 
 function exit_by_error($error_){
