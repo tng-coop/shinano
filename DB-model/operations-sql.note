@@ -167,19 +167,21 @@ COMMIT;
 
 -- view job listing / seeking
 -- --------
--- example 1
+-- specify set from public_uid, ordered, opened first
 --   input params
-SET @email := 'mail@piyomail.com';
---   specify set from email
+SET @public_uid := 7372800;
+--   joined SELECT
 SELECT U.public_uid, U.name, J.attribute, J.title, J.description, J.created_at, J.updated_at, J.opened_at, J.closed_at
        FROM user as U INNER JOIN job_entry AS J
        ON U.id = J.user
-       WHERE U.email = @email;
+       WHERE U.public_uid = @public_uid
+       ORDER BY J.attribute, J.opened_at IS NULL ASC, J.created_at ASC;
+
 -- --------
--- example 2
+-- sepecify set from email, ordered, opened first
 --   input params
 SET @email := 'mail@piyomail.com';
---   sepecify set from email, ordered, opened first
+--   joined SELECT
 SELECT U.public_uid, U.name, J.attribute, J.title, J.description, J.created_at, J.updated_at, J.opened_at, J.closed_at
        FROM user as U INNER JOIN job_entry AS J
        ON U.id = J.user
