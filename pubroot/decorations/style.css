@@ -1,0 +1,13 @@
+
+
+#head_line > .search_form > * {
+    display: inline;
+}
+
+.logout_form {
+    display: inline;
+}
+
+.logout_form > .logout_button{
+
+}

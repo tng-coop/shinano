@@ -4,56 +4,56 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title> <?php echo $v->page_title; ?> </title>
-    <link rel="stylesheet" href="style.css" type="text/css" media="screen" charset="utf-8"/>
+    <link rel="stylesheet" href="/decorations/style.css" type="text/css" media="screen" charset="utf-8"/>
   </head>
 
   <body>
+    <!-- head line -->
     <div id="head_line">
-      <!-- head line -->
-      <big> Shinano </big> | <!-- logo -->
-      
-      <a href="./"> index </a> |
-      <a href="./lookformatch.php"> look for match </a> |
-      <a href="./cooperators.php"> cooperators </a> |
-      maybe inva|id |ink because re|ative path |
-      ...   |
-
-      <!-- search -->
-      <form id="search_form" method="GET" action="search.php">
-        <div>
+      <div id="head_head">
+        |
+        <big>Shinano</big> | <!-- logo -->
+        
+        <a href="./">index</a> |
+        <a href="./lookformatch.php">look for match</a> |
+        <a href="./cooperators.php">cooperators</a> |
+      </div>
+      <div id="head_search">
+        <!-- search -->
+        <form class="search_form" method="GET" action="search.php">
+          |
           <input type="text" name="search_text" placeholder="insert text to search" />
-        </div>
-        <div>
           <input type="checkbox" name ="jobp" > Job </input>
-        </div>
-        <div>
           <input type="checkbox" name="workerp"> Worker </input>
-        </div>
-        <div>
-          <!-- item for search system here -->
-        </div>
-        <div>
-          <input type="submit" value="search_search" />
-        </div>
-      </form>
-      
-      <!-- account login/create -->
-      <?php 
-      global $login;
-      if(! $login->user()){
-          echo("");
-      } else {
-          global $csrf;
-          echo("Hello! " . $login->user("name"));
-          echo("<form action='./account_logout.php' method='post'>" . 
-               $csrf->hiddenInputHTML() .
-               "<input type='submit' value='logout'>" .
-               "</form>");
-      }
-      ?>
-      <a href='./account_login.php'>login</a> ,
-      <a href='./account_create.php'>create</a>
+          <input type="submit" value="search" />
+          |
+        </form>
+      </div>
+      <div id="head_cooperator_menu">
+        <!-- account login/create -->
+        |
+        <?php 
+        global $login;
+        $login_tml = "<a href='./account_login.php'>login</a>";
+        $create_tml = "<a href='./account_create.php'>create</a>";
 
+        if(! $login->user()){
+            echo("Account" . " | ");
+            echo($login_tml . " | " . $create_tml . " | ");
+        } else {
+            echo("Hello! " . $login->user("name") . " | " );
+            echo("<a href='./cmenu_account.php'>cooperator's_menu</a>" . " | ");
+            echo($login_tml . " | " . $create_tml . " | ");
+            global $csrf;
+            echo("<form action='./account_logout.php' method='post' class='logout_form'>" .
+                 $csrf->hiddenInputHTML() .
+                 "<input type='submit' value='logout' class='logout_button'>" .
+                 "</form>" . " | ");
+        }
+        ?>
+
+      </div>
+      
     </div> <!-- /id: head_line -->
 
     <hr />
@@ -65,10 +65,13 @@
     <hr />
 
     <div id="foot_line">
-      Shinano |
-      hogehoge@hogehgoe.com |
-      W3C XHTML x.xx, W3C CSS x.xx
+      <div id="foot_head">
+        | 
+        Shinano |
+        hogehoge@hogehgoe.com |
+        W3C XHTML x.xx, W3C CSS x.xx
+        |
+      </div>
     </div>
-    
   </body>
 </html>
