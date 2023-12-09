@@ -46,58 +46,6 @@ if(is_GET()){
     $request_method = "POST";
 }
 
-
-// # database connection
-
-function db_connect_ro(){
-    global $data_source_name, $sql_ro_user, $sql_ro_pass;
-    return new PDO ($data_source_name,
-                    $sql_ro_user, $sql_ro_pass,
-                    [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]
-    );
-}
-
-/*
-// # Wrap SQL connections, WPDO is Wrapped PDO.
-
-function PDO_connect($data_source_name, $sql_user, $sql_password) {
-     try {
-         return new PDO($data_source_name, $sql_user, $sql_password);
-     } catch (\PDOException $e) {
-         echo "Server Error";
-         $err_s = "WPDO Error: PDOException was caused when tried to connect DB Server via PDO.";
-         error_log($err_s);
-         error_log("WPDO Error: " . $e->getMessage());
-         exit();
-     } catch (\Error $e) {
-         exit_by_error($e);
-     }
-}
-
-class WPDO{
-    public $conn;
-
-    function __construct($data_source_name, $sql_user, $sql_password){
-        $this->conn = PDO_connect($data_source_name, $sql_user, $sql_password);
-    }
-
-    function askdb($sql_sentence){
-        try {
-            $stmt = ($this->conn)->prepare($sql_sentence);
-            $execute = $stmt->execute();
-            if(!$execute){
-                throw new Exception("blah");
-            }
-            return $stmt;
-        } catch (\Exception $e) {
-            exit_by_error($e);
-        }
-    }
-}
-*/
-
-
 // # utility functions
 
 function h($string){

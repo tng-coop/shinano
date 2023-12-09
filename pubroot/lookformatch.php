@@ -10,7 +10,7 @@ include_once(__DIR__ . "/../lib/common.php");
 $job_entries
     = db_ask_ro("SELECT attribute,user,title,description,created_at,opened_at,closed_at" .
                 "  FROM job_entry;",
-                [], PDO::FETCH_DEFAULT);
+                [], \PDO::FETCH_DEFAULT);
 
 // make content_actual of cooperators
 

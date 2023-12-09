@@ -63,7 +63,7 @@ function html_text_of_cooperators($stmt_of_user, $stmt_of_jobs){
 
     $user_thing = array_map('h', $stmt_of_user->fetch());
 
-    $jobs = $stmt_of_jobs->fetchAll(PDO::FETCH_ASSOC);
+    $jobs = $stmt_of_jobs->fetchAll(\PDO::FETCH_ASSOC);
     
     // html of user and user's job things
     $jobs_text = array_reduce($jobs,

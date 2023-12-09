@@ -14,19 +14,18 @@ if(! $login->user()){
 
 // if logged in, prepare cooperators page.
 
-// parepare and execute DB and SQL
-$wconn_ro = new PDO($data_source_name, $sql_ro_user, $sql_ro_pass);
-$sql1 = "SELECT name,email,public_uid,note,created_at FROM user;";
+// Ask DB about Query.
 
-$stmt = $wconn_ro->prepare($sql1);
-$stmt->execute();
+$cooperator_array = db_ask_ro("SELECT name,email,public_uid,note,created_at FROM user;",
+                  [], \PDO::FETCH_DEFAULT);
+
 
 // make actual content of cooperators
 
-function html_text_of_cooperators($statement){
+function html_text_of_cooperators($cooper_arr){
     $contents_tml = "";
     $contents_tml = "<div class='cooperators'>";
-    while($row = $statement->fetch()){
+    foreach($cooper_arr as $row){
         [$name, $note, $puid, $email, $created_at]
         = array_map(fn($key) => h($row[$key]), 
                     ['name', 'note', 'public_uid', 'email', 'created_at']);
@@ -49,9 +48,9 @@ function html_text_of_cooperators($statement){
 }
 
 
-// render HTML by template.
+// render HTML by template
 
-$cooperators_tml = html_text_of_cooperators($stmt);
+$cooperators_tml = html_text_of_cooperators($cooperator_array);
 
 RenderByTemplate("template.html", "Cooperators - Shinano -",
                  $cooperators_tml);

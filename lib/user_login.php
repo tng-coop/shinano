@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace USER_LOGIN;
 
 include_once(__DIR__ . '/./utilities.php');
+include_once(__DIR__ . '/./common.php');
 
 // session start if not started.
 if (session_status() === PHP_SESSION_NONE) {
@@ -31,12 +32,12 @@ class LOGIN{
         if(!isset($_SESSION[self::LOGIN_PUID])){
             $this->login_user=null;
         } else {
-            $dbh = db_connect_ro();
-            $sth = $dbh->prepare("SELECT id, public_uid, name, email" .
-                                       "  FROM user" .
-                                       "  WHERE public_uid=:public_uid");
-            $sth->execute([':public_uid' => $_SESSION[self::LOGIN_PUID]]);
-            $user=$sth->fetch();
+            $users = db_ask_ro("SELECT id, public_uid, name, email" .
+                               "  FROM user" .
+                               "  WHERE public_uid=:public_uid",
+                               [':public_uid' => $_SESSION[self::LOGIN_PUID]],
+                               \PDO::FETCH_DEFAULT);
+            $user = $users[0];
             if($user){
                 $this->login_user = $user;
             } else {

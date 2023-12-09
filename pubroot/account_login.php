@@ -43,13 +43,10 @@ if($request_method == "POST"){
             
             // ask database
             global $data_source_name, $sql_rw_user, $sql_rw_pass;
-            $conn = new PDO($data_source_name, $sql_ro_user, $sql_ro_pass);
-            $stmt = $conn->prepare("SELECT id,name,email,public_uid,passwd_hash FROM user" .
-                                   "  WHERE lower(email)=lower(:email);");
-            $stmt->execute(['email' => $checked_email]);
-            
-            // check user and password
-            $users = $stmt->fetchAll();
+            $users = db_ask_ro("SELECT id,name,email,public_uid,passwd_hash FROM user" .
+                               "  WHERE lower(email)=lower(:email);",
+                               ['email' => $checked_email],
+                               \PDO::FETCH_DEFAULT);
             if(count($users) == 1 && 
                $users[0] &&
                password_verify($checked_password, $users[0]["passwd_hash"])){
