@@ -24,7 +24,9 @@ you can edit and search cooperator, seeks and matchings. ......</p>
 
 
 <h3>account login or create</h3>
-account <a href="./account_login.php">login</a> <a href="./account_create.php">create</a>
+account
+<a href="{$pubroot}account_login.php">login</a>
+<a href="{$pubroot}account_create.php">create</a>
 
 
 CONTENT;
@@ -50,9 +52,9 @@ if($session_cooperator){
 Hello! {$session_cooperator['name']}! <br />
 
 <ul>
-  <li><a href='./cmenu_account.php'>edit your account</a></li>
-  <li><a href='./cmenu_seeks.php'>edit your seeks</a></li>
-  <li><a href='./cmenu_seek.php'>edit(or new) your seek</a></li>
+  <li><a href='{$pubroot}cmenu_account.php'>edit your account</a></li>
+  <li><a href='{$pubroot}cmenu_seeks.php'>edit your seeks</a></li>
+  <li><a href='{$pubroot}cmenu_seek.php'>edit(or new) your seek</a></li>
 </ul>
 
 CONTENT;

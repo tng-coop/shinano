@@ -38,6 +38,9 @@ $sqlclient = "mysql";
 $data_source_name = "{$sqlclient}:host={$dbhost};dbname={$dbname};charset=UTF8";
 
 
+// ### url
+$pubroot = $config['url']['url_shinano_pubroot']; # url of shinano's pubroot
+
 // ### request_method
 
 if(is_GET()){
@@ -105,8 +108,11 @@ class TemplateAndConfigs{
 
     // config and config values
     function __construct(){
+        global $pubroot;
+
         $this->_document_root = realpath(__DIR__ . "/../");
         $this->_URL = get_url();
+        $this->pub = $pubroot;
     }
 
     // template

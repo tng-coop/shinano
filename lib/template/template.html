@@ -3,8 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title> <?php echo $v->page_title; ?> </title>
-    <link rel="stylesheet" href="/decorations/style.css" type="text/css" media="screen" charset="utf-8"/>
+    <title> <?= $v->page_title ?> </title>
+    <link rel="stylesheet" href="<?=$v->pub?>decorations/style.css" type="text/css" media="screen" charset="utf-8"/>
   </head>
 
   <body>
@@ -14,41 +14,43 @@
         |
         <big>Shinano</big> | <!-- logo -->
         
-        <a href="./">index</a> |
-        <a href="./lookformatch.php">look for match</a> |
-        <a href="./cooperators.php">cooperators</a> |
+        <a href="<?=$v->pub?>">index</a> |
+        <a href="<?=$v->pub?>lookformatch.php">look for match</a> |
+        <a href="<?=$v->pub?>cooperators.php">cooperators</a> |
       </div>
       <div id="head_search">
         <!-- search -->
-        <form class="search_form" method="GET" action="search.php">
+        <form class="search_form" method="GET" action="<?=$v->pub?>search.php">
           |
           <input type="text" name="search_text" placeholder="insert text to search" />
-          <input type="checkbox" name ="jobp" > Job </input>
+          <input type="checkbox" name="jobp"> Job </input>
           <input type="checkbox" name="workerp"> Worker </input>
           <input type="submit" value="search" />
           |
         </form>
       </div>
       <div id="head_cooperator_menu">
-        <!-- account login/create -->
+        <!-- account -->
         |
         <?php 
         global $login;
-        $login_tml = "<a href='./account_login.php'>login</a>";
-        $create_tml = "<a href='./account_create.php'>create</a>";
+        $login_tml = "<a href='{$v->pub}account_login.php'>login</a>";
+        $create_tml = "<a href='{$v->pub}account_create.php'>create</a>";
 
         if(! $login->user()){
-            echo("Account" . " | ");
-            echo($login_tml . " | " . $create_tml . " | ");
+            echo("Account" . " | \n");
+            echo($login_tml . " | \n" . $create_tml . " | \n");
         } else {
-            echo("Hello! " . $login->user("name") . " | " );
-            echo("<a href='./cmenu_account.php'>cooperator's_menu</a>" . " | ");
-            echo($login_tml . " | " . $create_tml . " | ");
+            echo("Hello! " . $login->user("name") . " | \n" );
+            echo("<a href='{$v->pub}cmenu_account.php'>cooperator's_menu</a>" . " | \n");
+            echo($login_tml . " | \n");
+            echo($create_tml . " | \n");
             global $csrf;
-            echo("<form action='./account_logout.php' method='post' class='logout_form'>" .
-                 $csrf->hiddenInputHTML() .
-                 "<input type='submit' value='logout' class='logout_button'>" .
-                 "</form>" . " | ");
+            echo("<form action='{$v->pub}account_logout.php'"
+                 .     "method='post' class='logout_form'>\n" .
+                 $csrf->hiddenInputHTML() . "\n" .
+                 "<input type='submit' value='logout' class='logout_button'>\n" .
+                 "</form>" . " | \n");
         }
         ?>
 
