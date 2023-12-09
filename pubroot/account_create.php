@@ -52,9 +52,9 @@ if($request_method == "POST"){
                     ($conn_rw, $checked_name, $checked_email, $checked_hashed_password, "");});
             // ask user's public_uid to (newer) DB.
             $new_user_public_uid
-            = \Tx\with_connection($data_source_name, $sql_rw_user, $sql_rw_pass)(
-                function($conn_rw) use($checked_email) {
-                    return \TxSnn\user_public_uid_get_by_email($conn_rw, $checked_email);});
+            = \Tx\with_connection($data_source_name, $sql_ro_user, $sql_ro_pass)(
+                function($conn_ro) use($checked_email) {
+                    return \TxSnn\user_public_uid_get_by_email($conn_ro, $checked_email);});
 
             if($new_user_public_uid){
                 $login->login($new_user_public_uid);
