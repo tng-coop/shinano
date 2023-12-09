@@ -64,12 +64,4 @@ CONTENT;
 }
 
 
-
-
-
-
-// render HTML by template
-
-
-
 ?>
