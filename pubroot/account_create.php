@@ -76,12 +76,6 @@ if($request_method == "POST"){
    DEBUG_TML;
  */
 
-// prepare template
-
-$tpl = new TemplateAndConfigs();
-
-$tpl->page_title = "Account Create - Shinano -";
-
 // parepare and execute DB and SQL
 
 // make contents
@@ -117,15 +111,18 @@ ACCOUNT_CREATE_FORM;
 }
 
 
-$tpl->content_actual = <<<CONTENT_CREATE_ACCOUNT
+// prepare template
+
+$content_actual = <<<CONTENT_CREATE_ACCOUNT
 ${debug_tml}
 <h3> Create Account </h3>
 {$account_create_form_html}
 CONTENT_CREATE_ACCOUNT;
 
 
-// apply and echos template
+RenderByTemplate("template.html", "Account Create - Shinano -",
+                 $content_actual);
 
-$tpl->eval_template("template.html");
+
 
 ?>

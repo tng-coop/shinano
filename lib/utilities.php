@@ -169,4 +169,26 @@ class TemplateAndConfigs{
     }
 }
 
+function RenderByTemplate($template_file, $title, $contents,
+                                $values = []){
+
+    $tpl = new TemplateAndConfigs();
+    $tpl->page_title = $title;
+    $tpl->content_actual = $contents;
+
+
+    /*
+    foreach($values as $val){
+        // register val to variables of class.
+        $name = (varName($val));
+        $this->$name = $val;
+
+    }
+    */
+    
+    // apply and echos template
+    $tpl->eval_template($template_file);
+
+}
+
 ?>

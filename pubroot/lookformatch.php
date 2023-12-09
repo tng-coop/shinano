@@ -11,9 +11,7 @@ $wconn_ro = new WPDO($data_source_name, $sql_ro_user, $sql_ro_pass);
 
 $sql1 = "SELECT attribute,user,title,description,created_at,opened_at,closed_at FROM job_entry;";
 
-
 $stmt = $wconn_ro->askdb($sql1);
-
 
 
 // make content_actual of cooperators
@@ -50,22 +48,9 @@ function html_text_of_matches_list($statement){
 $matches_list_tml = html_text_of_matches_list($stmt);
 
 
-// prepare template
+// prepare and render by template
 
-$tpl = new TemplateAndConfigs();
-
-$tpl->page_title = "look for match";
-
-
-$tpl->content_actual = <<<CONTENTINDEX
-
-{$matches_list_tml}
-
-CONTENTINDEX;
-
-
-// apply and echos template
-
-$tpl->eval_template("template.html");
+RenderByTemplate("template.html", "Look for match - Shinano -",
+                 $matches_list_tml);
 
 ?>

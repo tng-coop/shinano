@@ -16,38 +16,28 @@ if(isset($_GET['puid']) &&
 
 // deny invalid URL
 if(! $request_public_uid){
-    $tpl = new TemplateAndConfigs();
-    $tpl->page_title = "Please login - Shinano";
-    $tpl->content_actual = "to show cooperator, Please login.";
-    $tpl->eval_template("template.html");
-
+    // if not logged in, Page to ask login.
+    $invalid_puid_message_tml
+        = "your requesting puid is invalid. <br />"
+        . "<a href='./cooperators.php'>back to cooperators</a>";
+    RenderByTemplate("template.html", "invalid puid - Shinano -",
+                     $invalid_puid_message_tml);
     exit();
 }
 
 // deny none logged in user.
 if(! $login->user()){
-    $tpl = new TemplateAndConfigs();
-    $tpl->page_title = "Please login - Shinano";
-    $tpl->content_actual = "to show cooperator, Please login.";
-    $tpl->eval_template("template.html");
-
+    // if not logged in, Page to ask login.
+    RenderByTemplate("template.html", "Please Login - Shinano -",
+                     "to show cooperators, Please login.");
     exit();
 }
-
-
 
 
 // if logged in, prepare specific cooperator page.
 
 
-//$request_public_uid = 100;
-
-
-
-
 // parepare and execute DB and SQL
-//$wconn_ro = \PDO($data_source_name, $sql_ro_user, $sql_ro_pass);
-
 
 $ret_stmt_user
     = \Tx\with_connection($data_source_name, $sql_ro_user, $sql_ro_pass)(
@@ -65,8 +55,6 @@ $ret_stmt_user_jobs
         function($conn_ro) use ($request_public_uid){  
             return \TxSnn\view_job_things_by_public_uid($conn_ro, $request_public_uid);
         });
-
-
 
 
 // make actual content of cooperators
@@ -101,16 +89,9 @@ function html_text_of_cooperators($stmt_of_user, $stmt_of_jobs){
 
 // prepare template
 
-$tpl = new TemplateAndConfigs();
-    
-$cooperators_tml = html_text_of_cooperators($ret_stmt_user, $ret_stmt_user_jobs);
+$cooperator_tml = html_text_of_cooperators($ret_stmt_user, $ret_stmt_user_jobs);
 
-$tpl->page_title = "cooperators - Shinano";
-
-$tpl->content_actual = "{$cooperators_tml}";
-
-// apply and echos template
-$tpl->eval_template("template.html");
-
+RenderByTemplate("template.html", "Cooperator - Shinano -",
+                 $cooperator_tml);
 
 ?>

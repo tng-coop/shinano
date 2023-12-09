@@ -20,13 +20,6 @@ echo "Read-Write User: " . $config['database']['readwrite_user'] . "<br>";
 echo "Read-Write Password: " . $config['database']['readwrite_password'] . "<br>";
 
 
-// prepare template
-
-$tpl = new TemplateAndConfigs();
-
-$tpl->page_title = "index php here";
-
-
 // parepare and execute DB and SQL
 
 $wconn_ro = new WPDO($data_source_name, $sql_ro_user, $sql_ro_pass);
@@ -72,20 +65,22 @@ DEBUGAREA;
 // $debug_area=""; // if $debug_area is not needed ,uncomment
 
 
-$tpl->content_actual = <<<CONTENTINDEX
+// prepare content
+
+$content_index = <<<CONTENT_INDEX
 
 <a href=\"./list_jobs.php\"> jobs </a> , 
-<a href=\"./list_seeker.php\"> seeks </a>
-<br />
+   <a href=\"./list_seeker.php\"> seeks </a>
+   <br />
 
-{$debug_area}
+   {$debug_area}
+
+CONTENT_INDEX;
 
 
-CONTENTINDEX;
+// render HTML by template
+RenderByTemplate("template.html", "index - Shinano -",
+                 $content_index);
 
-
-// apply and echos template
-
-$tpl->eval_template("template.html");
 
 ?>

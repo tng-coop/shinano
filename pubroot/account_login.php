@@ -61,7 +61,7 @@ if($request_method == "POST"){
             // login to user if valified
             if($doing_login_user){
                 $login->login($doing_login_user['public_uid']);
-                print_r($login->user('name'));
+                //print_r($login->user('name'));
             }
 
             // html by login state
@@ -73,15 +73,6 @@ if($request_method == "POST"){
         }
     }
 }
-
-
-
-
-// prepare template
-
-$tpl = new TemplateAndConfigs();
-
-$tpl->page_title = "Account Login - Shinano - ";
 
 
 // make contents
@@ -122,12 +113,9 @@ LOGIN_FORM;
 }
 
 
-// apply and echos template
+// Apply and Render HTML.
+RenderByTemplate("template.html", "Account Login - Shinano -",
+                 $login_form_html);
 
-$tpl->content_actual = <<<CONTENTLOGIN
-{$login_form_html}
-CONTENTLOGIN;
-
-$tpl->eval_template("template.html");
 
 ?>

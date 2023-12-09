@@ -7,11 +7,8 @@ include_once(__DIR__ . "/../lib/common.php");
 
 if(! $login->user()){
     // if not logged in, Page to ask login.
-    $tpl = new TemplateAndConfigs();
-    $tpl->page_title = "Please login - Shinano";
-    $tpl->content_actual = "to show cooperators, Please login.";
-    $tpl->eval_template("template.html");
-
+    RenderByTemplate("template.html", "Please Login - Shinano -",
+                     "to show cooperators, Please login.");
     exit();
 }
 
@@ -50,18 +47,11 @@ function html_text_of_cooperators($statement){
 }
 
 
-// prepare template
+// render HTML by template.
 
-$tpl = new TemplateAndConfigs();
-    
-$cooperators_tml = html_text_of_cooperators($stmt);    
+$cooperators_tml = html_text_of_cooperators($stmt);
 
-$tpl->page_title = "cooperators - Shinano";
-
-$tpl->content_actual = "{$cooperators_tml}";
-
-// apply and echos template
-$tpl->eval_template("template.html");
-
+RenderByTemplate("template.html", "Cooperators - Shinano -",
+                 $cooperators_tml);
 
 ?>

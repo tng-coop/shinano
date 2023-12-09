@@ -19,18 +19,7 @@ if(! $request_method == "POST" || ! $csrf->checkToken()){
 
 // prepare template
 
-$tpl = new TemplateAndConfigs();
-
-$tpl->page_title = "Account Logout - Shinano - ";
-
-$tpl->content_actual = <<<CONTENTLOGOUT
-{$message_of_logouting}
-CONTENTLOGOUT;
-
-// apply template
-
-
-
-$tpl->eval_template("template.html");
+RenderByTemplate("template.html", "Account Logout - Shinano -",
+                 $message_of_logouting);
 
 ?>
