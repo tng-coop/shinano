@@ -1,13 +1,48 @@
 #! /bin/sh
 
+# Usage function
+usage() {
+    cat << EOF
+Usage: $0 [OPTIONS]
+
+This script sets up MySQL users with specific privileges. It reads configurations 
+from a config.ini file, validates user and password variables, and executes MySQL 
+commands to create and configure database users.
+
+OPTIONS:
+  -h, --help       Show this help message and exit
+  [mysql options]  Use custom MySQL command with its options
+
+Examples:
+  $0                   # Use default MySQL command
+  $0 mysql -uroot      # Run as MySQL root user
+  $0 cat               # Print SQL commands without executing
+
+EOF
+}
+
+# Check for help option
+if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    usage
+    exit 0
+fi
+
+
 # MySQL admin command
-admin_mysql="$@"
-if [ x"$admin_mysql" = x ]; then
+admin_mysql="$*"
+if [ "$admin_mysql" = "" ]; then
     admin_mysql=mysql
 fi
 
-# Read config.ini
-$(php export-database-config.php)
+# Read config.ini and ensure only 'export' commands are executed
+eval "$(php export-database-config.php | grep '^export ')"
+
+# Validate imported user and password variables
+if [ -z "$readonly_user" ] || [ -z "$readwrite_user" ] || \
+   [ -z "$readonly_password" ] || [ -z "$readwrite_password" ]; then
+    echo "Error: Database user or password variables not set."
+    exit 1
+fi
 
 set -x
 # $admin_mysql < drop-dev-tables.sql

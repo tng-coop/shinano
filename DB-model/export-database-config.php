@@ -10,7 +10,9 @@ if ($config === false) {
 // Replace 'database' with the actual section name in your INI file
 if (isset($config['database'])) {
     foreach ($config['database'] as $key => $value) {
-        echo "export $key=$value\n";
+        // Escaping values to ensure they are safe to be sourced
+        $safeValue = escapeshellarg($value);
+        echo "export $key=$safeValue\n";
     }
 } else {
     echo "Section 'database' not found in the INI file.";
