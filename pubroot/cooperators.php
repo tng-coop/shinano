@@ -15,9 +15,11 @@ if(! $login->user()){
 // if logged in, prepare cooperators page.
 
 // parepare and execute DB and SQL
-$wconn_ro = new WPDO($data_source_name, $sql_ro_user, $sql_ro_pass);
+$wconn_ro = new PDO($data_source_name, $sql_ro_user, $sql_ro_pass);
 $sql1 = "SELECT name,email,public_uid,note,created_at FROM user;";
-$stmt = $wconn_ro->askdb($sql1);
+
+$stmt = $wconn_ro->prepare($sql1);
+$stmt->execute();
 
 // make actual content of cooperators
 

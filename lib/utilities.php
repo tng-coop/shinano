@@ -58,7 +58,7 @@ function db_connect_ro(){
     );
 }
 
-
+/*
 // # Wrap SQL connections, WPDO is Wrapped PDO.
 
 function PDO_connect($data_source_name, $sql_user, $sql_password) {
@@ -95,7 +95,7 @@ class WPDO{
         }
     }
 }
-
+*/
 
 
 // # utility functions

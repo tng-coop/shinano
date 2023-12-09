@@ -43,7 +43,7 @@ if($request_method == "POST"){
             
             // ask database
             global $data_source_name, $sql_rw_user, $sql_rw_pass;
-            $conn = PDO_connect($data_source_name, $sql_ro_user, $sql_ro_pass);
+            $conn = new PDO($data_source_name, $sql_ro_user, $sql_ro_pass);
             $stmt = $conn->prepare("SELECT id,name,email,public_uid,passwd_hash FROM user" .
                                    "  WHERE lower(email)=lower(:email);");
             $stmt->execute(['email' => $checked_email]);

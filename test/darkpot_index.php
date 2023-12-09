@@ -22,12 +22,11 @@ echo "Read-Write Password: " . $config['database']['readwrite_password'] . "<br>
 
 // parepare and execute DB and SQL
 
-$wconn_ro = new WPDO($data_source_name, $sql_ro_user, $sql_ro_pass);
-//$wconn_ro = new WPDO($data_source_name, $sql_ro_user, "fial_pssaowrd"); // the case of password failure
-
+$wconn_ro = new PDO($data_source_name, $sql_ro_user, $sql_ro_pass);
+//$wconn_ro = new PDO($data_source_name, $sql_ro_user, "fial_pssaowrd"); // the case of password failure
 $sql1 = "SELECT name,email,id,public_uid,passwd_hash FROM user;";
-
-$stmt = $wconn_ro->askdb($sql1);
+$stmt = $wconn_ro->prepare($sql1);
+$stmt->execute();
 
 
 // contents

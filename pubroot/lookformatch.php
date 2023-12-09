@@ -7,11 +7,10 @@ include_once(__DIR__ . "/../lib/common.php");
 
 // parepare and execute DB and SQL
 
-$wconn_ro = new WPDO($data_source_name, $sql_ro_user, $sql_ro_pass);
-
+$wconn_ro = new PDO($data_source_name, $sql_ro_user, $sql_ro_pass);
 $sql1 = "SELECT attribute,user,title,description,created_at,opened_at,closed_at FROM job_entry;";
-
-$stmt = $wconn_ro->askdb($sql1);
+$stmt = $wconn_ro->prepare($sql1);
+$stmt->execute();
 
 
 // make content_actual of cooperators
