@@ -229,6 +229,18 @@ SQL
     return $stmt;
 }
 
+
+function db_ask_ro(string $query, ?array $params=null, int $mode = PDO::FETCH_DEFAULT){
+    global $data_source_name, $sql_ro_user, $sql_ro_pass;
+    return \Tx\with_connection($data_source_name, $sql_ro_user, $sql_ro_pass)(
+        function($conn_ro) use($query, $params, $mode){
+            $stmt = $conn_ro->prepare($query);
+            $stmt->execute($params);
+            $ret =  $stmt->fetchAll($mode);
+            return $ret;
+        });
+}
+
 } ## end of namesapce TxSnn
 
 ?>

@@ -7,19 +7,17 @@ include_once(__DIR__ . "/../lib/common.php");
 
 // parepare and execute DB and SQL
 
-$wconn_ro = new PDO($data_source_name, $sql_ro_user, $sql_ro_pass);
-$sql1 = "SELECT attribute,user,title,description,created_at,opened_at,closed_at FROM job_entry;";
-$stmt = $wconn_ro->prepare($sql1);
-$stmt->execute();
-
+$job_entries
+    = db_ask_ro("SELECT attribute,user,title,description,created_at,opened_at,closed_at" .
+                "  FROM job_entry;",
+                [], PDO::FETCH_DEFAULT);
 
 // make content_actual of cooperators
 
-function html_text_of_matches_list($statement){
-    
+function html_text_of_matches_list($job_entries){
     $tml_text = "";
     $tml_text = "<div class='cooperators'>";
-    while($row = $statement->fetch()){
+    foreach($job_entries as $row){
         [$t_title, $t_attribute, $t_created_at, $t_opened_at, $t_closed_at, $t_description]
         = [htmlspecialchars($row['title']),
            $row['attribute'],
@@ -44,7 +42,7 @@ function html_text_of_matches_list($statement){
     return $tml_text;
 }
 
-$matches_list_tml = html_text_of_matches_list($stmt);
+$matches_list_tml = html_text_of_matches_list($job_entries);
 
 
 // prepare and render by template
