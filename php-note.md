@@ -64,18 +64,10 @@ if($request_method == "GET"){
     // parepare and execute DB and SQL.
 }
 
-// prepare template
+// render templated HTML
 
-$tpl = new TemplateAndConfigs();
-$tpl->page_title = "Account Create - Shinano -";
-
-// make contents
-
-$tpl->content_actual = "content html"
-
-// apply and echos template
-
-$tpl->eval_template("template.html");
+RenderByTemplate("template.html", "title",
+                 "body_content");
 
 ?>
 
