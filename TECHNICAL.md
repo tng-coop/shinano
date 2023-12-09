@@ -32,8 +32,12 @@ The front-end is designed to be wget friendly and compatible with text-based web
      ```
    - Access localhost:5000 to view content and interact with PHP request handlers.
 
-2. **SQL**:
-   - [Details about SQL usage and commands]
+2. **DataBase**:
+   - MySQL
+   - to do reset and prepare (develop version of) DataBase.
+     `$ ./DB-model/reset-dev-database.sh --arguments --needed --to-be-written `
+   - such as the part of the user information, if access/write is denied by DataBase, 
+     please check authority for your accessing DB user.
 
 3. **Deployment Server**:
    - [Instructions for server deployment]
@@ -43,7 +47,9 @@ The front-end is designed to be wget friendly and compatible with text-based web
 | Name       | Purpose                                 |
 |------------|-----------------------------------------|
 | main       | Developing version and its source code. |
-| production | Stable Production.                      |
+
+Specific tag and release represents production (stable) version.
+
 
 ## Feedback and Contributions
 
