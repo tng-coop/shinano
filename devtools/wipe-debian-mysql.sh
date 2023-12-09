@@ -38,7 +38,6 @@ if [ "$TERM_PROGRAM" == "vscode" ]; then
     echo "This script cannot be run within the VS Code sandboxed terminal due to its restricted access to system resources and limited permissions, which are necessary for MySQL operations."
     exit 1
 fi
-echo $TERM_PROGRAM
 # Check for a command-line argument to bypass the confirmation prompt
 if [ "$1" != "--force" ]; then
     echo "Are you sure you want to completely wipe the MySQL database? This cannot be undone."
