@@ -25,29 +25,28 @@ $stmt = $wconn_ro->askdb($sql1);
 // make actual content of cooperators
 
 function html_text_of_cooperators($statement){
-    $tml_text = "";
-    $tml_text = "<div class='cooperators'>";
+    $contents_tml = "";
+    $contents_tml = "<div class='cooperators'>";
     while($row = $statement->fetch()){
         [$name, $note, $puid, $email, $created_at]
-        = [h($row['name']),
-           h($row['note']),
-           h($row['public_uid']),
-           h($row["email"]),
-           h($row["created_at"])];
-        $tml_text .= 
-                  ("<div class='cooperator'>" .
-                   "  <h3> {$name} </h3>". 
-                   "  <a href='./cooperator.php?puid=${puid}'> c </a>" .
-                   "  <p> <pre> {$note} </pre> </p> " .
-                   "  <p style='color:blue;'> links of look for match </p>" .
-                   "  email: <span> {$email} </span>" . 
-                   "  , created: <span> {$created_at} </span>".
-                   "</div>" .
-                   "<hr /> \n");
+        = array_map(fn($key) => h($row[$key]), 
+                    ['name', 'note', 'public_uid', 'email', 'created_at']);
+        
+        $row_tml
+            = "<div class='cooperator'>"
+            . "  <h3> {$name} </h3>"
+            . "  <a href='./cooperator.php?puid=${puid}'> c </a>"
+            . "  <pre> {$note} </pre>"
+            . "  <p style='color:blue;'> links of look for match </p>"
+            . "  email: <span> {$email} </span>"
+            . "  , created: <span> {$created_at} </span>"
+            . "</div>"
+            ."<hr /> \n";
+        $contents_tml .= $row_tml;
     }
-    $tml_text .= "</div>";
+    $contents_tml .= "</div>";
     
-    return $tml_text;
+    return $contents_tml;
 }
 
 
