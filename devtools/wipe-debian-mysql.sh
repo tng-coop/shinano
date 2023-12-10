@@ -10,6 +10,7 @@
 #
 # Options:
 #   --force   Bypass the confirmation prompt and directly proceed with wiping the database.
+#   --reinstall  Reinstall MySQL after wiping the database.
 #
 # Important Notes:
 #   - Running this script will permanently delete all data in the MySQL databases.
@@ -17,6 +18,23 @@
 #   - This script should NOT be run in a sandboxed environment like the VS Code terminal, 
 #     as it may not have the necessary permissions and access to perform database operations.
 
+FORCE=false
+REINSTALL_MYSQL=false
+
+# Parse command-line arguments
+for arg in "$@"
+do
+    case $arg in
+        --force)
+        FORCE=true
+        shift # Remove --force from processing
+        ;;
+        --reinstall)
+        REINSTALL_MYSQL=true
+        shift # Remove --reinstall from processing
+        ;;
+    esac
+done
 
 # Using 'set -e' to ensure that the script exits immediately if any command fails.
 set -e
@@ -39,7 +57,7 @@ if [ "$TERM_PROGRAM" == "vscode" ]; then
     exit 1
 fi
 # Check for a command-line argument to bypass the confirmation prompt
-if [ "$1" != "--force" ]; then
+if [ "$FORCE" = false ]; then
     echo "Are you sure you want to completely wipe the MySQL database? This cannot be undone."
     # 'IFS=' prevents leading/trailing whitespace trimming. 'read -r' prevents backslashes from being interpreted as escape characters. 
     # '-p' allows prompting for input. This line is for safely reading user input with these considerations.
@@ -50,10 +68,25 @@ if [ "$1" != "--force" ]; then
     fi
 fi
 
-# Stopping the MySQL service
-# It's crucial to stop the service to prevent any access to the databases while we are deleting them.
-sudo systemctl stop mysql
-echo "MySQL service stopped."
+# Check if MySQL service is running
+if systemctl is-active --quiet mysql; then
+    # Stopping the MySQL service
+    # It's crucial to stop the service to prevent any access to the databases while we are deleting them.
+    sudo systemctl stop mysql
+    echo "MySQL service stopped."
+else
+    echo "MySQL service is not running, no need to stop it."
+fi
+
+# Check if --reinstall argument was given
+if [ "$REINSTALL_MYSQL" = true ]; then
+    # Removing MySQL server and dependencies
+    sudo apt-get remove --purge --yes mysql-server mysql-client mysql-common mysql-server-core-* mysql-client-core-*
+    sudo apt autoremove --yes
+    sudo apt autoclean
+    sudo rm -rf /etc/mysql
+    sudo apt-get install mysql-server --yes
+fi
 
 # Wiping out the /var/lib/mysql directory
 # This directory contains all the actual database files.
