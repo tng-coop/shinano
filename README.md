@@ -1,8 +1,8 @@
 # Shinano Project
-[test site](http://tng.coop/shinano)
+
 ## Introduction
 
-Welcome to the Shinano Project. 
+[test site](http://tng.coop/shinano) Welcome to the Shinano Project. 
 Our platform is specifically designed to create direct connections: connecting those initiating projects with collaborative partners, and linking employers with contractors seeking opportunities.
 
 Our mission is to nurture autonomous, collaborative, and sustainable work practices. We aim to spread the principles of economic democracy in society, exemplified by such concepts as
