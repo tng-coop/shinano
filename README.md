@@ -64,7 +64,7 @@ It values mutual aid, cooperation, economic democracy, sustainability, and socia
 This approach aims to create an inclusive, equitable society that respects both people and the planet.
 
 ## はじめに
-[試験版](http://tng.coop/shinano)
+[(試験版)](http://tng.coop/shinano)
 信濃プロジェクトへようこそ。起業・企画の発案者と参加者、または雇用者と請負業者の間の
 直接的なマッチングを促進することに注力している当プラットフォームは、自律的、協調的、
 持続的な働き方を促進し、経済の民主主義、具体的には[ *労働者協同組合、連帯経済*](#-労働者協同組合と連帯経済)などと呼ばれる概念を社会に広めることを目指しています。
