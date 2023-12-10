@@ -14,33 +14,52 @@ if(! $login->user()){
 // if logged in request, prepare contents.
 
 // parepare and execute DB and SQL
-$job_entries
-    = db_ask_ro("SELECT attribute,user,title,description,created_at,opened_at,closed_at" .
-                "  FROM job_entry;",
-                [], \PDO::FETCH_DEFAULT);
+
+$sql1
+    = "SELECT U.name, U.email, U.public_uid, "
+    . "    J.id, J.attribute, J.user, J.title, J.description, J.created_at, J.opened_at, J.closed_at"
+    . "  FROM user as U INNER JOIN job_entry as J"
+    . "    ON U.id = J.user"
+    . "  ORDER BY J.id"
+    . ";";
+
+$job_entries = db_ask_ro($sql1, [], \PDO::FETCH_ASSOC);
 
 // make content_actual of cooperators
 
 function html_text_of_matches_list($job_entries){
+    $key_names = array_keys($job_entries[0]);
+
+    // content
     $tml_text = "";
     $tml_text = "<div class='cooperators'>";
     foreach($job_entries as $row){
-        [$t_title, $t_attribute, $t_created_at, $t_opened_at, $t_closed_at, $t_description]
-        = [htmlspecialchars($row['title']),
-           $row['attribute'],
-           $row['created_at'],
-           $row['opened_at'],
-           $row['closed_at'],
-           htmlspecialchars($row['description'])];
+
+        // set key_value
+        $vals = []; // values
+        foreach($key_names as $key){
+            $vals[$key] = h($row[$key]);
+        }
+
+        // content of row
+        $description_omitted = mb_strimwidth($vals['description'], 0, 74*3, '...', 'UTF-8' );
+        $listing_or_seeking = ($vals['attribute'] =='L'  ?  'Listing' :
+                               ($vals['attribute']=='S' ?  'Seeking' : 'showing'));
+
+        global $pubroot;
         $tml_text
             .= 
-            ("<div class='cooperator'>" .
-             "  <h3> {$t_title} </h3>" .
-             "  S/L: <span> {$t_attribute} </span> , " .
-             "  created: <span> {$t_created_at} </span> , " .
-             "  opened: <span> {$t_opened_at} </span> , " .
-             "  closed: <span> {$t_closed_at} </span> ," .
-             "  <p> {$t_description} </p>" .
+            ("<div class='look_for_seek'>" .
+             "  <a href=''> <h3> {$vals['title']} </h3> </a>" .
+             "  id: <span> {$vals['id']} </span> , " .
+             "  S/L: <span> {$vals['attribute']} </span> , " .
+             "  created: <span> {$vals['created_at']} </span> , " .
+             "  opened: <span> {$vals['opened_at']} </span> , " .
+             "  closed: <span> {$vals['closed_at']} </span> ," .
+             "  <p><pre style='display: inline;'> {$description_omitted}</pre>" .
+             "     <a href=''>(detail)</a></p>" .
+             "  {$listing_or_seeking} by " .
+             "  <a href='{$pubroot}cooperator.php?puid={$vals['public_uid']}'>{$vals['name']}</a>" .
              "</div>" .
              "<hr /> \n");
     }
