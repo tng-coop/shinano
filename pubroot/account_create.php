@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+include_once(__DIR__ . "/../lib/common.php");
 include_once(__DIR__ . "/../lib/form_check.php");
 include_once(__DIR__ . '/../lib/transactions.php');
 
@@ -39,9 +40,12 @@ if($request_method == "POST"){
          [$checked_email, $form_message_email],
          [$checked_password, $form_message_password]]
         = check_for_user_post($post_name, $post_email, $post_password_check, $post_password_first);
+
+        $safe_form_post_p =
+            ($checked_name!=null && $checked_email!=null && $checked_password!=null);
         
         // reigster to user table if good POST.
-        if($checked_name!=null && $checked_email!=null && $checked_password!=null){
+        if($safe_form_post_p){
             $checked_hashed_password = password_hash($checked_password, PASSWORD_DEFAULT);
 
             // register user to DB.

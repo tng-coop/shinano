@@ -71,14 +71,17 @@ function check_user_email_safe($email){
         return [null, $check_safe_post_text];
     }
 
+    // interpretation as lower_email (only ASCII)
+    $email_lower = strtolower($email);
+
     // email format check
-    if(strlen($email) > 254) {
+    if(strlen($email_lower) > 254) {
         return [null, "email must be less than 255 characters. \n"];
     }
-    if(!filter_var($email, FILTER_VALIDATE_EMAIL, FILTER_FLAG_EMAIL_UNICODE)){
+    if(!filter_var($email_lower, FILTER_VALIDATE_EMAIL, FILTER_FLAG_EMAIL_UNICODE)){
         return [null, "it unable to recoginize as email.\n"];
     }
-    list($local_part, $domain_part) = explode('@', $email, 2);
+    list($local_part, $domain_part) = explode('@', $email_lower, 2);
     if(!checkdnsrr($domain_part, 'MX') &&
        !checkdnsrr($domain_part, 'A') &&
        !checkdnsrr($domain_part, 'AAAA')){
@@ -89,7 +92,7 @@ function check_user_email_safe($email){
     if(false){
         return [null, ""];
     } elseif(true){
-        return [$email, ""];
+        return [$email_lower, ""];
     }
 }
 
