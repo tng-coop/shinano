@@ -54,7 +54,7 @@ RenderByTemplate("template.html", "{$title_part} - Shinano -",
 
 function content_and_process_by_GET($pvs, $messages){
     // 1. edit page
-    $title_part = "Edit Seek";
+    $title_part = "edit seek";
     $content_html = content_of_edit_seek($pvs, $messages);
 
     // return
@@ -82,9 +82,9 @@ function content_and_process_by_POST($pvs, $messages){
        check_radio_value_safe($pvs['open_close'], ['open', 'close'])];
 
     $safe_form_post_p
-        = array_reduce($post_checks,
-                       fn($carry, $item) => $carry && ($item || $item===""),
-                       true);
+    = array_reduce($post_checks,
+                   fn($carry, $item) => $carry && ($item || $item===""),
+                   true);
 
     // prepare Content
 
@@ -103,28 +103,48 @@ function content_and_process_by_POST($pvs, $messages){
 
         if($duplicated_post){
             // when duplicated
+            $dup0 = $duplicated_post[0];
+            $title_part = "duplicated";
+            $content_html = "Your seek is duplicated. a-href-from: " .
+                            "<pre>" . 
+                            "title: {$dup0['title']}\njob_entry.id: {$dup0['id']}\n" .
+                            "uesr.email: {$dup0['email']}" .
+                            "</pre>";
             
         }elseif(!$duplicated_post){
             // register user to DB.
             \Tx\with_connection($data_source_name, $sql_rw_user, $sql_rw_pass)(
                 function($conn_rw) use($loggedin_email, $post_checks) {
                     \TxSnn\add_job_things($post_checks['attribute'])
-                        ($conn_rw, $loggedin_email,
-                         $post_checks['title'], $post_checks['description']);});
+                    ($conn_rw, $loggedin_email,
+                     $post_checks['title'], $post_checks['description']);});
 
-            $title_part = "Uploaded";
-            $content_html = "your Seek is Uploaded";
+            $duplicated_post = select_duplicated_seeks_from_db($loggedin_email, $post_checks['title']);
+            $dup0 = $duplicated_post[0];
+            
+            if($duplicated_post){
+                $title_part = "uploaded";
+                $content_html = "Your seek is uploaded. " .
+                                "<pre>" . 
+                                "title: {$dup0['title']}\njob_entry.id: {$dup0['id']}\n" .
+                                "uesr.email: {$dup0['email']}" .
+                                "</pre>";
+            } else {
+                $title_part = "something wrong";
+                $content_html = "something wrong";
+                error_log("Error of POSTing: failed POST or failed DataBase state");
+            }
         }
 
     }
     // 2. confirm page
     elseif ($safe_form_post_p && $pvs['step_previous'] === 'edit') {
-        $title_part = "Please Confirm";
+        $title_part = "please confirm";
         $content_html = content_of_confirm_seek($pvs, $messages);
     }
     // 1. edit page
     else {
-        $title_part = "Edit Seek";
+        $title_part = "edit seek";
         $content_html = content_of_edit_seek($pvs, $messages);
     }
     
@@ -132,11 +152,28 @@ function content_and_process_by_POST($pvs, $messages){
     return [$title_part, $content_html, $messages];
 }
 
-// POSTed parameter's check
-
 function select_duplicated_seeks_from_db(string $email, string $title){
-    return true;
+    global $data_source_name, $sql_rw_user, $sql_rw_pass;
+
+    $ret0 = \Tx\with_connection($data_source_name, $sql_rw_user, $sql_rw_pass)(
+        function($conn_rw) use($email, $title) {
+            $sql1
+            = "SELECT J.id, J.user, U.id, J.title, U.email"
+            . "  FROM user as U INNER JOIN job_entry AS J"
+            . "  ON U.id = J.user"
+            . "  WHERE J.title = :title"
+            . "  AND U.email = :email;";
+            $stmt = $conn_rw->prepare($sql1);
+            $stmt->execute([":email" => $email, ":title" => $title]);
+            $ret = $stmt->fetchAll();
+
+            return $ret;});
+
+    return $ret0;
 }
+
+
+// POSTed parameter's check
 
 function check_text_safe(string $string_text, bool $enable_spaces_text_p , int $text_length_limit){
     // is safe POST?
@@ -164,7 +201,7 @@ function check_radio_value_safe($radio_value, array $enabled_values = []){
     }
     // is selected from list ?
     $selected_p
-        = array_reduce($enabled_values, fn($carry, $item) => $carry || $item==$radio_value, false);
+    = array_reduce($enabled_values, fn($carry, $item) => $carry || $item==$radio_value, false);
     if(! $selected_p){
         return [null, "Select Item from radio box."];
     }
@@ -183,12 +220,12 @@ function content_of_confirm_seek($pvs, $messages){
     $current_step_html = "<input type='hidden' name='step_current' value='confirm'>";
     
     $message_listing_or_seeking
-        = ((($pvs['attribute']==='L')  ? "as Listing" :
-            ($pvs['attribute']==='S')) ? "as Seeking" : "as null");
+    = ((($pvs['attribute']==='L')  ? "as Listing" :
+        ($pvs['attribute']==='S')) ? "as Seeking" : "as null");
     
     $message_open_or_close
-        = ((($pvs['open_close']==='open')   ? "as Opend"  :
-            ($pvs['open_close']==='close')) ? "as Closed" : "as null");
+    = ((($pvs['open_close']==='open')   ? "as Opend"  :
+        ($pvs['open_close']==='close')) ? "as Closed" : "as null");
 
     $content_confirm_form_html = <<<CONTENT
 <h3> Confirm your Seek </h3>
