@@ -29,5 +29,12 @@ function db_ask_ro(string $query, ?array $params=null, int $mode = \PDO::FETCH_D
         });
 }
 
+// please login page
+function please_login_page(string $message="Please Login.",
+                           string $title="Please Login - Shinano - "){
+    RenderByTemplate("template.html", $title, $message);
+}
+
+
 ?>
 

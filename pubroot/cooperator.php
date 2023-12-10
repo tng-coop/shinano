@@ -25,14 +25,11 @@ if(! $request_public_uid){
     exit();
 }
 
-// deny none logged in user.
+// deny not loggedin request
 if(! $login->user()){
-    // if not logged in, Page to ask login.
-    RenderByTemplate("template.html", "Please Login - Shinano -",
-                     "to show cooperators, Please login.");
+    please_login_page();
     exit();
 }
-
 
 // if logged in, prepare specific cooperator page.
 

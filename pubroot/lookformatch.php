@@ -5,8 +5,15 @@ declare(strict_types=1);
 include_once(__DIR__ . "/../lib/common.php");
 
 
-// parepare and execute DB and SQL
+// deny not loggedin request
+if(! $login->user()){
+    please_login_page();
+    exit();
+}
 
+// if logged in request, prepare contents.
+
+// parepare and execute DB and SQL
 $job_entries
     = db_ask_ro("SELECT attribute,user,title,description,created_at,opened_at,closed_at" .
                 "  FROM job_entry;",
