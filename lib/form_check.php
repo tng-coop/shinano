@@ -10,6 +10,8 @@ include_once(__DIR__ . '/./common.php');
 
 $preg_str_of_marks = preg_quote(' !"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~', '/'); // Ascii code
 
+// POST's safety
+
 function check_if_post_is_safe($formed_string){
     if(!isset($formed_string)) {
         return [null, "please use form. \n"];
@@ -21,6 +23,8 @@ function check_if_post_is_safe($formed_string){
         return [$formed_string, ""];
     }
 }
+
+// POST of account information
 
 function check_user_id_safe($string_user_id){
     /*
@@ -165,5 +169,41 @@ function check_user_password_safe($password1, $password2){
     }
 }
 
+
+// POST of etc. such as seek editor, ... .
+
+function check_text_safe(string $string_text, bool $enable_spaces_text_p , int $text_length_limit){
+    // is safe POST?
+    [$check_safe_post_p, $check_safe_post_text] = \FormCheck\check_if_post_is_safe($string_text);
+    if(! $check_safe_post_p){
+        return [null, $check_safe_post_text];
+    }
+    // is spaces POST?
+    if((! $enable_spaces_text_p) && trim($string_text) === ''){
+        return [null, "input some text"];
+    }
+    // is too Long?
+    if(mb_strlen($string_text) > $text_length_limit){
+        return [null, "Too long text. Text need to be less than {$text_length_limit} characters."];
+    }
+    // return safe
+    return [$string_text, ""];
+}
+
+function check_radio_value_safe($radio_value, array $enabled_values = []){
+    // is safe POST?
+    [$check_safe_post_p, $check_safe_post_text] = \FormCheck\check_if_post_is_safe($radio_value);
+    if(! $check_safe_post_p){
+        return [null, $check_safe_post_text];
+    }
+    // is selected from list ?
+    $selected_p
+    = array_reduce($enabled_values, fn($carry, $item) => $carry || $item==$radio_value, false);
+    if(! $selected_p){
+        return [null, "Select Item from radio box."];
+    }
+    // return safe
+    return [$radio_value, ""];
+}
 
 ?>

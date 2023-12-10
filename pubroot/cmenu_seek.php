@@ -76,10 +76,10 @@ function content_and_process_by_POST($pvs, $messages){
      [$post_checks['description'], $messages['description']],
      [$post_checks['attribute'], $messages['attribute']],
      [$post_checks['open_close'], $messages['open_close']]]
-    = [check_text_safe($pvs['title'], false, (256 - 4)),
-       check_text_safe($pvs['description'], false, (16384 - 4)),
-       check_radio_value_safe($pvs['attribute'], ['L', 'S']),
-       check_radio_value_safe($pvs['open_close'], ['open', 'close'])];
+    = [\FormCheck\check_text_safe($pvs['title'], false, (256 - 4)),
+       \FormCheck\check_text_safe($pvs['description'], false, (16384 - 4)),
+       \FormCheck\check_radio_value_safe($pvs['attribute'], ['L', 'S']),
+       \FormCheck\check_radio_value_safe($pvs['open_close'], ['open', 'close'])];
 
     $safe_form_post_p
     = array_reduce($post_checks,
@@ -171,44 +171,6 @@ function select_duplicated_seeks_from_db(string $email, string $title){
 
     return $ret0;
 }
-
-
-// POSTed parameter's check
-
-function check_text_safe(string $string_text, bool $enable_spaces_text_p , int $text_length_limit){
-    // is safe POST?
-    [$check_safe_post_p, $check_safe_post_text] = \FormCheck\check_if_post_is_safe($string_text);
-    if(! $check_safe_post_p){
-        return [null, $check_safe_post_text];
-    }
-    // is spaces POST?
-    if((! $enable_spaces_text_p) && trim($string_text) === ''){
-        return [null, "input some text"];
-    }
-    // is too Long?
-    if(mb_strlen($string_text) > $text_length_limit){
-        return [null, "Too long text. Text need to be less than {$text_length_limit} characters."];
-    }
-    // return safe
-    return [$string_text, ""];
-}
-
-function check_radio_value_safe($radio_value, array $enabled_values = []){
-    // is safe POST?
-    [$check_safe_post_p, $check_safe_post_text] = \FormCheck\check_if_post_is_safe($radio_value);
-    if(! $check_safe_post_p){
-        return [null, $check_safe_post_text];
-    }
-    // is selected from list ?
-    $selected_p
-    = array_reduce($enabled_values, fn($carry, $item) => $carry || $item==$radio_value, false);
-    if(! $selected_p){
-        return [null, "Select Item from radio box."];
-    }
-    // return safe
-    return [$radio_value, ""];
-}
-
 
 // prepare contents
 
