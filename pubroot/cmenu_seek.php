@@ -88,20 +88,42 @@ function content_and_process_by_POST($pvs, $messages){
 
     // prepare Content
 
+    // 0. eheck email
+    global $login;
+    $loggedin_email = $login->user('email');
+    if (! $loggedin_email) {
+        $title_part = "Please Login";
+        $content_html = "Please Login";
+    }
     // 3. update database page
-    { } if ($safe_form_post_p && $pvs['step_previous'] === 'confirm') {
-        print_r("after confirm");
-        $title_part = "Please Confirm";
+    elseif ($safe_form_post_p && $pvs['step_previous'] === 'confirm') {
+        global $data_source_name, $sql_rw_user, $sql_rw_pass;
+        // check Duplicated POST
+        $duplicated_post = select_duplicated_seeks_from_db($loggedin_email, $post_checks['title']);
+
+        if($duplicated_post){
+            // when duplicated
+            
+        }elseif(!$duplicated_post){
+            // register user to DB.
+            \Tx\with_connection($data_source_name, $sql_rw_user, $sql_rw_pass)(
+                function($conn_rw) use($loggedin_email, $post_checks) {
+                    \TxSnn\add_job_things($post_checks['attribute'])
+                        ($conn_rw, $loggedin_email,
+                         $post_checks['title'], $post_checks['description']);});
+
+            $title_part = "Uploaded";
+            $content_html = "your Seek is Uploaded";
+        }
+
     }
     // 2. confirm page
     elseif ($safe_form_post_p && $pvs['step_previous'] === 'edit') {
-        print_r("after edit");
         $title_part = "Please Confirm";
-        $content_html = content_of_edit_seek($pvs, $messages);
+        $content_html = content_of_confirm_seek($pvs, $messages);
     }
     // 1. edit page
     else {
-        print_r("edit with some unsafe POST");
         $title_part = "Edit Seek";
         $content_html = content_of_edit_seek($pvs, $messages);
     }
@@ -111,6 +133,10 @@ function content_and_process_by_POST($pvs, $messages){
 }
 
 // POSTed parameter's check
+
+function select_duplicated_seeks_from_db(string $email, string $title){
+    return true;
+}
 
 function check_text_safe(string $string_text, bool $enable_spaces_text_p , int $text_length_limit){
     // is safe POST?
@@ -149,16 +175,54 @@ function check_radio_value_safe($radio_value, array $enabled_values = []){
 
 // prepare contents
 
+function content_of_confirm_seek($pvs, $messages){
+
+    global $csrf;
+    $csrf_html = $csrf->hiddenInputHTML();
+
+    $current_step_html = "<input type='hidden' name='step_current' value='confirm'>";
+    
+    $message_listing_or_seeking
+        = ((($pvs['attribute']==='L')  ? "as Listing" :
+            ($pvs['attribute']==='S')) ? "as Seeking" : "as null");
+    
+    $message_open_or_close
+        = ((($pvs['open_close']==='open')   ? "as Opend"  :
+            ($pvs['open_close']==='close')) ? "as Closed" : "as null");
+
+    $content_confirm_form_html = <<<CONTENT
+<h3> Confirm your Seek </h3>
+<hr />
+<h3>${pvs['title']}</h3>
+<pre>${pvs['description']}</pre>
+<hr />
+<p>${message_listing_or_seeking}</p>
+<p>${message_open_or_close}</p>
+
+<form action="" method="POST">
+  ${csrf_html}
+  ${current_step_html}
+  <input type="hidden" name="title"       value="${pvs['title']}" />
+  <input type="hidden" name="description" value="${pvs['description']}" />
+  <input type="hidden" name="attribute"   value="${pvs['attribute']}" />
+  <input type="hidden" name="open_close"  value="${pvs['open_close']}" />
+  back_to_edit, <input type="submit" value="Upload">
+</form>
+CONTENT;
+    
+    return $content_confirm_form_html;
+}
+
 function content_of_edit_seek($pvs, $messages){
     global $csrf;
-
     $csrf_html = $csrf->hiddenInputHTML();
+
     $current_step_html = "<input type='hidden' name='step_current' value='edit'>";
     
     $content_edit_seek_form_html = <<<CONTENT
 {$messages['csrf']}
 <h3> Edit Seek </h3>
-<form action="" method="post">
+<form action="" method="POST">
   ${csrf_html}
   ${current_step_html}
   <dl>
@@ -179,7 +243,7 @@ function content_of_edit_seek($pvs, $messages){
     </dd>
     <dd> <pre>{$messages['open_close']}</pre> </dd>
   </dl>
-  <input type="submit" value="Update"> </input>
+  <input type="submit" value="Confirm"> </input>
 </form>
 
 CONTENT;
