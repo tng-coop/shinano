@@ -1,0 +1,54 @@
+name: PHP CI with MariaDB
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 1  # This sets the timeout for the entire job to 1 minute
+    services:
+      mariadb:
+        image: mariadb:10.3
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+          MYSQL_DATABASE: testdb
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1"
+          --health-interval=10s
+          --health-timeout=10s
+          --health-retries=10
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Copy config file
+      run: cp config.ini.sample config.ini
+
+    - name: Start PHP server
+      run: php -S localhost:8000 -t devtools/test-php &
+  
+    - name: Wait for MariaDB
+      run: |
+        until mysqladmin ping -h 127.0.0.1 --silent; do
+          echo 'waiting for db'
+          sleep 1
+        done
+
+    - name: Check MariaDB Server Version
+      run: mysql -h 127.0.0.1 -u root -e "SELECT VERSION();"
+
+    - name: Wait for PHP server
+      run: |
+        until $(curl --output /dev/null --silent --head --fail http://localhost:8000/hello.php); do
+          printf '.'
+          sleep 1
+        done
+
+    - name: Basic Features Test
+      run: ./devtools/test-basic-features.sh
+
+    - name: PHP Hello World Test
+      run: |
+        curl -s http://localhost:8000/hello.php
