@@ -35,17 +35,14 @@ if [ "$admin_mysql" = "" ]; then
 fi
 
 # Read config.ini and ensure only 'export' commands are executed
-echo "setup-users: Reading configuration from config.ini..."
 eval "$(php export-database-config.php | grep '^export ')"
 
 # Validate imported user and password variables
 if [ -z "$readonly_user" ] || [ -z "$readwrite_user" ] || \
    [ -z "$readonly_password" ] || [ -z "$readwrite_password" ]; then
-    echo "setup-users: Error: Database user or password variables not set."
     exit 1
 fi
 
-echo "setup-users: Starting MySQL user setup..."
 
 # Commands to be executed
 sql_commands=$(cat <<SQL
@@ -64,10 +61,4 @@ SQL
 )
 
 # Execute MySQL commands
-echo "setup-users: Executing MySQL commands..."
-if echo "$sql_commands" | $admin_mysql; then
-    echo "setup-users: MySQL user setup completed successfully."
-else
-    echo "setup-users: Error occurred during MySQL operations."
-    exit 1
-fi
+echo "$sql_commands" | $admin_mysql;

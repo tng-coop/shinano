@@ -35,9 +35,7 @@ The front-end is designed to be wget friendly and compatible with text-based web
 2. **DataBase**:
    - MySQL
    - to do reset and prepare (develop version of) DataBase.
-     `$ ./DB-model/reset-dev-database.sh --arguments --needed --to-be-written `
-   - such as the part of the user information, if access/write is denied by DataBase, 
-     please check authority for your accessing DB user.
+     `$ ./DB-model/reset-dev.sh mysql -uroot `
 
 3. **Deployment Server**:
    - [Instructions for server deployment]
