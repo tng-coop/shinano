@@ -15,22 +15,21 @@
 # Important Notes:
 #   - Running this script will permanently delete all data in the MySQL databases.
 #   - Ensure that you have backups if necessary before running this script.
-#   - This script should NOT be run in a sandboxed environment like the VS Code terminal, 
+#   - This script should NOT be run in a sandboxed environment like the VS Code terminal,
 #     as it may not have the necessary permissions and access to perform database operations.
 
 FORCE=false
-REINSTALL_MYSQL=false
+REINSTALL_MARIADB=false
 
 # Parse command-line arguments
-for arg in "$@"
-do
+for arg in "$@"; do
     case $arg in
-        --force)
+    --force)
         FORCE=true
         shift # Remove --force from processing
         ;;
-        --reinstall)
-        REINSTALL_MYSQL=true
+    --reinstall)
+        REINSTALL_MARIADB=true
         shift # Remove --reinstall from processing
         ;;
     esac
@@ -38,6 +37,26 @@ done
 
 # Using 'set -e' to ensure that the script exits immediately if any command fails.
 set -e
+# Function to stop MariaDB service
+stop_mariadb_service() {
+    # Check if MariaDB service is running
+    if systemctl is-active --quiet mariadb; then
+        # Stopping the MariaDB service
+        sudo systemctl stop mariadb
+        echo "MariaDB service stopped."
+    else
+        echo "MariaDB service is not running, no need to stop it."
+    fi
+}
+# Function to wipe out the /var/lib/mysql directory
+wipe_mysql_directory() {
+    # Wiping out the /var/lib/mysql directory
+    # This directory contains all the actual database files.
+    # By removing this directory, we are deleting all the databases.
+    sudo rm -rf /var/lib/mysql
+    echo "/var/lib/mysql directory removed."
+}
+
 
 # wipe-debian-mysql.sh
 # This script is designed to completely wipe MySQL databases on a Debian-based system.
@@ -58,8 +77,8 @@ if [ "$TERM_PROGRAM" == "vscode" ]; then
 fi
 # Check for a command-line argument to bypass the confirmation prompt
 if [ "$FORCE" = false ]; then
-    echo "Are you sure you want to completely wipe the MySQL database? This cannot be undone."
-    # 'IFS=' prevents leading/trailing whitespace trimming. 'read -r' prevents backslashes from being interpreted as escape characters. 
+    echo "Are you sure you want to completely wipe the MariaDB? This cannot be undone."
+    # 'IFS=' prevents leading/trailing whitespace trimming. 'read -r' prevents backslashes from being interpreted as escape characters.
     # '-p' allows prompting for input. This line is for safely reading user input with these considerations.
     IFS= read -r -p "Type 'yes' to confirm: " confirm
     if [ "$confirm" != "yes" ]; then
@@ -68,46 +87,33 @@ if [ "$FORCE" = false ]; then
     fi
 fi
 
-# Check if MySQL service is running
-if systemctl is-active --quiet mysql; then
-    # Stopping the MySQL service
-    # It's crucial to stop the service to prevent any access to the databases while we are deleting them.
-    sudo systemctl stop mysql
-    echo "MySQL service stopped."
-else
-    echo "MySQL service is not running, no need to stop it."
-fi
+# Call the function to stop MariaDB service
+stop_mariadb_service
+wipe_mysql_directory
 
 # Check if --reinstall argument was given
-if [ "$REINSTALL_MYSQL" = true ]; then
-    # Removing MySQL server and dependencies
-    sudo apt-get remove --purge --yes mysql-server mysql-client mysql-common mysql-server-core-* mysql-client-core-*
+if [ "$REINSTALL_MARIADB" = true ]; then
+    sudo apt-get purge mariadb-server mariadb-client libmariadb3:amd64 mariadb-client-core mariadb-common mariadb-server-core --yes
     sudo apt autoremove --yes
     sudo apt autoclean
     sudo rm -rf /etc/mysql
-    sudo apt-get install mysql-server --yes
+    sudo apt-get install mariadb-server --yes
+    stop_mariadb_service
+    wipe_mysql_directory
+else
+    # Recreating the /var/lib/mysql directory
+    # After wiping out the original directory, we need to recreate it for MySQL to function properly.
+    sudo mkdir /var/lib/mysql
+    sudo chown mysql:mysql /var/lib/mysql
+    echo "/var/lib/mysql directory recreated."
 fi
-
-# Wiping out the /var/lib/mysql directory
-# This directory contains all the actual database files.
-# By removing this directory, we are deleting all the databases.
-sudo rm -rf /var/lib/mysql
-echo "/var/lib/mysql directory removed."
-
 # Note: We are not manipulating the /etc/mysql directory in this script.
 # /etc/mysql contains configuration files for MySQL, not database data.
 
-# Recreating the /var/lib/mysql directory
-# After wiping out the original directory, we need to recreate it for MySQL to function properly.
-sudo mkdir /var/lib/mysql
-sudo chown mysql:mysql /var/lib/mysql
-echo "/var/lib/mysql directory recreated."
-
-# Initializing the MySQL data directory
-# This step re-creates the necessary system tables and other files required for MySQL operation.
-echo "Initializing MySQL data directory. Please wait, this may take a while..."
-sudo mysqld --initialize --user=mysql --datadir=/var/lib/mysql
-echo "MySQL data directory initialized."
+# Initializing the MariaDB data directory
+echo "Initializing MariaDB data directory..."
+sudo mariadb-install-db --user=mysql --datadir=/var/lib/mysql
+echo "MariaDB data directory initialized."
 
 # Creating /var/run/mysqld for the MySQL socket
 sudo mkdir -p /var/run/mysqld
@@ -118,7 +124,7 @@ echo "Created directory /var/run/mysqld with appropriate permissions."
 sudo mysqld_safe --skip-grant-tables &
 echo "Attempting to start MySQL in safe mode..."
 
-# Wait for MySQL to start. Replace the sleep command with a loop that checks if MySQL is running
+#Wait for MySQL to start. Replace the sleep command with a loop that checks if MySQL is running
 while ! mysqladmin ping --silent; do
     echo "Waiting for MySQL to start..."
     sleep 1
@@ -134,41 +140,41 @@ EOF
 
 echo "Root password has been changed."
 
-# Define the path to the MySQL PID file
-MYSQL_PID_FILE="/var/lib/mysql/ubuntu.pid"
+# Define the path to the MariaDB PID file
+MARIADB_PID_FILE="/var/run/mysqld/mysqld.pid"
 
 # Check if the PID file exists
-if [ -f "$MYSQL_PID_FILE" ]; then
+if [ -f "$MARIADB_PID_FILE" ]; then
     # Read the PID from the file
-    MYSQL_PID=$(sudo cat "$MYSQL_PID_FILE")
+    MARIADB_PID=$(sudo cat "$MARIADB_PID_FILE")
 
-    # Attempt to kill the MySQL process
-    if sudo kill "$MYSQL_PID"; then
-        echo "Sent termination signal to MySQL process (PID $MYSQL_PID)."
+    # Attempt to kill the MariaDB process
+    if sudo kill "$MARIADB_PID"; then
+        echo "Sent termination signal to MariaDB process (PID $MARIADB_PID)."
 
         # Wait and check if the process is terminated
         for _ in {1..10}; do
-            if ! ps -p "$MYSQL_PID" > /dev/null; then
-                echo "MySQL process (PID $MYSQL_PID) has been successfully stopped."
+            if ! ps -p "$MARIADB_PID" >/dev/null; then
+                echo "MariaDB process (PID $MARIADB_PID) has been successfully stopped."
                 break
             fi
-            echo "Waiting for MySQL process to stop..."
+            echo "Waiting for MariaDB process to stop..."
             sleep 1
         done
 
         # Final check if process is still running
-        if ps -p "$MYSQL_PID" > /dev/null; then
-            echo "Failed to stop MySQL process (PID $MYSQL_PID). Manual intervention required."
+        if ps -p "$MARIADB_PID" >/dev/null; then
+            echo "Failed to stop MariaDB process (PID $MARIADB_PID). Manual intervention required."
         fi
     else
-        echo "Failed to send termination signal to MySQL process (PID $MYSQL_PID)."
+        echo "Failed to send termination signal to MariaDB process (PID $MARIADB_PID)."
     fi
 else
-    echo "MySQL PID file not found at $MYSQL_PID_FILE. Cannot stop MySQL process."
+    echo "MariaDB PID file not found at $MARIADB_PID_FILE. Cannot stop MariaDB process."
 fi
 
-# Starting the MySQL service
-sudo systemctl start mysql
-echo "MySQL service started. The database has been completely wiped and reset."
+#Starting the MySQL service
+sudo systemctl start mariadb
+echo "MariaDB service started. The database has been completely wiped and reset."
 
 # End of script
