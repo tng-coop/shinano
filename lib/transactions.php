@@ -12,6 +12,8 @@ use \PDO;
 class Exception extends \RuntimeException {
 }
 
+## read_only : with_connection 内で1つ以上の SELECT 等を行なう.
+## read_write: with_connection 内で1つ以上のトランザクション ( \Tx\block ) を行なう.
 function with_connection(string $data_source_name, string $sql_user, string $sql_password) {
     return function($tx) use($data_source_name, $sql_user, $sql_password) {
         $conn = new PDO($data_source_name, $sql_user, $sql_password,
