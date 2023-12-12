@@ -15,11 +15,11 @@ if(! $login->user()){
 
 // fill variables by POSTed values
 
-$form_accessors = ["title", "description", "attribute", "open_close", "step_current"];
+$form_accessors = ["title", "description", "attribute", "open_close", "step_demand"];
 $post_data = array_map(fn($accessor) => h($_POST[$accessor]), $form_accessors);
 $pvs = array(); // posted values
 [$pvs['title'], $pvs['description'], $pvs['attribute'], $pvs['open_close'],
- $pvs['step_previous']]
+ $pvs['step_demand']]
 = $post_data;
 
 // according to POSTing, radio button into checked.
@@ -96,7 +96,7 @@ function content_and_process_by_POST($pvs, $messages){
     // prepare Content
 
     // 3. update database page
-    if ($safe_form_post_p && $pvs['step_previous'] === 'confirm') {
+    if ($safe_form_post_p && $pvs['step_demand'] === 'upload') {
         global $data_source_name, $sql_rw_user, $sql_rw_pass;
 
         // register user to DB.
@@ -121,7 +121,7 @@ function content_and_process_by_POST($pvs, $messages){
         }
     }
     // 2. confirm page
-    elseif ($safe_form_post_p && $pvs['step_previous'] === 'edit') {
+    elseif ($safe_form_post_p && $pvs['step_demand'] === 'confirm') {
         $title_part = "please confirm";
         $content_html = content_of_confirm_seek($pvs, $messages);
     }
@@ -169,8 +169,6 @@ function content_of_confirm_seek($pvs, $messages){
 
     global $csrf;
     $csrf_html = $csrf->hiddenInputHTML();
-
-    $current_step_html = "<input type='hidden' name='step_current' value='confirm'>";
     
     $message_listing_or_seeking
     = ((($pvs['attribute']==='L')  ? "as Listing" :
@@ -191,12 +189,13 @@ function content_of_confirm_seek($pvs, $messages){
 
 <form action="" method="POST">
   ${csrf_html}
-  ${current_step_html}
   <input type="hidden" name="title"       value="${pvs['title']}" />
   <input type="hidden" name="description" value="${pvs['description']}" />
   <input type="hidden" name="attribute"   value="${pvs['attribute']}" />
   <input type="hidden" name="open_close"  value="${pvs['open_close']}" />
-  back_to_edit, <input type="submit" value="Upload">
+
+  <input type="submit" name="step_demand" value="edit">
+  <input type="submit" name="step_demand" value="upload">
 </form>
 CONTENT;
     
@@ -206,8 +205,6 @@ CONTENT;
 function content_of_edit_seek($pvs, $messages){
     global $csrf;
     $csrf_html = $csrf->hiddenInputHTML();
-
-    $current_step_html = "<input type='hidden' name='step_current' value='edit'>";
 
     $title_duplicate_message = 
         (($messages['title_duplicated_in_each_user']==="") ? "" :
@@ -222,7 +219,6 @@ function content_of_edit_seek($pvs, $messages){
 <h3> Edit Seek </h3>
 <form action="" method="POST">
   ${csrf_html}
-  ${current_step_html}
   <dl>
     <dt> title </dt>
     <dd> <input type="text" name="title" required value="${pvs['title']}"> </input> </dd>
@@ -241,7 +237,7 @@ function content_of_edit_seek($pvs, $messages){
     </dd>
     <dd> <pre>{$messages['open_close']}</pre> </dd>
   </dl>
-  <input type="submit" value="Confirm"> </input>
+  <input type="submit" name="step_demand" value="confirm"> </input>
 </form>
 
 CONTENT;
