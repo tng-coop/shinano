@@ -33,10 +33,7 @@ if ($config === false) {
 [$sql_rw_user, $sql_rw_pass] = [$config['database']['readwrite_user'], $config['database']['readwrite_password']];
 
 // Abstraction of the last three lines from DATA1
-$dbname = $config['database']['dbname'];
-$dbhost = $config['database']['dbhost'];
-$sqlclient = $config['database']['sqlclient'];
-$data_source_name = "{$sqlclient}:host={$dbhost};dbname={$dbname};charset=UTF8";
+$data_source_name = $config['database']['dsn'];
 
 
 // ### url
