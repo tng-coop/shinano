@@ -27,6 +27,10 @@ SELECT @last_uid := last_uid FROM public_uid_state LIMIT 1 FOR UPDATE;
 SET @public_uid := 14745600; -- get result of galois_next24(@last_uid)
 UPDATE public_uid_state SET last_uid = @public_uid;
 
+COMMIT;
+--
+START TRANSACTION;
+
 INSERT INTO user(email, passwd_hash, public_uid, name, note, created_at, updated_at)
        VALUES (@email, @passwd_hash, @public_uid, @name, @note, current_timestamp, current_timestamp);
 
@@ -41,6 +45,10 @@ START TRANSACTION;
 SELECT @last_uid := last_uid FROM public_uid_state LIMIT 1 FOR UPDATE;
 SET @public_uid := 7372800;-- get result of galois_next24(@last_uid)
 UPDATE public_uid_state SET last_uid = @public_uid;
+
+COMMIT;
+--
+START TRANSACTION;
 
 INSERT INTO user(email, passwd_hash, public_uid, name, note, created_at, updated_at)
        VALUES (@email, @passwd_hash, @public_uid, @name, @note, current_timestamp, current_timestamp);
