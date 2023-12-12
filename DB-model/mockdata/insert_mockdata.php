@@ -40,40 +40,41 @@ function insert_users(){
     }
     //print_r($ki);
 
+    global $data_source_name, $sql_rw_user, $sql_rw_pass;
+    \Tx\with_connection($data_source_name, $sql_rw_user, $sql_rw_pass)(
+        function($conn_rw) use($csv_table, $ki) {
 
-    // for for insert data
-    // 1 is table_head line. $i+1 means index count from 1.
-    for($i=0+1; isset($csv_table[$i+1]); $i++){
+            // for for insert data
+            // 1 is table_head line. $i+1 means index count from 1.
+            for($i=0+1; isset($csv_table[$i+1]); $i++){
 
-        // safe check and set value for row's data
-        $row = $csv_table[$i];
+                // safe check and set value for row's data
+                $row = $csv_table[$i];
 
-        $r_name = $row[$ki['name']];
-        $r_email = $row[$ki['email']];
-        $r_password = $row[$ki['password']];
+                $r_name = $row[$ki['name']];
+                $r_email = $row[$ki['email']];
+                $r_password = $row[$ki['password']];
 
-        [[$pn, $bottom],
-         [$pe, $bottom],
-         [$pp, $bottom]]
-        = [\FormCheck\check_user_name_safe($r_name),
-           \FormCheck\check_user_email_safe($r_email),
-           \FormCheck\check_user_password_safe($r_password, $r_password)];
+                [[$pn, $bottom],
+                 [$pe, $bottom],
+                 [$pp, $bottom]]
+                = [\FormCheck\check_user_name_safe($r_name),
+                   \FormCheck\check_user_email_safe($r_email),
+                   \FormCheck\check_user_password_safe($r_password, $r_password)];
 
-        if($pn && $pe && $pp){
+                if($pn && $pe && $pp){
 
-            $r_passwd_hash = password_hash($pp, PASSWORD_DEFAULT);
-            $r_note = $row[$ki['note']];
+                    $r_passwd_hash = password_hash($pp, PASSWORD_DEFAULT);
+                    $r_note = $row[$ki['note']];
 
-            // insert to DB
-            global $data_source_name, $sql_rw_user, $sql_rw_pass;
-            \Tx\with_connection($data_source_name, $sql_rw_user, $sql_rw_pass)(
-                function($conn_rw) use ($r_name, $r_email, $r_passwd_hash, $r_note){
+                    // insert to DB
                     $emails_user_id=\TxSnn\user_id_lock_by_email($conn_rw, $r_email);
                     if(!$emails_user_id){
                         \TxSnn\add_user($conn_rw, $r_name, $r_email, $r_passwd_hash, $r_note);
-                    }});
-        }
-    }
+                    }
+                }
+            }
+        });
 
     return null;
 }
