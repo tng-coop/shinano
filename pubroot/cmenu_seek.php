@@ -68,8 +68,12 @@ function content_and_process_by_POST($pvs, $messages){
         $messages['csrf'] = "invalid token. use form.\n";
         return null;
     }
+    // variables
+    global $login;
+    $loggedin_email = $login->user('email');
 
     // form check
+
     $post_checks = array();
 
     [[$post_checks['title'], $messages['title']],
@@ -81,6 +85,9 @@ function content_and_process_by_POST($pvs, $messages){
        \FormCheck\check_radio_value_safe($pvs['attribute'], ['L', 'S']),
        \FormCheck\check_radio_value_safe($pvs['open_close'], ['open', 'close'])];
 
+    [$post_checks['title_duplicated_in_each_user'], $messages['title_duplicated_in_each_user'], $messages['title_duplicated_url_p']]
+    = check_title_duplicate_in_each_user($login->user('email'), trim($post_checks['title'])); // check duplicated title
+    
     $safe_form_post_p
     = array_reduce($post_checks,
                    fn($carry, $item) => $carry && ($item || $item===""),
@@ -88,46 +95,29 @@ function content_and_process_by_POST($pvs, $messages){
 
     // prepare Content
 
-    // 0. eheck email
-    global $login;
-    $loggedin_email = $login->user('email');
-    if (! $loggedin_email) {
-        $title_part = "Please Login";
-        $content_html = "Please Login";
-    }
     // 3. update database page
-    elseif ($safe_form_post_p && $pvs['step_previous'] === 'confirm') {
+    if ($safe_form_post_p && $pvs['step_previous'] === 'confirm') {
         global $data_source_name, $sql_rw_user, $sql_rw_pass;
-        // check Duplicated POST
+
+        // register user to DB.
+        \Tx\with_connection($data_source_name, $sql_rw_user, $sql_rw_pass)(
+            function($conn_rw) use($loggedin_email, $post_checks) {
+                \TxSnn\add_job_things($post_checks['attribute'])
+                ($conn_rw, $loggedin_email,
+                 $post_checks['title'], $post_checks['description']);});
+        
         $duplicated_post = select_duplicated_seeks_from_db($loggedin_email, $post_checks['title']);
+        $dup0 = $duplicated_post[0];
 
-        if($duplicated_post){
-            // when duplicated
-            $dup0 = $duplicated_post[0];
-            $title_part = "duplicated";
-            $duplicated_url = url_of_match_detail($dup0['id']);
-            $content_html = "Your post is duplicated at <a href='{$duplicated_url}'>here</a>";
-            
-        }elseif(!$duplicated_post){
-            // register user to DB.
-            \Tx\with_connection($data_source_name, $sql_rw_user, $sql_rw_pass)(
-                function($conn_rw) use($loggedin_email, $post_checks) {
-                    \TxSnn\add_job_things($post_checks['attribute'])
-                    ($conn_rw, $loggedin_email,
-                     $post_checks['title'], $post_checks['description']);});
-
-            $duplicated_post = select_duplicated_seeks_from_db($loggedin_email, $post_checks['title']);
-            $dup0 = $duplicated_post[0];
-            
-            if($duplicated_post){
-                $title_part = "uploaded";
-                $uploaded_url = url_of_match_detail($dup0['id']);
-                $content_html = "Your post is uploaded at <a href='{$uploaded_url}'>here</a>";
-            } else {
-                $title_part = "something wrong";
-                $content_html = "something wrong";
-                error_log("Error of POSTing: failed POST or failed DataBase state");
-            }
+        [$bottom, $post_a_href, $post_sucessed_p] = check_title_duplicate_in_each_user($loggedin_email, $post_checks['title']);
+        
+        if($post_sucessed_p){
+            $title_part = "uploaded";
+            $content_html = "Your post is uploaded at <a href='{$post_a_href}'>here</a>";
+        } else {
+            $title_part = "something wrong";
+            $content_html = "something wrong";
+            error_log("Error of POSTing: failed POST or failed DataBase state");
         }
     }
     // 2. confirm page
@@ -145,10 +135,25 @@ function content_and_process_by_POST($pvs, $messages){
     return [$title_part, $content_html, $messages];
 }
 
+function check_title_duplicate_in_each_user(string $email, $title){
+    // returns [success_p, message, duplicated_url_p];
+    if(gettype($title)!=='string' || $title==="") {
+        return [null, "invalid title.", false];
+    }
+    $duplicated_post = select_duplicated_seeks_from_db($email, $title);
+    if($duplicated_post) {
+        $dup0 = $duplicated_post[0];
+        $duplicated_url = url_of_match_detail($dup0['eid']);
+        return [null, $duplicated_url, true]; // duplicated
+    } else {
+        return ['not_duplicated', "", false]; // not duplicated
+    }
+}
+
 function select_duplicated_seeks_from_db(string $email, string $title){
     global $data_source_name, $sql_rw_user, $sql_rw_pass;
     
-    $sql_sel_dup = "SELECT J.id, U.email, J.title"
+    $sql_sel_dup = "SELECT J.id AS eid , U.email, J.title"
                  . "  FROM user as U INNER JOIN job_entry AS J"
                  . "    ON U.id = J.user"
                  . "  WHERE J.title = :title"
@@ -203,6 +208,14 @@ function content_of_edit_seek($pvs, $messages){
     $csrf_html = $csrf->hiddenInputHTML();
 
     $current_step_html = "<input type='hidden' name='step_current' value='edit'>";
+
+    $title_duplicate_message = 
+        (($messages['title_duplicated_in_each_user']==="") ? "" :
+         ($messages['title_duplicated_url_p']===true)) ? 
+        "\ntitle you put is duplicated at <a href='{$messages['title_duplicated_in_each_user']}'>here</a> " :
+        "\n".$messages['title_duplicated_in_each_user'];
+    
+    $messages_for_title = $messages['title'] . $title_duplicate_message;
     
     $content_edit_seek_form_html = <<<CONTENT
 {$messages['csrf']}
@@ -213,7 +226,7 @@ function content_of_edit_seek($pvs, $messages){
   <dl>
     <dt> title </dt>
     <dd> <input type="text" name="title" required value="${pvs['title']}"> </input> </dd>
-    <dd> <pre>{$messages['title']}</pre> </dd>
+    <dd> <pre>{$messages_for_title}</pre> </dd>
     <dt> description </dt>
     <dd> <textarea name="description" cols="72" rows="13" required>${pvs['description']}</textarea> </dd>
     <dd> <pre>{$messages['description']}</pre> </dd>
