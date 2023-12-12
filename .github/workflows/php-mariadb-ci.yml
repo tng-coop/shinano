@@ -1,6 +1,15 @@
 name: PHP CI with MariaDB
 
-on: [push, pull_request]
+on:
+  push:
+    paths-ignore:
+      - '**/*.md'
+      - '**/*.drawio'
+  pull_request:
+    paths-ignore:
+      - '**/*.md'
+      - '**/*.drawio'
+
 
 jobs:
   build:
