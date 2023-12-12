@@ -34,7 +34,7 @@ jobs:
 
     - name: Copy config file and update dbhost
       run: |
-        cp config.ini.sample config.ini
+        cp config.ini.CI config.ini
         sed -i 's/dbhost=localhost/dbhost=127.0.0.1/' config.ini
 
     - name: Start PHP server
