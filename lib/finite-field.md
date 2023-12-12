@@ -113,7 +113,7 @@ hmask = gmask >> 1  (ここで >> は符号無し右シフト)
 ```
 unsigned input, lsb, tmp, output;
 lsb =  input & 1u;          /* Get LSB */
-tmp =  input >> 1           /* Unsigned right shift */
+tmp =  input >> 1;          /* Unsigned right shift */
 if (lsb) {                  /* If the output bit is 1, */
    output =  tmp ^ hmask;   /* apply toggle mask. */
 } else {
@@ -178,5 +178,48 @@ o(x) = h(x) · i(x)
 出力 `o(x)` が得られる.
 
 原始元の逆元による生成で、体のすべての要素を巡回できる.
+
+--------------------------------------------------------------------------------
+
+プログラム  ⇔  多項式  対応関係
+--------------------------------
+
+```
+unsigned input, lsb, tmp, output;
+lsb =  input & 1u;
+tmp =  input >> 1;
+if (lsb) {
+   output =  tmp ^ hmask;
+} else {
+   output =  tmp;
+}
+```
+
+```
+i(x) : input
+o(x) : output
+s(x) : input >> 1
+h(x) : x の逆元 ( h(x)·x = 1 )
+```
+
+`input`の`lsb`が`1`のとき
+`input = ((input >> 1) << 1) + 1 ⇔ i(x) = x·s(x) + 1`
+```
+lsb =  input & 1u;      // ⇔ lsb は i(i) の定数項, i(i) の定数項が 1
+tmp =  input >> 1;      // ⇔ tmp は s(x) = h(x)·x·s(x) = h(x)·(x·s(x) + 1) + h(x)
+                        //        = h(x)·i(x) + h(x)
+output =  tmp ^ hmask;  // ⇔ o(x) = s(x) + h(x) = h(x)·i(x) + h(x) + h(x)
+                        // = h(x)·i(x)
+```
+
+`input`の`lsb`が`0`のとき
+`input = (input >> 1) << 1 ⇔ i(x) = x·s(x)`
+```
+lsb =  input & 1u;      // ⇔ lsb は i(i) の定数項,  i(i) の定数項が 0
+tmp =  input >> 1;      // ⇔ tmp は s(x) = h(x)·x·s(x) = h(x)·(x·s(x))
+                        //        = h(x)·i(x)
+output =  tmp;          // ⇔ o(x) = s(x)
+                        // = h(x)·i(x)
+```
 
 --------------------------------------------------------------------------------
