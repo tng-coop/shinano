@@ -82,7 +82,13 @@ function insert_users(){
 // main method
 if (basename(__FILE__) == basename($_SERVER['PHP_SELF'])) {
     echo("insert user.\n");
+    # start logging time
+    $start_time = microtime(true);
     insert_users();
+    # end logging time
+    $end_time = microtime(true);
+    $execution_time = ($end_time - $start_time);
+    echo("execution time: {$execution_time} sec.\n");
 }
 
 
