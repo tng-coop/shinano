@@ -145,4 +145,13 @@ function RenderByTemplate($template_file, $title, $contents,
 
 }
 
+
+// URL to specific pages
+
+function url_of_match_detail($job_entry_id){
+    // method for detect specific job_entry is going to be changed.
+    global $pubroot;
+    return "{$pubroot}match.php?eid={$job_entry_id}";
+}
+
 ?>

@@ -105,11 +105,8 @@ function content_and_process_by_POST($pvs, $messages){
             // when duplicated
             $dup0 = $duplicated_post[0];
             $title_part = "duplicated";
-            $content_html = "Your seek is duplicated. a-href-from: " .
-                            "<pre>" . 
-                            "title: {$dup0['title']}\njob_entry.id: {$dup0['id']}\n" .
-                            "uesr.email: {$dup0['email']}" .
-                            "</pre>";
+            $duplicated_url = url_of_match_detail($dup0['id']);
+            $content_html = "Your post is duplicated at <a href='{$duplicated_url}'>here</a>";
             
         }elseif(!$duplicated_post){
             // register user to DB.
@@ -124,18 +121,14 @@ function content_and_process_by_POST($pvs, $messages){
             
             if($duplicated_post){
                 $title_part = "uploaded";
-                $content_html = "Your seek is uploaded. " .
-                                "<pre>" . 
-                                "title: {$dup0['title']}\njob_entry.id: {$dup0['id']}\n" .
-                                "uesr.email: {$dup0['email']}" .
-                                "</pre>";
+                $uploaded_url = url_of_match_detail($dup0['id']);
+                $content_html = "Your post is uploaded at <a href='{$uploaded_url}'>here</a>";
             } else {
                 $title_part = "something wrong";
                 $content_html = "something wrong";
                 error_log("Error of POSTing: failed POST or failed DataBase state");
             }
         }
-
     }
     // 2. confirm page
     elseif ($safe_form_post_p && $pvs['step_previous'] === 'edit') {
@@ -154,21 +147,14 @@ function content_and_process_by_POST($pvs, $messages){
 
 function select_duplicated_seeks_from_db(string $email, string $title){
     global $data_source_name, $sql_rw_user, $sql_rw_pass;
+    
+    $sql_sel_dup = "SELECT J.id, U.email, J.title"
+                 . "  FROM user as U INNER JOIN job_entry AS J"
+                 . "    ON U.id = J.user"
+                 . "  WHERE J.title = :title"
+                 . "    AND U.email = :email;";
 
-    $ret0 = \Tx\with_connection($data_source_name, $sql_rw_user, $sql_rw_pass)(
-        function($conn_rw) use($email, $title) {
-            $sql1
-            = "SELECT J.id, J.user, U.id, J.title, U.email"
-            . "  FROM user as U INNER JOIN job_entry AS J"
-            . "  ON U.id = J.user"
-            . "  WHERE J.title = :title"
-            . "  AND U.email = :email;";
-            $stmt = $conn_rw->prepare($sql1);
-            $stmt->execute([":email" => $email, ":title" => $title]);
-            $ret = $stmt->fetchAll();
-
-            return $ret;});
-
+    $ret0 = db_ask_ro($sql_sel_dup, [":email" => $email, ":title" => $title], \PDO::FETCH_ASSOC);
     return $ret0;
 }
 

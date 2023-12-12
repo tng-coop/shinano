@@ -44,7 +44,7 @@ function html_text_of_matches_list($job_entries){
         // content of row
         $listing_or_seeking = ($vals['attribute'] =='L'  ?  'Listing' :
                                ($vals['attribute']=='S' ?  'Seeking' : 'showing'));
-        $detail_url = "{$pubroot}match.php?eid={$vals['id']}";
+        $detail_url = url_of_match_detail($vals['id']);
         $description_omitted = mb_strimwidth($vals['description'], 0, 74*3, '...', 'UTF-8' );  // limit to 74*3 characters.
 
         global $pubroot;
