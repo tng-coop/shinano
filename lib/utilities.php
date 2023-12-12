@@ -28,16 +28,24 @@ if ($config === false) {
     exit;
 }
 
+function get_config(string $k1, string $k2) : string {
+    global $config;
+    if (!key_exists($k1 , $config) || !key_exists($k2 , $config[$k1])) {
+        throw new RuntimeException("Error: initialization: cannot read config param \$config['$k1']['$k2']");
+    }
+    return $config[$k1][$k2];
+}
+
 // Get read-only and read-write SQL credentials
-[$sql_ro_user, $sql_ro_pass] = [$config['database']['readonly_user'], $config['database']['readonly_password']];
-[$sql_rw_user, $sql_rw_pass] = [$config['database']['readwrite_user'], $config['database']['readwrite_password']];
+[$sql_ro_user, $sql_ro_pass] = [get_config('database','readonly_user'), get_config('database','readonly_password')];
+[$sql_rw_user, $sql_rw_pass] = [get_config('database','readwrite_user'), get_config('database','readwrite_password')];
 
 // Abstraction of the last three lines from DATA1
-$data_source_name = $config['database']['dsn'];
+$data_source_name = get_config('database','dsn');
 
 
 // ### url
-$pubroot = $config['url']['url_shinano_pubroot']; # url of shinano's pubroot
+$pubroot = get_config('url','url_shinano_pubroot'); # url of shinano's pubroot
 
 // ### request_method
 
