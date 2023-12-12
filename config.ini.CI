@@ -5,9 +5,6 @@ readwrite_user=sdev_rw
 readwrite_password=Kis0Shinan0DevRW
 ; dsn="mysql:host=localhost;dbname=shinano_dev;charset=UTF8" ; for unix-domain
 dsn="mysql:host=127.0.0.1;dbname=shinano_dev;charset=UTF8"
-dbname=shinano_dev
-dbhost=localhost
-sqlclient=mysql
 
 [url]
 url_shinano_pubroot=https://tng.coop/shinano-main/
