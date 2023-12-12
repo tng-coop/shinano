@@ -140,7 +140,7 @@ function RenderByTemplate($template_file, $title, $contents,
 
     }
     */
-    
+
     // apply and echos template
     $tpl->eval_template($template_file);
 
@@ -214,7 +214,7 @@ function html_text_of_job_entry_table (array $job_entries_array, $edit_menu_p=fa
         // tml of each row
         $row_tml = "<tr>"
                  . array_reduce($col_keys,
-                                fn($carry, $key) => 
+                                fn($carry, $key) =>
                                 $carry . "<td>".h($row_tml_formed[$key])."</td>",
                                 "")
                  . (($edit_menu_p) ? $tml_edit_button : "")
