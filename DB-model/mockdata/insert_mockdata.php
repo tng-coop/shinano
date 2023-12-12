@@ -12,7 +12,7 @@ include_once(__DIR__ . '../../../lib/form_check.php');
 
 function csvfile_table_array($csv_file_path){
     $csv_table = [];
-    
+
     $file = fopen($csv_file_path , "r");
     while(! feof($file)){
         $row = (fgetcsv($file)); // one line of csv
@@ -31,7 +31,7 @@ function insert_users(){
     // csv into 2D_array
     $csv_filename=__DIR__ . "/./user.csv";
     $csv_table = csvfile_table_array($csv_filename);
-    
+
     // key index, index key.
     //print_r($csv_table[0]);
     $ki = array(); // keys index
@@ -51,11 +51,11 @@ function insert_users(){
         $r_name = $row[$ki['name']];
         $r_email = $row[$ki['email']];
         $r_password = $row[$ki['password']];
-        
+
         [[$pn, $bottom],
          [$pe, $bottom],
-         [$pp, $bottom]] 
-        = [\FormCheck\check_user_name_safe($r_name), 
+         [$pp, $bottom]]
+        = [\FormCheck\check_user_name_safe($r_name),
            \FormCheck\check_user_email_safe($r_email),
            \FormCheck\check_user_password_safe($r_password, $r_password)];
 
@@ -63,7 +63,7 @@ function insert_users(){
 
             $r_passwd_hash = password_hash($pp, PASSWORD_DEFAULT);
             $r_note = $row[$ki['note']];
-                     
+
             // insert to DB
             global $data_source_name, $sql_rw_user, $sql_rw_pass;
             \Tx\with_connection($data_source_name, $sql_rw_user, $sql_rw_pass)(
@@ -74,7 +74,7 @@ function insert_users(){
                     }});
         }
     }
-    
+
     return null;
 }
 
