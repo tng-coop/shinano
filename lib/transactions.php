@@ -63,11 +63,13 @@ include_once(__DIR__ . '/finite_field.php');
 use \PDO;
 
 function add_user(PDO $conn, string $name, string $email, string $passwd_hash, string $note) {
-    \Tx\block($conn, "add_user")(
-        function() use($conn, $name, $email, $passwd_hash, $note) {
+    $public_uid =
+    \Tx\block($conn, "gen_public_uid")(
+        ## public_uid を発行するトランザクションを分離
+        function() use($conn) {
             $pstate = $conn->prepare('SELECT last_uid FROM public_uid_state LIMIT 1 FOR UPDATE');
             $pstate->execute();
-            // カーソル位置でテーブルのレコードをロック
+            ## カーソル位置でテーブルのレコードをロック
             $state_ref = $pstate->fetch(PDO::FETCH_NUM);
             if (!$state_ref) {
                 throw new \Tx\Exception('TxSnn.add_user: internal error. wrong system initialization');
@@ -77,7 +79,11 @@ function add_user(PDO $conn, string $name, string $email, string $passwd_hash, s
             $stmt = $conn->prepare('UPDATE public_uid_state SET last_uid = ?');
             $pstate->fetchAll(); ## UGLY HACK for MySQL!! breaks critical section for Cursor Solid isolation RDBMs
             $stmt->execute(array($public_uid));
+            return $public_uid;
+        });
 
+    \Tx\block($conn, "add_user")(
+        function() use($conn, $email, $passwd_hash, $public_uid, $name, $note) {
             $stmt = $conn->prepare(<<<SQL
 INSERT INTO user(email, passwd_hash, public_uid, name, note, created_at, updated_at)
     VALUES (:email, :passwd_hash, :public_uid, :name, :note, current_timestamp, current_timestamp)
