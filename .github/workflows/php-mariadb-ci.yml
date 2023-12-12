@@ -39,7 +39,7 @@ jobs:
 
     - name: Start PHP server
       run: php -S localhost:8000 -t devtools/test-php &
-  
+
     - name: Wait for MariaDB
       run: |
         until mysqladmin ping -h 127.0.0.1 --silent; do
