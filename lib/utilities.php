@@ -32,9 +32,10 @@ if ($config === false) {
 [$sql_ro_user, $sql_ro_pass] = [$config['database']['readonly_user'], $config['database']['readonly_password']];
 [$sql_rw_user, $sql_rw_pass] = [$config['database']['readwrite_user'], $config['database']['readwrite_password']];
 
-$dbname = "shinano_dev";
-$dbhost = "localhost";
-$sqlclient = "mysql";
+// Abstraction of the last three lines from DATA1
+$dbname = $config['database']['dbname'];
+$dbhost = $config['database']['dbhost'];
+$sqlclient = $config['database']['sqlclient'];
 $data_source_name = "{$sqlclient}:host={$dbhost};dbname={$dbname};charset=UTF8";
 
 

@@ -23,8 +23,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Copy config file
-      run: cp config.ini.sample config.ini
+    - name: Copy config file and update dbhost
+      run: |
+        cp config.ini.sample config.ini
+        sed -i 's/dbhost=localhost/dbhost=127.0.0.1/' config.ini
 
     - name: Start PHP server
       run: php -S localhost:8000 -t devtools/test-php &
@@ -48,6 +50,9 @@ jobs:
 
     - name: Basic Features Test
       run: ./devtools/test-basic-features.sh
+
+    - name: Check Database Character Set and Collation
+      run: mysql -h 127.0.0.1 -u root  -e "SELECT * FROM INFORMATION_SCHEMA.SCHEMATA;"
 
     - name: PHP Hello World Test
       run: |

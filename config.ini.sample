@@ -3,7 +3,9 @@ readonly_user=sdev_ro
 readonly_password=Kis0Shinan0DevR0
 readwrite_user=sdev_rw
 readwrite_password=Kis0Shinan0DevRW
+dbname=shinano_dev
+dbhost=localhost
+sqlclient=mysql
 
 [url]
 url_shinano_pubroot=https://tng.coop/shinano-main/
-

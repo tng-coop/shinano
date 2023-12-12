@@ -18,6 +18,9 @@ else
         MYSQL_ADMIN='mysql -uroot'
     fi
 fi
+$MYSQL_ADMIN -e "SET GLOBAL character_set_server = 'utf8mb4';"
+$MYSQL_ADMIN -e "SET GLOBAL collation_server = 'utf8mb4_general_ci';"
+
 DBMODEL_DIR="$SCRIPT_DIR/../DB-model"
 cd "$DBMODEL_DIR"
 
@@ -46,6 +49,14 @@ bash "reset-dev.sh" "$MYSQL_ADMIN"
 # 'FLUSH PRIVILEGES;' applies these changes immediately.
 $MYSQL_ADMIN -e "ALTER USER '$readwrite_user'@'localhost' IDENTIFIED BY '$readwrite_password'; FLUSH PRIVILEGES;"
 $MYSQL_ADMIN -e "ALTER USER '$readonly_user'@'localhost' IDENTIFIED BY '$readonly_password'; FLUSH PRIVILEGES;"
+$MYSQL_ADMIN -e "DROP USER IF EXISTS '$readwrite_user'@'%';"
+$MYSQL_ADMIN -e "DROP USER IF EXISTS '$readonly_user'@'%';"
+$MYSQL_ADMIN -e "CREATE USER '$readwrite_user'@'%' IDENTIFIED BY '$readwrite_password';"
+$MYSQL_ADMIN -e "CREATE USER '$readonly_user'@'%' IDENTIFIED BY '$readonly_password';"
+$MYSQL_ADMIN shinano_dev -e "GRANT SELECT ON shinano_dev.* TO '$readonly_user'@'%';"
+$MYSQL_ADMIN shinano_dev -e "GRANT SELECT, INSERT, UPDATE, DELETE ON shinano_dev.* TO '$readwrite_user'@'%';"
+
+
 
 # Use the MYSQL_ADMIN variable to execute SQL file
 $MYSQL_ADMIN --local-infile=1 shinano_dev < "mockdata-inserts.sql"
