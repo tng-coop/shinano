@@ -62,7 +62,6 @@ function html_text_of_matches_list($job_entry){
         }
 
         // content of row
-        //$description_omitted = mb_strimwidth($vals['description'], 0, 74*3, '...', 'UTF-8' );
         $listing_or_seeking = ($vals['attribute'] =='L'  ?  'Listing' :
                                ($vals['attribute']=='S' ?  'Seeking' : 'showing'));
 

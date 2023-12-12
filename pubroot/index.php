@@ -52,7 +52,7 @@ if($session_cooperator){
 Hello! {$session_cooperator['name']}! <br />
 
 <ul>
-  <li><a href='{$pubroot}cmenu_account.php'>edit your account</a></li>
+  <li><a href='{$pubroot}cmenu_account_edit.php'>edit your account</a></li>
   <li><a href='{$pubroot}cmenu_seeks.php'>edit your seeks</a></li>
   <li><a href='{$pubroot}cmenu_seek.php'>edit(or new) your seek</a></li>
 </ul>
