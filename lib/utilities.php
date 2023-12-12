@@ -155,4 +155,76 @@ function url_of_match_detail($job_entry_id){
     return "{$pubroot}match.php?eid={$job_entry_id}";
 }
 
+// specific parts of html
+
+function html_text_of_cooperator(array $user_info){
+    $user_things = array_map('h', $user_info);
+
+    $tml_text
+        = "<h3>{$user_things['name']}</h3>"
+        . "<ul>"
+        . "  <li>created: {$user_things['created_at']}</li>"
+        . "  <li>email: {$user_things['email']}</li>"
+        . "  <li>public_uid: {$user_things['public_uid']}</li>"
+        . "</ul>"
+        . "<p>{$user_things['note']}</p>";
+
+    return $tml_text;
+}
+
+
+function html_text_of_job_entry_table (array $job_entries_array, $edit_menu_p=false){
+    // accessor for array
+    $col_keys = ['eid', 'attribute', 'title', 'description', 'created_at', 'updated_at', 'opened_at', 'closed_at'];
+
+    // table
+    $tml_text  = "";
+    $tml_text .= "<table>";
+
+    // table head
+    $tr_keys  = array_merge
+              (['id', 'L/S', 'title', 'detail', 'created', 'updated', 'opened', 'closed'],
+               ($edit_menu_p ? ['edit', 'delete'] : []));
+
+    $tml_text .= "<tr>"
+              . array_reduce($tr_keys, fn($carry, $key) => $carry . " <th>$key</th> ", "")
+              . "</ tr>";
+
+    // table rows
+    foreach($job_entries_array as $row){
+        // each row into html injection safe
+        $row_tml_formed = [];
+        foreach($col_keys as $key) {
+            $row_tml_formed[$key] = h((gettype($row[$key])=='string') ?
+                                      mb_strimwidth($row[$key], 0, 50, '...', 'UTF-8') :
+                                      $row[$key]);
+        }
+
+        // edit menu buttons if edit_menu_p
+        if($edit_menu_p){
+            $tml_delete_button = "<td>".tml_entry_delete_button($row['eid'])."</td>";
+            $tml_edit_button = "<td>".tml_entry_edit_button($row['eid'])."</td>";
+        }
+
+        // tml of each row
+        $row_tml = "<tr>"
+                 . array_reduce($col_keys,
+                                fn($carry, $key) => 
+                                $carry . "<td>".h($row_tml_formed[$key])."</td>",
+                                "")
+                 . (($edit_menu_p) ? $tml_edit_button : "")
+                 . (($edit_menu_p) ? $tml_delete_button : "")
+                 . "</tr>";
+
+        $tml_text .= $row_tml;
+    }
+
+    // end of table
+    $tml_text .= "</table>";
+
+    // return
+    return $tml_text;
+}
+
+
 ?>

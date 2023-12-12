@@ -63,22 +63,10 @@ function html_text_of_cooperators($stmt_of_user, $stmt_of_jobs){
     $jobs = $stmt_of_jobs->fetchAll(\PDO::FETCH_ASSOC);
     
     // html of user and user's job things
-    $jobs_text = array_reduce($jobs,
-                              fn($carry, $job) => 
-                              $carry . "<pre>" .  h(implode(", ", $job)) . "</pre>\n",
-                              "");
+    $cooperator_text = html_text_of_cooperator($user_thing);
+    $jobs_text = html_text_of_job_entry_table($jobs, false);
     
-    $tml_text 
-        = "<h3>{$user_thing['name']}</h3>"
-        . "<ul>"
-        . "  <li>created: {$user_thing['created_at']}</li>"
-        . "  <li>email: {$user_thing['email']}</li>"
-        . "  <li>public_uid: {$user_thing['public_uid']}</li>"
-        . "</ul>"
-        . "<p>{$user_thing['note']}</p>"
-        . "<hr />"
-        . "<p>" . $jobs_text . "</p>";
-
+    $tml_text = $cooperator_text  . "<hr />" . $jobs_text;
 
     return $tml_text;
 }

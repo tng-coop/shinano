@@ -80,13 +80,13 @@ function content_and_process_by_POST($pvs, $messages){
      [$post_checks['description'], $messages['description']],
      [$post_checks['attribute'], $messages['attribute']],
      [$post_checks['open_close'], $messages['open_close']]]
-    = [\FormCheck\check_text_safe($pvs['title'], false, (256 - 4)),
+    = [\FormCheck\check_text_safe(trim($pvs['title']), false, (256 - 4)),
        \FormCheck\check_text_safe($pvs['description'], false, (16384 - 4)),
        \FormCheck\check_radio_value_safe($pvs['attribute'], ['L', 'S']),
        \FormCheck\check_radio_value_safe($pvs['open_close'], ['open', 'close'])];
 
     [$post_checks['title_duplicated_in_each_user'], $messages['title_duplicated_in_each_user'], $messages['title_duplicated_url_p']]
-    = check_title_duplicate_in_each_user($login->user('email'), trim($post_checks['title'])); // check duplicated title
+    = check_title_duplicate_in_each_user($login->user('email'), trim($pvs['title'])); // check duplicated title
     
     $safe_form_post_p
     = array_reduce($post_checks,

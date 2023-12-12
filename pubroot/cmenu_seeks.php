@@ -11,69 +11,99 @@ if(! $login->user()){
     exit();
 }
 
+
+// DB update of user's note if POST of user_note edit.
+
+include_once(__DIR__ . "/../lib/form_check.php");
+include_once(__DIR__ . '/../lib/transactions.php');
+
+function update_user_note_if_note_editted_post(){
+    global $request_method, $_POST;
+    global $csrf;
+
+    if($request_method != "POST" ||
+       $_POST['user_note_edit_area'] != 'submitted' ||
+       $_POST['user_note_edit_text'] == null
+    ){
+        return [null, ""];
+    }
+
+    if(!$csrf->checkToken()){
+        return [null, "invalid token. please user form.\n"];
+    }
+
+    [$checked_note_editted, $message_note_editted] 
+    = \FormCheck\check_text_safe($_POST['user_note_edit_text'] ,false ,(16384 - 4));
+
+    global $login;
+    $user_id = intval($login->user('id'));
+
+    if($checked_note_editted && $user_id) {
+        // register updated note to DB.
+        global $data_source_name, $sql_rw_user, $sql_rw_pass;
+        \Tx\with_connection($data_source_name, $sql_rw_user, $sql_rw_pass)(
+            function($conn_rw) use($user_id, $checked_note_editted) {
+                update_user_note($conn_rw, $user_id, $checked_note_editted);
+            });
+        return [$checked_note_editted, ""];
+    }
+    return [null, $message_note_editted];
+}
+
+function update_user_note($conn_rw, int $user_id, string $note_new){
+    \Tx\block($conn_rw, "update_user_note: of ${user_id}")(
+        function() use($conn_rw, $user_id, $note_new){
+            $stmt = $conn_rw->prepare("UPDATE user SET note = :note WHERE id = :id;");
+            $stmt->execute([':note' => $note_new, ':id' => $user_id]);
+        });
+}
+
+[$note_edit_posted, $note_edit_message] = update_user_note_if_note_editted_post();
+
+
+// Ask DB about user
+$sql_user_info = <<<SQL
+SELECT id AS uid,name,email,public_uid,note,created_at
+  FROM user
+  WHERE id = :id;
+SQL;
+
+$user_info_array = db_ask_ro($sql_user_info, [":id" => $login->user('id')]);
+
+if (!isset($user_info_array[0])){
+    please_login_page();
+    exit();
+}
+
+$user_info = $user_info_array[0];
+
 // Ask DB about user's job_entry
 
-$sql1 = <<<SQL1
+$sql_job_entries = <<<SQL
 SELECT id AS eid, attribute, user, title, description, created_at, updated_at, opened_at, closed_at 
   FROM job_entry
   WHERE user = :user
-SQL1;
+SQL;
 
-$job_entries_array = db_ask_ro($sql1, [":user" => $login->user('id')]);
+$job_entries_array = db_ask_ro($sql_job_entries, [":user" => $login->user('id')]);
+
 
 // prepare contents
 
-function job_entry_table (array $job_entries_array, $edit_menu_p=false){
-    // accessor for array
-    $col_keys = ['eid', 'attribute', 'title', 'description', 'created_at', 'updated_at', 'opened_at', 'closed_at'];
+function cooperator_note_edit_form(string $note){
+    global $csrf;
+    $csrf_html = $csrf->hiddenInputHTML();
 
-    // table
-    $tml_text  = "";
-    $tml_text .= "<table>";
-
-    // table head
-    $tr_keys  = array_merge
-              (['id', 'L/S', 'title', 'detail', 'created', 'updated', 'opened', 'closed'],
-               ($edit_menu_p ? ['edit', 'delete'] : []));
-
-    $tml_text .= "<tr>"
-              . array_reduce($tr_keys, fn($carry, $key) => $carry . " <th>$key</th> ", "")
-              . "</ tr>";
-
-    // table rows
-    foreach($job_entries_array as $row){
-        // each row into html injection safe
-        $row_tml_formed = [];
-        foreach($col_keys as $key) {
-            $row_tml_formed[$key] = h((gettype($row[$key])=='string') ?
-                                      mb_strimwidth($row[$key], 0, 50, '...', 'UTF-8') :
-                                      $row[$key]);
-        }
-
-        // edit menu buttons if edit_menu_p
-        if($edit_menu_p){
-            $tml_delete_button = "<td>".tml_entry_delete_button($row['eid'])."</td>";
-            $tml_edit_button = "<td>".tml_entry_edit_button($row['eid'])."</td>";
-        }
-
-        // tml of each row
-        $row_tml = "<tr>"
-                 . array_reduce($col_keys,
-                                fn($carry, $key) => 
-                                $carry . "<td>".h($row_tml_formed[$key])."</td>",
-                                "")
-                 . (($edit_menu_p) ? $tml_edit_button : "")
-                 . (($edit_menu_p) ? $tml_delete_button : "")
-                 . "</tr>";
-
-        $tml_text .= $row_tml;
-    }
-
-    // end of table
-    $tml_text .= "</table>";
-
-    // return
-    return $tml_text;
+    global $note_edit_message;
+    $form_tml = "edit your note . "
+              . "<form action='' method='POST'>"
+              . "  <input type='submit' name='note_edit_submit' value='renew note'>"
+              .    $csrf_html
+              . "  <input type='hidden' name='user_note_edit_area' value='submitted'>"
+              . "  <textarea name='user_note_edit_text' cols='72' rows='5'>${note}</textarea>"
+              . "  <pre>{$note_edit_message}</pre>"
+              . "</form>";
+    return  $form_tml;
 }
 
 function tml_entry_delete_button(int $job_entry_id){
@@ -102,10 +132,12 @@ function tml_entry_edit_button(int $job_entry_id){
 }
 
 
-
 // render HTML
 
-$job_entry_table_html = job_entry_table($job_entries_array, true);
+$job_entry_table_html = 
+    html_text_of_cooperator($user_info) .
+    cooperator_note_edit_form($user_info['note']) .
+    html_text_of_job_entry_table($job_entries_array, true);
 
 
 $content_job_entries = <<<CONTENT_JOB_ENTRIES
