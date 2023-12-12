@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 include_once(__DIR__ . "/../lib/common.php");
+include_once(__DIR__ . "/../lib/form_check.php");
+include_once(__DIR__ . '/../lib/transactions.php');
 
 
 // deny not loggedin request
@@ -11,11 +13,7 @@ if(! $login->user()){
     exit();
 }
 
-
 // DB update of user's note if POST of user_note edit.
-
-include_once(__DIR__ . "/../lib/form_check.php");
-include_once(__DIR__ . '/../lib/transactions.php');
 
 function update_user_note_if_note_editted_post(){
     global $request_method, $_POST;
@@ -133,15 +131,22 @@ function tml_entry_edit_button(int $job_entry_id){
 
 
 // render HTML
+$href_of_cooperator_detail = url_of_cooperator_detail($login->user('public_uid'));
 
-$job_entry_table_html = 
-    html_text_of_cooperator($user_info) .
-    cooperator_note_edit_form($user_info['note']) .
+$content_html = 
+    // cooperator info 
+    html_text_of_cooperator($user_info) . 
+    "look detail at <a href='{$href_of_cooperator_detail}'>public page</a>" .
+    "<hr />" .
+    // cooperator note edit
+    cooperator_note_edit_form($user_info['note']) . "<hr />" .
+    // job_entry info and edit
+    "<h3> your seeks </h3>" .
     html_text_of_job_entry_table($job_entries_array, true);
 
 
 $content_job_entries = <<<CONTENT_JOB_ENTRIES
-{$job_entry_table_html}
+{$content_html}
 CONTENT_JOB_ENTRIES;
 
 // render HTML by template

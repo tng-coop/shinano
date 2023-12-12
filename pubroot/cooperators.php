@@ -28,11 +28,13 @@ function html_text_of_cooperators($cooper_arr){
         [$name, $note, $puid, $email, $created_at]
         = array_map(fn($key) => h($row[$key]), 
                     ['name', 'note', 'public_uid', 'email', 'created_at']);
+
+        $href_of_cooperator = url_of_cooperator_detail($puid);
         
         $row_tml
             = "<div class='cooperator'>"
             . "  <h3> {$name} </h3>"
-            . "  <a href='./cooperator.php?puid=${puid}'> c </a>"
+            . "  <a href='{$href_of_cooperator}'> detail </a>"
             . "  <pre> {$note} </pre>"
             . "  <p style='color:blue;'> links of look for match </p>"
             . "  email: <span> {$email} </span>"
@@ -45,6 +47,8 @@ function html_text_of_cooperators($cooper_arr){
     
     return $contents_tml;
 }
+
+
 
 
 // render HTML by template

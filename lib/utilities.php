@@ -155,6 +155,11 @@ function url_of_match_detail($job_entry_id){
     return "{$pubroot}match.php?eid={$job_entry_id}";
 }
 
+function url_of_cooperator_detail($puid){
+    global $pubroot;
+    return "${pubroot}cooperator.php?puid=${puid}";
+}
+
 // specific parts of html
 
 function html_text_of_cooperator(array $user_info){
