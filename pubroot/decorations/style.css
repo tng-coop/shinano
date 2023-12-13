@@ -1,4 +1,5 @@
 
+/* style of template framework HTML */
 
 #head_line > .search_form > * {
     display: inline;
@@ -9,5 +10,22 @@
 }
 
 .logout_form > .logout_button{
-
 }
+
+
+/* table */
+
+table  {
+    border-collapse: collapse;
+    border: 2px solid #999999;
+}
+
+table td, th {
+    text-align:center;
+    border: 1px solid #cccccc;
+}
+
+table th {
+    border-bottom: 3px double #999999;
+}
+
