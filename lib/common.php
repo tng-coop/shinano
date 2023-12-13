@@ -35,6 +35,15 @@ function please_login_page(string $message="Please Login.",
     RenderByTemplate("template.html", $title, $message);
 }
 
+// redirect page
+function redirect_page(string $url_redirect){
+    $meta_redirect = "<meta http-equiv='refresh' content='5;url=${url_redirect}' />";
+    RenderByTemplate("template.html", "Redirect - Shinano -",
+                     $meta_redirect .
+                     "Invalid URL. redirect in 5 second." .
+                     "to <a href='${url_redirect}'>here</a>");
+}
+
 
 ?>
 

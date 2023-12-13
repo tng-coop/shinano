@@ -61,6 +61,10 @@ function h($string){
     return htmlspecialchars(strval($string));
 }
 
+function int_string_p(string $integer_string_maybe){
+    return (is_numeric($integer_string_maybe) && is_int(intval($integer_string_maybe)));
+}
+
 function exit_by_error($error_){
     echo "Server Error";
     error_log("PHP Error: " . $error_->getMessage());
@@ -167,6 +171,8 @@ function url_of_cooperator_detail($puid){
 
 // specific parts of html
 
+// cooperator's html
+
 function html_text_of_cooperator(array $user_info){
     $user_things = array_map('h', $user_info);
 
@@ -181,6 +187,8 @@ function html_text_of_cooperator(array $user_info){
 
     return $tml_text;
 }
+
+// entries table
 
 
 function tml_entry_delete_button(int $job_entry_id){

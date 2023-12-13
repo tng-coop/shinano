@@ -5,18 +5,24 @@ declare(strict_types=1);
 include_once(__DIR__ . "/../lib/common.php");
 
 
+// deny not loggedin request
+if(! $login->user()){
+    please_login_page();
+    exit();
+}
+
+
+// if logged in, prepare specific cooperator page.
 
 // GET's public_uid
-if(isset($_GET['puid']) && 
-   is_numeric($_GET['puid']) &&
-   is_int(intval($_GET['puid']))){
-    //print_r($_GET['puid']);
+if(isset($_GET['puid']) && int_string_p($_GET['puid'])){
     $request_public_uid = intval($_GET['puid']);    
+} else {
+    $request_public_uid = false;
 }
 
 // deny invalid URL
 if(! $request_public_uid){
-    // if not logged in, Page to ask login.
     $invalid_puid_message_tml
         = "your requesting puid is invalid. <br />"
         . "<a href='./cooperators.php'>back to cooperators</a>";
@@ -25,16 +31,7 @@ if(! $request_public_uid){
     exit();
 }
 
-// deny not loggedin request
-if(! $login->user()){
-    please_login_page();
-    exit();
-}
-
-// if logged in, prepare specific cooperator page.
-
-
-// parepare and execute DB and SQL
+// ask DB
 
 $ret_stmt_user
     = \Tx\with_connection($data_source_name, $sql_ro_user, $sql_ro_pass)(

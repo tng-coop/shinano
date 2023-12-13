@@ -11,26 +11,32 @@ if(! $login->user()){
     exit();
 }
 
+
 // if logged in request, prepare contents.
-
-
-// utils. there is same pattern at the cooperator.php .
-function int_string_p(string $integer_string_maybe){
-    return (is_numeric($integer_string_maybe) && is_int(intval($integer_string_maybe)));
-}
 
 // Note:
 // addressing method for specific job_entry 
 // is going to be changed from jobentry.id into user each own jobentry's id.
 
-// parse GET request
-
+// GET's eid
 if($request_method == "GET") {
     if(isset($_GET['eid']) && int_string_p($_GET['eid'])){
         $request_entry_id = intval($_GET['eid']);
     } else {
         $request_entry_id = false;
     }
+}
+
+// deny invalid URL
+if (! $request_entry_id){
+    // redirect_page("{$pubroot}matches.php"); // old_implement
+    $invalid_eid_message_tml
+        = "your requesting eid is invalid. <br />"
+        . "<a href='./matches.php'>back to matches</a>";
+    RenderByTemplate("template.html", "invalid eid - Shinano -",
+                     $invalid_eid_message_tml);
+
+    exit();
 }
 
 // ask DB
@@ -45,7 +51,7 @@ $sql1
 
 $job_entry = db_ask_ro($sql1, ['entry_id' => $request_entry_id], \PDO::FETCH_ASSOC)[0];
 
-// make content_actual of cooperators
+// make content_actual of match
 
 function html_text_of_matches_list($job_entry){
     $key_names = array_keys($job_entry);
