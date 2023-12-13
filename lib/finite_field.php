@@ -33,17 +33,31 @@ x²⁴ + x²³ + x²² + x¹⁷ + 1
 namespace FF {
 
 ## From https://docs.xilinx.com/v/u/en-US/xapp052
-## 24次原始多項式 x^24 + x^23 + x^22 + x^17 + 1
+## 24次原始多項式 / 24th-order primitive polynomial
+##   x^24 + x^23 + x^22 + x^17 + 1
 $irreducible = 0x1c20001;
 
 ## 原始多項式 $irreducible の原始元の逆元
+## Inverse of the primitive source of the primitive polynomial $irreducible
 $prim_inv = $irreducible >> 1;
 
-## Galois LFSR を使用
+## Applying Galois LFSR
 function galois_next24(int $lfsr) : int {
     global $prim_inv;
     $lfsr1 = ($lfsr >> 1) ^ ( (- ($lfsr & 1)) & $prim_inv ); ## 24bit原始元の逆元を参照
     return $lfsr1;
+}
+
+## 最後に生成した値と、生成した $n 個の値の array を返す
+## Returns the last value generated and an array of the $n values generated
+function galois_next24_list(int $lfsr, int $n) : array {
+    $results = array();
+    while($n > 0) {
+        $lfsr = galois_next24($lfsr);
+        array_push($results, $lfsr);
+        $n--;
+    }
+    return [$lfsr, $results];
 }
 
 } ## end of namesapce FF
