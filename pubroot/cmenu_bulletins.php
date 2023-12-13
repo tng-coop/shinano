@@ -114,18 +114,18 @@ $content_html =
     "<hr />" .
     // cooperator note edit
     cooperator_note_edit_form($user_info['note']) . "<hr />" .
-    // job_entry info and edit
+    // bulletin info and edit
     "<h3> your seeks </h3>" .
-    html_text_of_job_entry_table($job_entries_array, true);
+    html_text_of_bulletins_table($job_entries_array, true);
 
 
-$content_job_entries = <<<CONTENT_JOB_ENTRIES
+$content_bulletins = <<<CONTENT_BULLETINS
 {$content_html}
-CONTENT_JOB_ENTRIES;
+CONTENT_BULLETINS;
 
 // render HTML by template
-RenderByTemplate("template.html", "job_entries - Shinano -",
-                 $content_job_entries);
+RenderByTemplate("template.html", "your bulletins - Shinano -",
+                 $content_bulletins);
 
 
 ?>

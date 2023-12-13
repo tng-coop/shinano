@@ -205,13 +205,13 @@ function html_text_of_cooperator(array $user_info){
     return $tml_text;
 }
 
-// entries table
+// bulletin table
 
-function tml_entry_delete_button(int $job_entry_id){
+function tml_bulletin_delete_button(int $job_entry_id){
     global $csrf;
     $token = $csrf->hiddenInputHTML();
 
-    $form_tml = "<form action='cmenu_entry_close.php' method='POST'>"
+    $form_tml = "<form action='cmenu_bulletin_close.php' method='POST'>"
               . "  " . $token
               . "  <input type='hidden' name='entry_id' value='{$job_entry_id}'>"
               . "  <input type='submit' value='delete' />"
@@ -219,11 +219,11 @@ function tml_entry_delete_button(int $job_entry_id){
     return $form_tml;
 }
 
-function tml_entry_edit_button(int $job_entry_id){
+function tml_bulletin_edit_button(int $job_entry_id){
     global $csrf;
     $token = $csrf->hiddenInputHTML();
 
-    $form_tml = "<form action='cmenu_entry_edit.php' method='POST'>"
+    $form_tml = "<form action='cmenu_bulletin_edit.php' method='POST'>"
               . "  " . $token
               . "  <input type='hidden' name='mode' value='edit_exist_post'>"
               . "  <input type='hidden' name='entry_id' value='{$job_entry_id}'>"
@@ -232,7 +232,7 @@ function tml_entry_edit_button(int $job_entry_id){
     return $form_tml;
 }
 
-function html_text_of_job_entry_table (array $job_entries_array, $edit_menu_p=false){
+function html_text_of_bulletins_table (array $bulletin_array, $edit_menu_p=false){
     // accessor for array
     $col_keys = ['eid', 'attribute', 'title', 'a_href', 'description', 'created_at', 'updated_at', 'opened_at', 'closed_at'];
 
@@ -250,7 +250,7 @@ function html_text_of_job_entry_table (array $job_entries_array, $edit_menu_p=fa
               . "</ tr>";
 
     // table rows
-    foreach($job_entries_array as $row){
+    foreach($bulletin_array as $row){
         // each row into html injection safe
         $row_tml_formed = [];
         foreach($col_keys as $key) {
@@ -262,8 +262,8 @@ function html_text_of_job_entry_table (array $job_entries_array, $edit_menu_p=fa
 
         // edit menu buttons if edit_menu_p
         if($edit_menu_p){
-            $tml_delete_button = "<td>".tml_entry_delete_button($row['eid'])."</td>";
-            $tml_edit_button = "<td>".tml_entry_edit_button($row['eid'])."</td>";
+            $tml_delete_button = "<td>".tml_bulletin_delete_button($row['eid'])."</td>";
+            $tml_edit_button = "<td>".tml_bulletin_edit_button($row['eid'])."</td>";
         }
 
         // tml of each row

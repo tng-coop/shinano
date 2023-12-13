@@ -58,7 +58,7 @@ function html_text_of_bulletins_list($job_entry){
     // content
     if(!(($job_entry)===[])){
         $tml_text = "";
-        $tml_text = "<div class='job_entry'>";
+        $tml_text = "<div class='bulletin'>";
 
         // set key_value
         $vals = []; // values

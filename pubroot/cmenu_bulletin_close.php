@@ -8,7 +8,7 @@ include_once(__DIR__ . '/../lib/transactions.php');
 
 //
 
-print_r("close (job_)entry\n");
+print_r("close bulletin (job_entry)\n");
 
 echo '<br /> POST: ';
 print_r($_POST);
