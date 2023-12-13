@@ -31,3 +31,6 @@ CREATE TABLE job_entry
 
 CREATE UNIQUE INDEX job_entry_user_opened_created
        ON job_entry (user, opened_at, created_at, id);
+
+CREATE UNIQUE INDEX job_entry_attribute_opened_created_user
+       ON job_entry (attribute, opened_at, created_at, user, id);
