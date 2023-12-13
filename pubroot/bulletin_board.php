@@ -22,8 +22,8 @@ if($request_method == "GET") {
     }
 }
 
-$matches_per_page = 17;
-$offset_from = ($request_npage - 1)  * $matches_per_page; // npage count from 1
+$bulletins_per_page = 17;
+$offset_from = ($request_npage - 1)  * $bulletins_per_page; // npage count from 1
 
 // ask DB
 
@@ -33,17 +33,17 @@ $sql1
     . "  FROM user as U INNER JOIN job_entry as J"
     . "    ON U.id = J.user"
     . "  ORDER BY J.id"
-    . "  LIMIT {$matches_per_page} OFFSET {$offset_from}"
+    . "  LIMIT {$bulletins_per_page} OFFSET {$offset_from}"
     . ";";
 
 $job_entries = db_ask_ro($sql1, [], \PDO::FETCH_ASSOC);
 
 
-$n_entries = db_ask_ro("SELECT COUNT(*) FROM job_entry;")[0][0]; // WHERE opend cooperator(user) and opend matches
+$n_entries = db_ask_ro("SELECT COUNT(*) FROM job_entry;")[0][0]; // WHERE opend cooperator(user) and opend bulletins
 
 // make content_actual of cooperators
 
-function html_text_of_matches_list($job_entries){
+function html_text_of_bulletins_list($job_entries){
     if(is_null($job_entries[0])){
         return "";
     }
@@ -64,7 +64,7 @@ function html_text_of_matches_list($job_entries){
         // content of row
         $listing_or_seeking = ($vals['attribute'] =='L'  ?  'Listing' :
                                ($vals['attribute']=='S' ?  'Seeking' : 'showing'));
-        $detail_url = url_of_match_detail($vals['id']);
+        $detail_url = url_of_bulletin_detail($vals['id']);
         $description_omitted = mb_strimwidth($vals['description'], 0, 74*3, '...', 'UTF-8' );  // limit to 74*3 characters.
 
         global $pubroot;
@@ -91,19 +91,20 @@ function html_text_of_matches_list($job_entries){
 
 // actual contents
 
-$html_matches_list = html_text_of_matches_list($job_entries);
+$html_bulletins_list = html_text_of_bulletins_list($job_entries);
 $html_hrefs_npages
-    = html_text_of_npages_a_hrefs("matches.php",
-                                  $request_npage, $n_entries, $matches_per_page);
+    = html_text_of_npages_a_hrefs("bulletin_board.php",
+                                  $request_npage, $n_entries, $bulletins_per_page);
 
-$matches_list_tml = "<p>Thanks for {$n_entries} entries in Shinano. </p>"
+$bulletins_list_tml = "<h3>Bulltein Board of Shinano <!-- (==BBS) --> </h3>"
+                  . "<p>Thanks for {$n_entries} bulletins in Shinano. </p>"
                   . $html_hrefs_npages . "<hr />" 
-                  . $html_matches_list . "<hr />"
+                  . $html_bulletins_list . "<hr />"
                   . $html_hrefs_npages;
 
 // render HTML by template
 
-RenderByTemplate("template.html", "Look for match - Shinano -",
-                 $matches_list_tml);
+RenderByTemplate("template.html", "Look for Bulletin Board of - Shinano -",
+                 $bulletins_list_tml);
 
 ?>

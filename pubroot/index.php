@@ -18,7 +18,7 @@ if(! $session_cooperator){
 text or text_file is rendered.</p>
 
 <p>once register to cooperator and login,
-you can edit and search cooperator, seeks and matchings. ......</p>
+you can edit and search Look bulletin Board of Shinano, search Cooperator, ......</p>
 
 <p><u>some</u> <u>document</u> <u>links</u></p>
 
@@ -52,8 +52,8 @@ if($session_cooperator){
 Hello! {$session_cooperator['name']}! <br />
 
 <ul>
-  <li><a href='{$pubroot}cmenu_entries.php'>edit your note, edit your seeks</a></li>
-  <li><a href='{$pubroot}cmenu_entry_new.php'>new your seek</a></li>
+  <li><a href='{$pubroot}cmenu_entries.php'>edit your note, edit your bulletins</a></li>
+  <li><a href='{$pubroot}cmenu_entry_new.php'>new bulletin</a></li>
 </ul>
 
 CONTENT;

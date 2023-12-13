@@ -60,7 +60,7 @@ function html_text_of_cooperators($cooper_arr){
             . "  <h3> {$name} </h3>"
             . "  <a href='{$href_of_cooperator}'> detail </a>"
             . "  <pre> {$note} </pre>"
-            . "  <p style='color:blue;'> links of look for match </p>"
+            . "  <p style='color:blue;'> links of look for bulletins </p>"
             . "  email: <span> {$email} </span>"
             . "  , created: <span> {$created_at} </span>"
             . "</div>"

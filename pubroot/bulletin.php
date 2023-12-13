@@ -29,10 +29,9 @@ if($request_method == "GET") {
 
 // deny invalid URL
 if (! $request_entry_id){
-    // redirect_page("{$pubroot}matches.php"); // old_implement
     $invalid_eid_message_tml
         = "your requesting eid is invalid. <br />"
-        . "<a href='./matches.php'>back to matches</a>";
+        . "<a href='./bulletin_board.php'>back to BBS</a>";
     RenderByTemplate("template.html", "invalid eid - Shinano -",
                      $invalid_eid_message_tml);
 
@@ -51,9 +50,9 @@ $sql1
 
 $job_entry = db_ask_ro($sql1, ['entry_id' => $request_entry_id], \PDO::FETCH_ASSOC)[0];
 
-// make content_actual of match
+// make content_actual of bulletin
 
-function html_text_of_matches_list($job_entry){
+function html_text_of_bulletins_list($job_entry){
     $key_names = array_keys($job_entry);
 
     // content
@@ -92,12 +91,12 @@ function html_text_of_matches_list($job_entry){
     return $tml_text;
 }
 
-$matches_list_tml = html_text_of_matches_list($job_entry);
+$bulletins_list_tml = html_text_of_bulletins_list($job_entry);
 
 
 // prepare and render by template
 
-RenderByTemplate("template.html", "Look for match - Shinano -",
-                 $matches_list_tml);
+RenderByTemplate("template.html", "Look for bulletin - Shinano -",
+                 $bulletins_list_tml);
 
 ?>

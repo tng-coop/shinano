@@ -54,8 +54,8 @@ RenderByTemplate("template.html", "{$title_part} - Shinano -",
 
 function content_and_process_by_GET($pvs, $messages){
     // 1. edit page
-    $title_part = "edit seek";
-    $content_html = content_of_edit_seek($pvs, $messages);
+    $title_part = "edit bulletin";
+    $content_html = content_of_edit_bulletin($pvs, $messages);
 
     // return
     return [$title_part, $content_html, $messages];
@@ -106,7 +106,7 @@ function content_and_process_by_POST($pvs, $messages){
                 ($conn_rw, $loggedin_email,
                  $post_checks['title'], $post_checks['description']);});
         
-        $duplicated_post = select_duplicated_seeks_from_db($loggedin_email, $post_checks['title']);
+        $duplicated_post = select_duplicated_bulletins_from_db($loggedin_email, $post_checks['title']);
         $dup0 = $duplicated_post[0];
 
         [$bottom, $post_a_href, $post_sucessed_p] = check_title_duplicate_in_each_user($loggedin_email, $post_checks['title']);
@@ -122,13 +122,13 @@ function content_and_process_by_POST($pvs, $messages){
     }
     // 2. confirm page
     elseif ($safe_form_post_p && $pvs['step_demand'] === 'confirm') {
-        $title_part = "please confirm";
-        $content_html = content_of_confirm_seek($pvs, $messages);
+        $title_part = "please confirm if OK";
+        $content_html = content_of_confirm_bulletin($pvs, $messages);
     }
     // 1. edit page
     else {
-        $title_part = "edit seek";
-        $content_html = content_of_edit_seek($pvs, $messages);
+        $title_part = "edit bulletin";
+        $content_html = content_of_edit_bulletin($pvs, $messages);
     }
     
     // return
@@ -140,17 +140,17 @@ function check_title_duplicate_in_each_user(string $email, $title){
     if(gettype($title)!=='string' || $title==="") {
         return [null, "invalid title.", false];
     }
-    $duplicated_post = select_duplicated_seeks_from_db($email, $title);
+    $duplicated_post = select_duplicated_bulletins_from_db($email, $title);
     if($duplicated_post) {
         $dup0 = $duplicated_post[0];
-        $duplicated_url = url_of_match_detail($dup0['eid']);
+        $duplicated_url = url_of_bulletin_detail($dup0['eid']);
         return [null, $duplicated_url, true]; // duplicated
     } else {
         return ['not_duplicated', "", false]; // not duplicated
     }
 }
 
-function select_duplicated_seeks_from_db(string $email, string $title){
+function select_duplicated_bulletins_from_db(string $email, string $title){
     global $data_source_name, $sql_rw_user, $sql_rw_pass;
     
     $sql_sel_dup = "SELECT J.id AS eid , U.email, J.title"
@@ -165,7 +165,7 @@ function select_duplicated_seeks_from_db(string $email, string $title){
 
 // prepare contents
 
-function content_of_confirm_seek($pvs, $messages){
+function content_of_confirm_bulletin($pvs, $messages){
 
     global $csrf;
     $csrf_html = $csrf->hiddenInputHTML();
@@ -179,7 +179,7 @@ function content_of_confirm_seek($pvs, $messages){
         ($pvs['open_close']==='close')) ? "as Closed" : "as null");
 
     $content_confirm_form_html = <<<CONTENT
-<h3> Confirm your Seek </h3>
+<h3> Confirm your Bulletin </h3>
 <hr />
 <h3>${pvs['title']}</h3>
 <pre>${pvs['description']}</pre>
@@ -202,7 +202,7 @@ CONTENT;
     return $content_confirm_form_html;
 }
 
-function content_of_edit_seek($pvs, $messages){
+function content_of_edit_bulletin($pvs, $messages){
     global $csrf;
     $csrf_html = $csrf->hiddenInputHTML();
 
@@ -214,9 +214,9 @@ function content_of_edit_seek($pvs, $messages){
     
     $messages_for_title = $messages['title'] . $title_duplicate_message;
     
-    $content_edit_seek_form_html = <<<CONTENT
+    $content_edit_bulletin_form_html = <<<CONTENT
 {$messages['csrf']}
-<h3> Edit Seek </h3>
+<h3> Edit Bulletin </h3>
 <form action="" method="POST">
   ${csrf_html}
   <dl>
@@ -242,7 +242,7 @@ function content_of_edit_seek($pvs, $messages){
 
 CONTENT;
     
-    return $content_edit_seek_form_html;
+    return $content_edit_bulletin_form_html;
 }
 
 ?>

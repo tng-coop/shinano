@@ -158,10 +158,10 @@ function RenderByTemplate($template_file, $title, $contents,
 
 // URL to specific pages
 
-function url_of_match_detail($job_entry_id){
+function url_of_bulletin_detail($job_entry_id){
     // method for detect specific job_entry is going to be changed.
     global $pubroot;
-    return "{$pubroot}match.php?eid={$job_entry_id}";
+    return "{$pubroot}bulletin.php?eid={$job_entry_id}";
 }
 
 function url_of_cooperator_detail($puid){
@@ -174,9 +174,9 @@ function url_of_cooperator_detail($puid){
 // npages <a href> s
 
 function html_text_of_npages_a_hrefs
-    ($script_relative_url, $npage_current, $n_entries, $matches_per_page){
+    ($script_relative_url, $npage_current, $n_entries, $entries_per_page){
 
-    $n_npages = ceil($n_entries / $matches_per_page);
+    $n_npages = ceil($n_entries / $entries_per_page);
     global $pubroot;
     $script_link = "{$pubroot}{$script_relative_url}";
 
@@ -258,7 +258,7 @@ function html_text_of_job_entry_table (array $job_entries_array, $edit_menu_p=fa
                                       mb_strimwidth($row[$key], 0, 50, '...', 'UTF-8') :
                                       $row[$key]);
         }
-        $row_tml_formed['a_href'] = "<a href='".url_of_match_detail($row['eid'])."'>A</a>";
+        $row_tml_formed['a_href'] = "<a href='".url_of_bulletin_detail($row['eid'])."'>A</a>";
 
         // edit menu buttons if edit_menu_p
         if($edit_menu_p){
