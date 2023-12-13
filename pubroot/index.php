@@ -52,8 +52,8 @@ if($session_cooperator){
 Hello! {$session_cooperator['name']}! <br />
 
 <ul>
-  <li><a href='{$pubroot}cmenu_seeks.php'>edit your note, edit your seeks</a></li>
-  <li><a href='{$pubroot}cmenu_seek.php'>new your seek</a></li>
+  <li><a href='{$pubroot}cmenu_entries.php'>edit your note, edit your seeks</a></li>
+  <li><a href='{$pubroot}cmenu_entry_new.php'>new your seek</a></li>
 </ul>
 
 CONTENT;

@@ -104,32 +104,6 @@ function cooperator_note_edit_form(string $note){
     return  $form_tml;
 }
 
-function tml_entry_delete_button(int $job_entry_id){
-    global $csrf;
-    $token = $csrf->hiddenInputHTML();
-
-    $form_tml = "<form action='cmenu_delete_job_entry.php' method='POST'>"
-              . "  " . $token
-              . "  <input type='hidden' name='entry_id' value='{$job_entry_id}'>"
-              . "  <input type='submit' value='delete' />"
-              . "</form>";
-    return $form_tml;
-}
-
-function tml_entry_edit_button(int $job_entry_id){
-    global $csrf;
-    $token = $csrf->hiddenInputHTML();
-
-    $form_tml = "<form action='cmenu_seek_edit.php' method='POST'>"
-              . "  " . $token
-              . "  <input type='hidden' name='mode' value='edit_exist_post'>"
-              . "  <input type='hidden' name='entry_id' value='{$job_entry_id}'>"
-              . "  <input type='submit' value='edit' />"
-              . "</form>";
-    return $form_tml;
-}
-
-
 // render HTML
 $href_of_cooperator_detail = url_of_cooperator_detail($login->user('public_uid'));
 

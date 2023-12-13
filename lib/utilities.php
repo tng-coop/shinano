@@ -183,9 +183,34 @@ function html_text_of_cooperator(array $user_info){
 }
 
 
+function tml_entry_delete_button(int $job_entry_id){
+    global $csrf;
+    $token = $csrf->hiddenInputHTML();
+
+    $form_tml = "<form action='cmenu_entry_close.php' method='POST'>"
+              . "  " . $token
+              . "  <input type='hidden' name='entry_id' value='{$job_entry_id}'>"
+              . "  <input type='submit' value='delete' />"
+              . "</form>";
+    return $form_tml;
+}
+
+function tml_entry_edit_button(int $job_entry_id){
+    global $csrf;
+    $token = $csrf->hiddenInputHTML();
+
+    $form_tml = "<form action='cmenu_entry_edit.php' method='POST'>"
+              . "  " . $token
+              . "  <input type='hidden' name='mode' value='edit_exist_post'>"
+              . "  <input type='hidden' name='entry_id' value='{$job_entry_id}'>"
+              . "  <input type='submit' value='edit' />"
+              . "</form>";
+    return $form_tml;
+}
+
 function html_text_of_job_entry_table (array $job_entries_array, $edit_menu_p=false){
     // accessor for array
-    $col_keys = ['eid', 'attribute', 'title', 'description', 'created_at', 'updated_at', 'opened_at', 'closed_at'];
+    $col_keys = ['eid', 'attribute', 'title', 'a_href', 'description', 'created_at', 'updated_at', 'opened_at', 'closed_at'];
 
     // table
     $tml_text  = "";
@@ -193,7 +218,7 @@ function html_text_of_job_entry_table (array $job_entries_array, $edit_menu_p=fa
 
     // table head
     $tr_keys  = array_merge
-              (['id', 'L/S', 'title', 'detail', 'created', 'updated', 'opened', 'closed'],
+              (['id', 'L/S', 'title', 'A', 'detail', 'created', 'updated', 'opened', 'closed'],
                ($edit_menu_p ? ['edit', 'delete'] : []));
 
     $tml_text .= "<tr>"
@@ -209,6 +234,7 @@ function html_text_of_job_entry_table (array $job_entries_array, $edit_menu_p=fa
                                       mb_strimwidth($row[$key], 0, 50, '...', 'UTF-8') :
                                       $row[$key]);
         }
+        $row_tml_formed['a_href'] = "<a href='".url_of_match_detail($row['eid'])."'>A</a>";
 
         // edit menu buttons if edit_menu_p
         if($edit_menu_p){
@@ -220,7 +246,7 @@ function html_text_of_job_entry_table (array $job_entries_array, $edit_menu_p=fa
         $row_tml = "<tr>"
                  . array_reduce($col_keys,
                                 fn($carry, $key) =>
-                                $carry . "<td>".h($row_tml_formed[$key])."</td>",
+                                $carry . "<td>${row_tml_formed[$key]}</td>",
                                 "")
                  . (($edit_menu_p) ? $tml_edit_button : "")
                  . (($edit_menu_p) ? $tml_delete_button : "")
