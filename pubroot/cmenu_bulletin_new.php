@@ -15,12 +15,12 @@ if(! $login->user()){
 
 // fill variables by POSTed values
 
-$form_accessors = ["title", "description", "attribute", "open_close", "step_demand"];
+$step_demand = $_POST['step_demand'];
+
+$form_accessors = ["title", "description", "attribute", "open_close"];
 $post_data = array_map(fn($accessor) => h($_POST[$accessor]), $form_accessors);
 $pvs = array(); // posted values
-[$pvs['title'], $pvs['description'], $pvs['attribute'], $pvs['open_close'],
- $pvs['step_demand']]
-= $post_data;
+[$pvs['title'], $pvs['description'], $pvs['attribute'], $pvs['open_close']] = $post_data;
 
 // according to POSTing, radio button into checked.
 [$pvs['checks_L'], $pvs['checks_S']] = [($pvs['attribute']==='L' ? 'checked' : ''),
@@ -44,7 +44,7 @@ if($request_method == "GET") {
 // render HTML
 $debug_tml = "";
 
-$content_actual = "${debug_tml}\n{$content_html}";
+$content_actual = "{$debug_tml}\n{$content_html}";
 
 RenderByTemplate("template.html", "{$title_part} - Shinano -",
                  $content_actual);
@@ -79,24 +79,23 @@ function content_and_process_by_POST($pvs, $messages){
     [[$post_checks['title'], $messages['title']],
      [$post_checks['description'], $messages['description']],
      [$post_checks['attribute'], $messages['attribute']],
-     [$post_checks['open_close'], $messages['open_close']]]
+     [$post_checks['open_close'], $messages['open_close']],
+     [$post_checks['title_duplicated_in_each_user'], $messages['title_duplicated_in_each_user'], $messages['title_duplicated_url_p']]]
     = [\FormCheck\check_text_safe(trim($pvs['title']), false, (256 - 4)),
        \FormCheck\check_text_safe($pvs['description'], false, (16384 - 4)),
        \FormCheck\check_radio_value_safe($pvs['attribute'], ['L', 'S']),
-       \FormCheck\check_radio_value_safe($pvs['open_close'], ['open', 'close'])];
-
-    [$post_checks['title_duplicated_in_each_user'], $messages['title_duplicated_in_each_user'], $messages['title_duplicated_url_p']]
-    = check_title_duplicate_in_each_user($login->user('email'), trim($pvs['title'])); // check duplicated title
-    
-    $safe_form_post_p
-    = array_reduce($post_checks,
-                   fn($carry, $item) => $carry && ($item || $item===""),
-                   true);
+       \FormCheck\check_radio_value_safe($pvs['open_close'], ['open', 'close']),
+       check_title_duplicate_in_each_user($login->user('email'), trim($pvs['title'])) // check duplicated title
+    ];
+        
+        $safe_form_post_p
+    = array_reduce($post_checks, (fn($carry, $item) => $carry&&($item||$item==="")), true);
 
     // prepare Content
 
     // 3. update database page
-    if ($safe_form_post_p && $pvs['step_demand'] === 'upload') {
+    global $step_demand;
+    if ($safe_form_post_p && $step_demand === 'upload') {
         global $data_source_name, $sql_rw_user, $sql_rw_pass;
 
         // register user to DB.
@@ -121,7 +120,7 @@ function content_and_process_by_POST($pvs, $messages){
         }
     }
     // 2. confirm page
-    elseif ($safe_form_post_p && $pvs['step_demand'] === 'confirm') {
+    elseif ($safe_form_post_p && $step_demand== 'confirm') {
         $title_part = "please confirm if OK";
         $content_html = content_of_confirm_bulletin($pvs, $messages);
     }
@@ -151,7 +150,6 @@ function check_title_duplicate_in_each_user(string $email, $title){
 }
 
 function select_duplicated_bulletins_from_db(string $email, string $title){
-    global $data_source_name, $sql_rw_user, $sql_rw_pass;
     
     $sql_sel_dup = "SELECT J.id AS eid , U.email, J.title"
                  . "  FROM user as U INNER JOIN job_entry AS J"
@@ -216,26 +214,30 @@ function content_of_edit_bulletin($pvs, $messages){
     
     $content_edit_bulletin_form_html = <<<CONTENT
 {$messages['csrf']}
-<h3> Edit Bulletin </h3>
+<h3> New Bulletin </h3>
 <form action="" method="POST">
   ${csrf_html}
   <dl>
+
     <dt> title </dt>
     <dd> <input type="text" name="title" required value="${pvs['title']}"> </input> </dd>
     <dd> <pre>{$messages_for_title}</pre> </dd>
+
     <dt> description </dt>
     <dd> <textarea name="description" cols="72" rows="13" required>${pvs['description']}</textarea> </dd>
     <dd> <pre>{$messages['description']}</pre> </dd>
+
     <dt> attribute </dt>
     <dd> <input type="radio" name="attribute" required value="L" {$pvs['checks_L']} />L: Listing
          <input type="radio" name="attribute" required value="S" {$pvs['checks_S']} />S: Seeking
     <dd> <pre>{$messages['attribute']}</pre> </dd>
-    </dd>
+
     <dt> Opened Update / Closed Save </dt>
     <dd> <input type="radio" name="open_close" required value="open"  {$pvs['checks_open']}  /> Open Update
          <input type="radio" name="open_close" required value="close" {$pvs['checks_close']} /> Closed Save
     </dd>
     <dd> <pre>{$messages['open_close']}</pre> </dd>
+
   </dl>
   <input type="submit" name="step_demand" value="confirm"> </input>
 </form>
