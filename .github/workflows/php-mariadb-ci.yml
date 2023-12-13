@@ -10,17 +10,18 @@ on:
       - '**/*.md'
       - '**/*.drawio'
 
-
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 1  # This sets the timeout for the entire job to 1 minute
+    timeout-minutes: 2  # This sets the timeout for the entire job to 1 minute
+    env:
+      PLAYWRIGHT_IMAGE: mcr.microsoft.com/playwright:v1.40.0-jammy
+
     services:
       mariadb:
         image: mariadb:10.3
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
-          MYSQL_DATABASE: testdb
         ports:
           - 3306:3306
         options: >-
@@ -28,6 +29,8 @@ jobs:
           --health-interval=10s
           --health-timeout=10s
           --health-retries=10
+      playwright:
+        image: mcr.microsoft.com/playwright:v1.40.0-jammy
 
     steps:
     - uses: actions/checkout@v4
@@ -35,9 +38,6 @@ jobs:
     - name: Copy config file
       run: |
         cp config.ini.CI config.ini
-
-    - name: Start PHP server
-      run: php -S localhost:8000 -t devtools/test-php &
 
     - name: Wait for MariaDB
       run: |
@@ -49,19 +49,30 @@ jobs:
     - name: Check MariaDB Server Version
       run: mysql -h 127.0.0.1 -u root -e "SELECT VERSION();"
 
-    - name: Wait for PHP server
-      run: |
-        until $(curl --output /dev/null --silent --head --fail http://localhost:8000/hello.php); do
-          printf '.'
-          sleep 1
-        done
+    - name: Check Database Character Set and Collation
+      run: mysql -h 127.0.0.1 -u root  -e "SELECT * FROM INFORMATION_SCHEMA.SCHEMATA;"
 
     - name: Basic Features Test
       run: ./devtools/test-basic-features.sh
 
-    - name: Check Database Character Set and Collation
-      run: mysql -h 127.0.0.1 -u root  -e "SELECT * FROM INFORMATION_SCHEMA.SCHEMATA;"
+    - name: Start PHP server
+      run: php -S localhost:8000 -t pubroot &
 
-    - name: PHP Hello World Test
-      run: |
-        curl -s http://localhost:8000/hello.php
+    - name: Install dependencies, Show Playwright version, and Run tests
+      run: docker run --rm --network="host" -v $(pwd):/repo -w /repo/e2e ${{ env.PLAYWRIGHT_IMAGE }} npm ci 
+
+    - name: Install dependencies, Show Playwright version, and Run tests
+      run: docker run --rm --network="host" -v $(pwd):/repo -w /repo/e2e ${{ env.PLAYWRIGHT_IMAGE }} npx playwright --version
+
+    - name: Install dependencies, Show Playwright version, and Run tests
+      run: docker run --rm --network="host" -e CI=true -v $(pwd):/repo -w /repo/e2e ${{ env.PLAYWRIGHT_IMAGE }} npx playwright test
+
+    - name: Upload Test Artifacts
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: playwright-artifacts
+        path: |
+          e2e/playwright-report/
+          e2e/test-results/
+        retention-days: 3      

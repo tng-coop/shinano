@@ -7,4 +7,5 @@ readwrite_password=Kis0Shinan0DevRW
 dsn="mysql:host=127.0.0.1;dbname=shinano_dev;charset=UTF8"
 
 [url]
-url_shinano_pubroot=https://tng.coop/shinano-main/
+; url_shinano_pubroot=https://tng.coop/shinano-main/
+url_shinano_pubroot=http://localhost:8000/
