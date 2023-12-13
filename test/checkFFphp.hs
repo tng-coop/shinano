@@ -13,7 +13,7 @@ instance Arbitrary Input where
 
 readNext24PHP' :: Bool -> Word -> IO Word
 readNext24PHP' debug w = do
-  let php = "include_once(\"finite_field.php\"); echo \\FF\\galois_next24(" ++ show w ++ ");"
+  let php = "include_once(\"./lib/finite_field.php\"); echo \\FF\\galois_next24(" ++ show w ++ ");"
   when debug $ putStrLn php
   readIO =<< readProcess "php" ["-r", php] ""
 
