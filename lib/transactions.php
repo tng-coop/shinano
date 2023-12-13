@@ -213,7 +213,7 @@ SQL
 
 function view_job_things_by_email(PDO $conn, string $email) {
     $stmt = $conn->prepare(<<<SQL
-SELECT U.public_uid, U.name, J.attribute, J.title, J.description, J.created_at, J.updated_at, J.opened_at, J.closed_at
+SELECT U.public_uid, U.name, J.attribute, J.title, J.description, J.created_at, J.updated_at, J.opened_at, J.closed_at, J.id AS eid
        FROM user as U INNER JOIN job_entry AS J
        ON U.id = J.user
        WHERE U.email = ?
