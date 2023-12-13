@@ -46,6 +46,17 @@ function galois_next24(int $lfsr) : int {
     return $lfsr1;
 }
 
+## 最後に生成した値と、生成した $n 個の値の array を返す.
+function galois_next24_list(int $lfsr, int $n) : array {
+    $results = array();
+    while($n > 0) {
+        $lfsr = galois_next24($lfsr);
+        array_push($results, $lfsr);
+        $n--;
+    }
+    return [$lfsr, $results];
+}
+
 } ## end of namesapce FF
 
 ?>
