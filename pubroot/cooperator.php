@@ -63,7 +63,9 @@ function html_text_of_cooperators($stmt_of_user, $stmt_of_jobs){
     $cooperator_text = html_text_of_cooperator($user_thing);
     $jobs_text = html_text_of_job_entry_table($jobs, false);
     
-    $tml_text = $cooperator_text  . "<hr />" . $jobs_text;
+    $tml_text = $cooperator_text  . "<hr />" 
+              . "<h3>".h("{$user_thing['name']}'s entries")."</h3>"
+              . $jobs_text;
 
     return $tml_text;
 }
