@@ -171,6 +171,23 @@ function url_of_cooperator_detail($puid){
 
 // specific parts of html
 
+// npages <a href> s
+
+function html_text_of_npages_a_hrefs
+    ($script_relative_url, $npage_current, $n_entries, $matches_per_page){
+
+    $n_npages = ceil($n_entries / $matches_per_page);
+    global $pubroot;
+    $script_link = "{$pubroot}{$script_relative_url}";
+
+    $a_s_tml = "";
+    for($iter=1; $iter<=$n_npages; $iter++){
+        $a_s_tml .= " <a href='{$script_link}?npage={$iter}'>{$iter}</a>";
+    }
+    return $a_s_tml;
+}
+
+
 // cooperator's html
 
 function html_text_of_cooperator(array $user_info){
@@ -189,7 +206,6 @@ function html_text_of_cooperator(array $user_info){
 }
 
 // entries table
-
 
 function tml_entry_delete_button(int $job_entry_id){
     global $csrf;

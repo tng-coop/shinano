@@ -13,6 +13,18 @@ if(! $login->user()){
 
 // if logged in request, prepare contents.
 
+// GET's npage
+if($request_method == "GET") {
+    if(isset($_GET['npage']) && int_string_p($_GET['npage'])){
+        $request_npage = intval($_GET['npage']);
+    } else {
+        $request_npage = 1;
+    }
+}
+
+$matches_per_page = 17;
+$offset_from = ($request_npage - 1)  * $matches_per_page; // npage count from 1
+
 // ask DB
 
 $sql1
@@ -21,13 +33,21 @@ $sql1
     . "  FROM user as U INNER JOIN job_entry as J"
     . "    ON U.id = J.user"
     . "  ORDER BY J.id"
+    . "  LIMIT {$matches_per_page} OFFSET {$offset_from}"
     . ";";
 
 $job_entries = db_ask_ro($sql1, [], \PDO::FETCH_ASSOC);
 
+
+$n_entries = db_ask_ro("SELECT COUNT(*) FROM job_entry;")[0][0]; // WHERE opend cooperator(user) and opend matches
+
 // make content_actual of cooperators
 
 function html_text_of_matches_list($job_entries){
+    if(is_null($job_entries[0])){
+        return "";
+    }
+
     $key_names = array_keys($job_entries[0]);
 
     // content
@@ -69,10 +89,19 @@ function html_text_of_matches_list($job_entries){
     return $tml_text;
 }
 
-$matches_list_tml = html_text_of_matches_list($job_entries);
+// actual contents
 
+$html_matches_list = html_text_of_matches_list($job_entries);
+$html_hrefs_npages
+    = html_text_of_npages_a_hrefs("matches.php",
+                                  $request_npage, $n_entries, $matches_per_page);
 
-// prepare and render by template
+$matches_list_tml = "<p>Thanks for {$n_entries} entries in Shinano. </p>"
+                  . $html_hrefs_npages . "<hr />" 
+                  . $html_matches_list . "<hr />"
+                  . $html_hrefs_npages;
+
+// render HTML by template
 
 RenderByTemplate("template.html", "Look for match - Shinano -",
                  $matches_list_tml);
