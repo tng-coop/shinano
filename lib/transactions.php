@@ -64,25 +64,38 @@ include_once(__DIR__ . '/finite_field.php');
 
 use \PDO;
 
-function add_user(PDO $conn, string $name, string $email, string $passwd_hash, string $note) {
-    $public_uid =
-    \Tx\block($conn, "gen_public_uid")(
-        ## public_uid を発行するトランザクションを分離
-        function() use($conn) {
+function unsafe_update_public_uid(PDO $conn, string $tag, $update_callback) {
+    return \Tx\block($conn, "unsafe_update_public_uid: " . $tag)(
+        ## public_uid を発行するトランザクション
+        ## Galois LFSR 以外の $update_callback を渡すと空間を書き潰す危険がある
+        function() use($conn, $update_callback) {
             $pstate = $conn->prepare('SELECT last_uid FROM public_uid_state LIMIT 1 FOR UPDATE');
             $pstate->execute();
             ## カーソル位置でテーブルのレコードをロック
             $state_ref = $pstate->fetch(PDO::FETCH_NUM);
             if (!$state_ref) {
-                throw new \Tx\Exception('TxSnn.add_user: internal error. wrong system initialization');
+                throw new \Tx\Exception('TxSnn.unsafe_update_public_uid: internal error. wrong system initialization');
             }
             $last_public_uid = $state_ref[0];
-            $public_uid = \FF\galois_next24($last_public_uid);
+            [ $public_uid, $result ] = $update_callback($last_public_uid);
             $stmt = $conn->prepare('UPDATE public_uid_state SET last_uid = ?');
             $pstate->fetchAll(); ## UGLY HACK for MySQL!! breaks critical section for Cursor Solid isolation RDBMs
             $stmt->execute(array($public_uid));
-            return $public_uid;
+            return $result;
         });
+}
+
+function gen_public_uid_list(PDO $conn, int $n) {
+    return unsafe_update_public_uid($conn, "gen_public_uid_list",
+                                    fn ($last_public_uid) => \FF\galois_next24_list($last_public_uid, $n) );
+}
+
+function add_user(PDO $conn, string $name, string $email, string $passwd_hash, string $note) {
+    $public_uid = unsafe_update_public_uid($conn, "gen_public_uid",
+                                           function ($last_public_uid) {
+                                               $next = \FF\galois_next24($last_public_uid);
+                                               return [ $next, $next ];
+                                           });
 
     \Tx\block($conn, "add_user")(
         function() use($conn, $email, $passwd_hash, $public_uid, $name, $note) {
