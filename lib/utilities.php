@@ -218,18 +218,6 @@ function job_entry_opened_p($opened_at, $closed_at){
     { return false; }
 }
 
-function tml_bulletin_delete_button(int $job_entry_id){
-    global $csrf;
-    $token = $csrf->hiddenInputHTML();
-
-    $form_tml = "<form action='cmenu_bulletin_close.php' method='POST'>"
-              . "  " . $token
-              . "  <input type='hidden' name='entry_id' value='{$job_entry_id}'>"
-              . "  <input type='submit' value='delete' />"
-              . "</form>";
-    return $form_tml;
-}
-
 function tml_bulletin_edit_button(int $job_entry_id){
     global $csrf;
     $token = $csrf->hiddenInputHTML();
@@ -243,48 +231,78 @@ function tml_bulletin_edit_button(int $job_entry_id){
     return $form_tml;
 }
 
+function tml_bulletin_swap_open_close_button(int $job_entry_id, $opened_at, $closed_at){
+    global $csrf;
+    $token = $csrf->hiddenInputHTML();
+
+    [$demand, $demand_text] = (job_entry_opened_p($opened_at, $closed_at) 
+                               ? ['let_close', 'Close it']
+                               : ['let_open',  'Open it']);
+
+    $form_tml = "<form action='cmenu_bulletin_swap_open_close.php' method='POST'>"
+              . "  " . $token
+              . "  <input type='hidden' name='entry_id' value='{$job_entry_id}'>"
+              . "  <button type='submit' name='demand' value='{$demand}'>{$demand_text}</button>"
+              . "</form>";
+    return $form_tml;
+}
+
 function html_text_of_bulletins_table (array $bulletin_array, $edit_menu_p=false){
     // accessor for array
-    $col_keys = ['eid', 'attribute', 'title', 'a_href', 'description', 'created_at', 'updated_at', 'opened_at', 'closed_at'];
+    $col_keys = ['eid', 'attribute', 'title', 'description', 'created_at', 'updated_at', 'opened_at', 'closed_at'];
 
     // table
     $tml_text  = "";
+    $tml_text .= "L/S means Listing or Seeking. O/C means Opened or Closed.";
     $tml_text .= "<table>";
 
     // table head
     $tr_keys  = array_merge
-              (['id', 'L/S', 'title', 'A', 'detail', 'created', 'updated', 'opened', 'closed'],
-               ($edit_menu_p ? ['edit', 'delete'] : []));
-
+              (['id', 'L/S', 'title', 'A', 'detail', 'created', 'updated'],
+               ($edit_menu_p ? ['O/C', 'swap O/C', 'edit'] : [])
+              ); // opened_at or closed_at is equally to updated.
     $tml_text .= "<tr>"
-              . array_reduce($tr_keys, fn($carry, $key) => $carry . " <th>$key</th> ", "")
-              . "</ tr>";
+              .  array_reduce($tr_keys, fn($carry, $key) => $carry . " <th>$key</th> ", "")
+              .  "</ tr>";
 
     // table rows
     foreach($bulletin_array as $row){
         // each row into html injection safe
         $row_tml_formed = [];
         foreach($col_keys as $key) {
-            $row_tml_formed[$key] = h((gettype($row[$key])=='string') ?
-                                      mb_strimwidth($row[$key], 0, 50, '...', 'UTF-8') :
-                                      $row[$key]);
+            $row_tml_formed[$key] = h(mb_strimwidth((string)$row[$key], 0, 50, '...', 'UTF-8'));
         }
+
+        //
         $row_tml_formed['a_href'] = "<a href='".url_of_bulletin_detail($row['eid'])."'>A</a>";
+        $row_tml_formed['open_close'] = job_entry_opened_p($row['opened_at'], $row['closed_at']) ? 'O' : 'C';
 
         // edit menu buttons if edit_menu_p
         if($edit_menu_p){
-            $tml_delete_button = "<td>".tml_bulletin_delete_button($row['eid'])."</td>";
+            $tml_swap_open_close_button
+                = "<td>"
+                . tml_bulletin_swap_open_close_button($row['eid'],$row['opened_at'],$row['closed_at'])
+                . "</td>";
             $tml_edit_button = "<td>".tml_bulletin_edit_button($row['eid'])."</td>";
         }
 
         // tml of each row
         $row_tml = "<tr>"
-                 . array_reduce($col_keys,
-                                fn($carry, $key) =>
-                                $carry . "<td>${row_tml_formed[$key]}</td>",
-                                "")
-                 . (($edit_menu_p) ? $tml_edit_button : "")
-                 . (($edit_menu_p) ? $tml_delete_button : "")
+                 // show table
+                 . "<td>" . $row_tml_formed['eid'] . "</td>"
+                 . "<td>" . $row_tml_formed['attribute'] . "</td>"
+                 . "<td>" . $row_tml_formed['title'] . "</td>"
+                 . "<td>" . $row_tml_formed['a_href'] . "</td>"
+                 . "<td>" . $row_tml_formed['description'] . "</td>"
+                 . "<td>" . $row_tml_formed['created_at'] . "</td>"
+                 . "<td>" . $row_tml_formed['updated_at'] . "</td>"
+                 // for edit menu
+                 . ($edit_menu_p
+                    ? (""
+                       . "<td>" . $row_tml_formed['open_close'] . "</td>"
+                       . $tml_swap_open_close_button
+                       . $tml_edit_button)
+                    : "")
                  . "</tr>";
 
         $tml_text .= $row_tml;
