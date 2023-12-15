@@ -64,6 +64,9 @@ $bulletin_url = url_of_bulletin_detail($_POST['entry_id']);
 
 $content_html = <<<CONTENT
 <a href='{$bulletin_url}'>entry_id ${_POST['entry_id']}'s bulletin</a> is ${message}.
+<br />
+
+or back to <a href='{$pubroot}'>index_menu</a>
 CONTENT;
 
 

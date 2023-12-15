@@ -115,8 +115,11 @@ function content_and_process_by_POST($pvs, $messages){
         [$bottom, $post_a_href, $post_sucessed_p] = check_title_duplicate_in_each_user($loggedin_email, $post_checks['title']);
         
         if($post_sucessed_p){
+            global $pubroot;
             $title_part = "uploaded";
-            $content_html = "Your post is uploaded at <a href='{$post_a_href}'>here</a>";
+            $content_html = "Your post is uploaded at <a href='{$post_a_href}'>here</a> <br />"
+                          . "or back to <a href='{$pubroot}'>index_menu</a> <br />"
+                          . "or back to <a href='{$pubroot}cmenu_bulletins.php'>your bulletins edit</a>";
         } else {
             $title_part = "something wrong";
             $content_html = "something wrong";
