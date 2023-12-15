@@ -141,12 +141,12 @@ function content_of_confirm_bulletin($pvs, $messages){
     $csrf_html = $csrf->hiddenInputHTML();
     
     $message_listing_or_seeking
-    = ((($pvs['attribute']==='L')  ? "as Listing" :
-        ($pvs['attribute']==='S')) ? "as Seeking" : "as null");
+    = $pvs['attribute']==='L' ? "as Listing" :
+      ($pvs['attribute']==='S' ? "as Seeking" : "as null");
     
     $message_open_or_close
-    = ((($pvs['open_close']==='open')   ? "as Opend"  :
-        ($pvs['open_close']==='close')) ? "as Closed" : "as null");
+    = $pvs['open_close']==='open'  ? "as Opened" :
+      ($pvs['open_close']==='close' ? "as Closed" : "as null");
 
     $content_confirm_form_html = <<<CONTENT
 <h3> Confirm your Bulletin </h3>
