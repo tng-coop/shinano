@@ -121,8 +121,7 @@ if ($safe_form_post_p && in_array($step_demand, ['update'])) {
         $title_part = "updated";
         $content_html = "Your post is updated at <a href='{$post_a_href}'>here</a> <br />"
                       . "or back to <a href='{$pubroot}'>index_menu</a> <br />"
-                      . "or back to <a href='{$pubroot}cmenu_bulletins.php'>your bulletins edit</a>"
-        ;
+                      . "or back to <a href='{$pubroot}cmenu_bulletins.php'>your bulletins edit</a>";
     } else {
         $title_part = "something wrong";
         $content_html = "something wrong";
