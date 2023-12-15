@@ -100,12 +100,17 @@ function content_and_process_by_POST($pvs, $messages){
         global $data_source_name, $sql_rw_user, $sql_rw_pass;
         \Tx\with_connection($data_source_name, $sql_rw_user, $sql_rw_pass)(
             function($conn_rw) use($loggedin_email, $post_checks) {
-                \TxSnn\add_job_things($post_checks['attribute'])
+
+                //$open_or_close = (( $post_checks['open_close']==='open') ? 'open' : 
+                //(($post_checks['open_close']==='close') ? 'close' : 'close')); // old implement
+                $open_or_close = $post_checks['open_close'];
+
+                \TxSnn\add_job_thing_in_open_or_close
                 ($conn_rw, $loggedin_email,
-                 $post_checks['title'], $post_checks['description']);});
-        
-        $duplicated_post = select_duplicated_bulletins_from_db($loggedin_email, $post_checks['title']);
-        $dup0 = $duplicated_post[0];
+                 $post_checks['attribute'], $post_checks['title'], $post_checks['description'],
+                 $open_or_close);
+                
+                return true;});
 
         [$bottom, $post_a_href, $post_sucessed_p] = check_title_duplicate_in_each_user($loggedin_email, $post_checks['title']);
         

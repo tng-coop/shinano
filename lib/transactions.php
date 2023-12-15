@@ -133,6 +133,32 @@ SQL
     };
 }
 
+function add_job_thing_in_open_or_close(PDO $conn, string $email, string $attribute, string $title, string $description, string $open_or_close){
+
+    $open_close = (( $open_or_close=='open') ? 'open' :
+                   (($open_or_close=='close') ? 'close' : 'NULL'));
+
+    return \Tx\block($conn, "add_job_things:" . $attribute)(
+        function() use($conn, $email, $attribute, $title, $description, $open_close) {
+            // raise if invalid user
+            $user_id = user_id_lock_by_email_or_raise('TxSnn.add_job_things: ', $conn, $email);
+            // INSERT to DB
+            $open_close_query 
+                = (( $open_close=='open')  ? "current_timestamp, NULL" :
+                   (($open_close=='close') ? "NULL, current_timestamp" : "NULL, NULL"));
+
+            $sql1 = "INSERT job_entry(attribute, user, title, description, "
+                  . "                 created_at, updated_at, opened_at, closed_at)"
+                  . "  VALUES (:attribute , :user_id, :title, :desc, "
+                  . "          current_timestamp, current_timestamp, "
+                  . $open_close_query . ");";
+            $stmt = $conn->prepare($sql1);
+            $stmt->execute(array(':attribute'=>$attribute, ':user_id'=>$user_id,
+                                 ':title'=>$title, ':desc'=>$description));
+            return true;
+        });
+}
+
 function update_job_things(PDO $conn, int $entry_id,
                            string $email, string $attribute, string $title, string $description){
     // attribute:: 'S'eeking or 'L'isting or etc...

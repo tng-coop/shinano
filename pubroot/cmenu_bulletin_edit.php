@@ -28,18 +28,6 @@ $job_entry_id = intval($_POST['job_entry_id']);
 $pvs = array(); // posted values for entry update.
 
 
-function detect_opene_or_close_by_db_data($opened_at, $closed_at){
-    if(is_null($opened)){
-        return 'close';
-    } elseif(is_null($closed)) {
-        return 'opene';
-    } elseif(strcmp($opened, $closed)) {
-        return 'opene';
-    } else {
-        return 'close';
-    }       
-}
-
 if(in_array($step_demand, ['ask_db_edit_post'])) {
     // ask DB about editable job_entry
     $db_entry_current = select_job_endty_by_entry_id_if_user($job_entry_id, $login->user('id'))[0];
@@ -56,7 +44,8 @@ if(in_array($step_demand, ['ask_db_edit_post'])) {
     = [h($db_entry_current['title']),
        h($db_entry_current['description']),
        h($db_entry_current['attribute']),
-       detect_opene_or_close_by_db_data($db_entry_current['closed_at'], $db_entry_current['opened_at'])
+       (job_entry_opened_p($db_entry_current['opened_at'], $db_entry_current['closed_at']))
+        ? 'open' : 'close'
     ];
 
 } elseif(in_array($step_demand, ['confirm', 'reedit', 'update'])) {
@@ -107,18 +96,24 @@ if (in_array($step_demand, ['confirm', 'update', 'reedit'])) {
 // prepare html content
 // 3. update database if OK POSTing
 if ($safe_form_post_p && in_array($step_demand, ['update'])) {
-    // register to DB
+    // UPDATE DB
     $loggedin_email = $login->user('email');
     
     global $data_source_name, $sql_rw_user, $sql_rw_pass;
     $post_successed_p 
-        = \Tx\with_connection($data_source_name, $sql_rw_user, $sql_rw_pass)(
-            function($conn_rw) use($job_entry_id, $loggedin_email, $post_checks) {
-                \TxSnn\update_job_things
-                    ($conn_rw, $job_entry_id,
-                     $loggedin_email, $post_checks['attribute'], $post_checks['title'], $post_checks['description']);
-                return true;
-            });
+    = \Tx\with_connection($data_source_name, $sql_rw_user, $sql_rw_pass)(
+        function($conn_rw) use($job_entry_id, $loggedin_email, $post_checks) {
+            \TxSnn\update_job_things($conn_rw, $job_entry_id,
+                                     $loggedin_email, $post_checks['attribute'],
+                                     $post_checks['title'], $post_checks['description']);
+
+            $func_open_close = ( $post_checks['open_close']=='open') ?  '\TxSnn\open_job_things' :
+                               (($post_checks['open_close']=='close') ? '\TxSnn\close_job_things' :
+                                null);            
+            $func_open_close($post_checks['attribute'])($conn_rw, $loggedin_email, $job_entry_id);
+            
+            return true;
+    });
 
     [$bottom, $post_a_href, $post_sucessed_p] = check_title_duplicate_in_each_user($loggedin_email, $post_checks['title']);
 
@@ -164,7 +159,7 @@ function select_job_endty_by_entry_id_if_user(int $job_entry_id, int $user_id){
                       \PDO::FETCH_ASSOC);
     return $ret0;
 }
-    
+
 
 
 // Render to HTML by template.

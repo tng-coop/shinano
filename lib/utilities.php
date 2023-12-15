@@ -207,6 +207,17 @@ function html_text_of_cooperator(array $user_info){
 
 // bulletin table
 
+function job_entry_opened_p($opened_at, $closed_at){
+    if(is_null($opened_at))
+    { return false; } 
+    elseif(is_null($closed_at))
+    { return true; }
+    if (strtotime($opened_at) > strtotime($closed_at))
+    { return true; }
+    else
+    { return false; }
+}
+
 function tml_bulletin_delete_button(int $job_entry_id){
     global $csrf;
     $token = $csrf->hiddenInputHTML();
