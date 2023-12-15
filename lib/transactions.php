@@ -133,6 +133,24 @@ SQL
     };
 }
 
+function update_job_things(PDO $conn, int $entry_id,
+                           string $email, string $attribute, string $title, string $description){
+    // attribute:: 'S'eeking or 'L'isting or etc...
+    // email: email of logging in account.
+    \Tx\block($conn, "update_job_things ID: " . $entry_id)(
+        function() use($conn, $entry_id, $attribute, $email, $title, $description) {
+            // raise if invalid user
+            $user_id = user_id_lock_by_email_or_raise('TxSnn.add_job_things: ', $conn, $email);
+            // rewrite DB
+            $sql1 = "UPDATE job_entry AS J"
+                  . "  SET J.attribute = :attribute , J.title = :title , J.description = :description , J.updated_at = current_timestamp "
+                  . "  WHERE J.id = :entry_id AND J.user = :user_id;";
+            $stmt = $conn->prepare($sql1);
+            $stmt->execute(array(':entry_id'=>$entry_id, ':user_id'=>$user_id, ':attribute'=>$attribute, ':title'=>$title, ':description'=>$description));
+            return true;
+        });
+}
+
 function open_job_listing(PDO $conn, string $email, int $job_entry_id) {
     return open_job_things('L')($conn, $email, $job_entry_id);
 }

@@ -87,18 +87,17 @@ function content_and_process_by_POST($pvs, $messages){
        \FormCheck\check_radio_value_safe($pvs['open_close'], ['open', 'close']),
        check_title_duplicate_in_each_user($login->user('email'), trim($pvs['title'])) // check duplicated title
     ];
-        
-        $safe_form_post_p
-    = array_reduce($post_checks, (fn($carry, $item) => $carry&&($item||$item==="")), true);
+    
+    $safe_form_post_p = array_reduce($post_checks, (fn($carry, $item) => $carry&&($item||$item==="")), true);
 
     // prepare Content
 
     // 3. update database page
     global $step_demand;
     if ($safe_form_post_p && $step_demand === 'upload') {
-        global $data_source_name, $sql_rw_user, $sql_rw_pass;
 
         // register user to DB.
+        global $data_source_name, $sql_rw_user, $sql_rw_pass;
         \Tx\with_connection($data_source_name, $sql_rw_user, $sql_rw_pass)(
             function($conn_rw) use($loggedin_email, $post_checks) {
                 \TxSnn\add_job_things($post_checks['attribute'])
@@ -121,44 +120,17 @@ function content_and_process_by_POST($pvs, $messages){
     }
     // 2. confirm page
     elseif ($safe_form_post_p && $step_demand== 'confirm') {
-        $title_part = "please confirm if OK";
+        $title_part = "please confirm";
         $content_html = content_of_confirm_bulletin($pvs, $messages);
     }
     // 1. edit page
     else {
-        $title_part = "edit bulletin";
+        $title_part = "new bulletin";
         $content_html = content_of_edit_bulletin($pvs, $messages);
     }
     
     // return
     return [$title_part, $content_html, $messages];
-}
-
-function check_title_duplicate_in_each_user(string $email, $title){
-    // returns [success_p, message, duplicated_url_p];
-    if(gettype($title)!=='string' || $title==="") {
-        return [null, "invalid title.", false];
-    }
-    $duplicated_post = select_duplicated_bulletins_from_db($email, $title);
-    if($duplicated_post) {
-        $dup0 = $duplicated_post[0];
-        $duplicated_url = url_of_bulletin_detail($dup0['eid']);
-        return [null, $duplicated_url, true]; // duplicated
-    } else {
-        return ['not_duplicated', "", false]; // not duplicated
-    }
-}
-
-function select_duplicated_bulletins_from_db(string $email, string $title){
-    
-    $sql_sel_dup = "SELECT J.id AS eid , U.email, J.title"
-                 . "  FROM user as U INNER JOIN job_entry AS J"
-                 . "    ON U.id = J.user"
-                 . "  WHERE J.title = :title"
-                 . "    AND U.email = :email;";
-
-    $ret0 = db_ask_ro($sql_sel_dup, [":email" => $email, ":title" => $title], \PDO::FETCH_ASSOC);
-    return $ret0;
 }
 
 // prepare contents

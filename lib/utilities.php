@@ -225,8 +225,8 @@ function tml_bulletin_edit_button(int $job_entry_id){
 
     $form_tml = "<form action='cmenu_bulletin_edit.php' method='POST'>"
               . "  " . $token
-              . "  <input type='hidden' name='mode' value='edit_exist_post'>"
-              . "  <input type='hidden' name='entry_id' value='{$job_entry_id}'>"
+              . "  <input type='hidden' name='step_demand' value='ask_db_edit_post'>"
+              . "  <input type='hidden' name='job_entry_id' value='{$job_entry_id}'>"
               . "  <input type='submit' value='edit' />"
               . "</form>";
     return $form_tml;
@@ -285,6 +285,40 @@ function html_text_of_bulletins_table (array $bulletin_array, $edit_menu_p=false
     // return
     return $tml_text;
 }
+
+
+// ask DB about duplication
+
+
+function select_duplicated_bulletins_from_db(string $email, string $title, string $eid_old='-1'){
+    $sql_sel_dup = "SELECT J.id AS eid , U.email, J.title"
+                 . "  FROM user as U INNER JOIN job_entry AS J"
+                 . "    ON U.id = J.user"
+                 . "  WHERE J.title = :title"
+                 . "    AND U.email = :email"
+                 . "    AND J.id != :eid_old"
+                 . ";";
+
+    $ret0 = db_ask_ro($sql_sel_dup, [":email"=>$email, ":title"=>$title, "eid_old"=>$eid_old],
+                      \PDO::FETCH_ASSOC);
+    return $ret0;
+}
+
+function check_title_duplicate_in_each_user(string $email, $title, $eid_old=-1){
+    // returns [success_p, message, duplicated_url_p];
+    if(gettype($title)!=='string' || $title==="") {
+        return [null, "invalid title.", false];
+    }
+    $duplicated_post = select_duplicated_bulletins_from_db($email, $title, (string)$eid_old);
+    if($duplicated_post) {
+        $dup0 = $duplicated_post[0];
+        $duplicated_url = url_of_bulletin_detail($dup0['eid']);
+        return [null, $duplicated_url, true]; // duplicated
+    } else {
+        return ['not_duplicated', "", false]; // not duplicated
+    }
+}
+
 
 
 ?>
