@@ -192,20 +192,82 @@ function html_text_of_npages_a_hrefs
 
 // cooperator's html
 
-function html_text_of_cooperator(array $user_info){
-    $user_things = array_map('h', $user_info);
+function html_text_of_cooperator(array $user_info, $omit_p=false, $omitted_length=0){
+    // $bulletin_info need to be included both of user info
+    $vals = array_map('h', $user_info);
+
+    // content
+    $cooperator_url = url_of_cooperator_detail($vals['public_uid']);
+
+    $h_n_tml
+        = ((! $omit_p)
+           ? "<h3>{$vals['name']}</h3>"
+           : "<a href='{$cooperator_url}'><h3>{$vals['name']}</h3></a>");
+    $note_omitted 
+        = ((! $omit_p)
+           ? $vals['note']
+           : mb_strimwidth($vals['note'], 0, $omitted_length, '...', 'UTF-8'));
+    $detail_a_href
+        = ((! $omit_p) ? "" : "  <a href='{$cooperator_url}'>(detail)</a>");
 
     $tml_text
-        = "<h3>{$user_things['name']}</h3>"
-        . "<ul>"
-        . "  <li>created: {$user_things['created_at']}</li>"
-        . "  <li>email: {$user_things['email']}</li>"
-        . "  <li>public_uid: {$user_things['public_uid']}</li>"
-        . "</ul>"
-        . "<p>{$user_things['note']}</p>";
+        = "<div class='cooperator'>"
+        . $h_n_tml
+        . "  <ul class='posten_meta'>"
+        . "    <li>created: {$vals['created_at']}</li>"
+        . "    <li>email: {$vals['email']}</li>"
+        . "    <li>public_uid: {$vals['public_uid']}</li>"
+        . "  </ul>"
+        . "  <p class='posten_content'>{$note_omitted}"
+        . $detail_a_href
+        . "  </p>"
+        . "</div>";
 
     return $tml_text;
 }
+
+// bulletin's html
+
+function html_text_of_bulletin(array $bulletin_info, $omit_p=false, $omitted_length=0){
+    // $bulletin_info need to be included both of user and job_entry informations
+    $vals = array_map('h', $bulletin_info);
+
+    // content
+    $listing_or_seeking = ($vals['attribute'] =='L'  ?  'Listing' :
+                           ($vals['attribute']=='S' ?  'Seeking' : 'showing'));
+    $detail_url = url_of_bulletin_detail($vals['id']); // id of job_entry.id
+    $cooperator_url = url_of_cooperator_detail($vals['public_uid']);
+
+    $h_n_tml
+        = ((! $omit_p)
+           ? "<h3>{$vals['title']}</h3>"
+           : "<a href='{$detail_url}'><h3>{$vals['title']}</h3></a>");
+    $description_omitted 
+        = ((! $omit_p)
+           ? $vals['description']
+           : mb_strimwidth($vals['description'], 0, $omitted_length, '...', 'UTF-8'));
+    $detail_a_href
+        = ((! $omit_p) ? "" : "  <a href='{$detail_url}'>(detail)</a>");
+
+    
+    $tml_text 
+           = "<div class='bulletin'>"
+           . $h_n_tml
+           . "  {$listing_or_seeking} by "
+           . "  <a href='{$cooperator_url}'>{$vals['name']}</a> <br />"
+           . "  <ul class='posten_meta'>"
+           . "    <li>eid: {$vals['id']}</li>"
+           . "    <li>S/L: {$vals['attribute']} </li>"
+           . "    <li>created: {$vals['created_at']}</li>"
+           . "    <li>updated: {$vals['updated_at']}</li>"
+           . "  </ul>"
+           . "  <p class='posten_content'> {$description_omitted}"
+           . $detail_a_href 
+           . "  </p>"
+           . "</div>";
+    return $tml_text;
+}
+
 
 // bulletin table
 

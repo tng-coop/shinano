@@ -42,30 +42,17 @@ $n_cooperators = db_ask_ro("SELECT COUNT(*) FROM user;")[0][0]; // WHERE opend c
 // make actual content of cooperators
 
 function html_text_of_cooperators($cooper_arr){
+    // detect null
     if(is_null($cooper_arr[0])){
         return "";
     }
 
+    // content
     $contents_tml = "";
     $contents_tml = "<div class='cooperators'>";
     foreach($cooper_arr as $row){
-        [$name, $note, $puid, $email, $created_at]
-        = array_map(fn($key) => h($row[$key]), 
-                    ['name', 'note', 'public_uid', 'email', 'created_at']);
-
-        $href_of_cooperator = url_of_cooperator_detail($puid);
-        
-        $row_tml
-            = "<div class='cooperator'>"
-            . "  <h3> {$name} </h3>"
-            . "  <a href='{$href_of_cooperator}'> detail </a>"
-            . "  <pre> {$note} </pre>"
-            . "  <p style='color:blue;'> links of look for bulletins </p>"
-            . "  email: <span> {$email} </span>"
-            . "  , created: <span> {$created_at} </span>"
-            . "</div>"
-            ."<hr /> \n";
-        $contents_tml .= $row_tml;
+        $contents_tml .= html_text_of_cooperator($row, true, 74*3) // limit to 74*3 characters.
+                      .  "<hr />\n";
     }
     $contents_tml .= "</div>";
     
@@ -79,7 +66,8 @@ $html_hrefs_npages
     = html_text_of_npages_a_hrefs("cooperators.php",
                                   $request_npage, $n_cooperators, $cooperators_per_page);
 
-$cooperators_tml = "<p>Thanks for {$n_cooperators} cooperators in Shinano. </p>"
+$cooperators_tml = "<h3>Cooperators of Shinano </h3>"
+                 . "<p>Thanks for {$n_cooperators} cooperators in Shinano. </p>"
                  . $html_hrefs_npages . "<hr />" 
                  . $html_cooperators_list . "<hr />"
                  . $html_hrefs_npages;

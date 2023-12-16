@@ -53,19 +53,19 @@ $ret_stmt_user_jobs
 
 // make actual content of cooperators
 
-function html_text_of_cooperators($stmt_of_user, $stmt_of_jobs){
+function html_text_of_specific_cooperator($stmt_of_user, $stmt_of_jobs){
 
     $user_thing = array_map('h', $stmt_of_user->fetch());
 
     $jobs = $stmt_of_jobs->fetchAll(\PDO::FETCH_ASSOC);
     
     // html of user and user's job things
-    $cooperator_text = html_text_of_cooperator($user_thing);
-    $jobs_text = html_text_of_bulletins_table($jobs, false);
+    $cooperator_info_tml = html_text_of_cooperator($user_thing);
+    $jobs_table_tml = "<h3>".h("{$user_thing['name']}'s bulletins")."</h3>"
+                    . html_text_of_bulletins_table($jobs, false);
     
-    $tml_text = $cooperator_text  . "<hr />" 
-              . "<h3>".h("{$user_thing['name']}'s bulletins")."</h3>"
-              . $jobs_text;
+    $tml_text = $cooperator_info_tml . "<hr />"
+              . $jobs_table_tml;
 
     return $tml_text;
 }
@@ -73,7 +73,7 @@ function html_text_of_cooperators($stmt_of_user, $stmt_of_jobs){
 
 // prepare template
 
-$cooperator_tml = html_text_of_cooperators($ret_stmt_user, $ret_stmt_user_jobs);
+$cooperator_tml = html_text_of_specific_cooperator($ret_stmt_user, $ret_stmt_user_jobs);
 
 RenderByTemplate("template.html", "Cooperator - Shinano -",
                  $cooperator_tml);

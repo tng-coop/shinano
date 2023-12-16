@@ -30,50 +30,21 @@ $offset_from = ($request_npage - 1) * $bulletins_per_page; // npage count from 1
 
 // make content_actual of cooperators
 function html_text_of_bulletins_list($job_entries){
+    // detect null
     if(is_null($job_entries[0])){
         return "";
     }
 
-    $key_names = array_keys($job_entries[0]);
-
     // content
-    $tml_text = "";
-    $tml_text = "<div class='cooperators'>";
+    $content_tml = "";
+    $content_tml = "<div class='builtin_board'>";
     foreach($job_entries as $row){
-
-        // set key_value
-        $vals = []; // values
-        foreach($key_names as $key){
-            $vals[$key] = h($row[$key]);
-        }
-
-        // content of row
-        $listing_or_seeking = (( $vals['attribute']=='L') ?  'Listing' :
-                               (($vals['attribute']=='S') ?  'Seeking' : 'showing'));
-        $detail_url = url_of_bulletin_detail($vals['id']);
-        $cooperator_url = url_of_cooperator_detail($vals['public_uid']);
-        $description_omitted = mb_strimwidth($vals['description'], 0, 74*3, '...', 'UTF-8'); // limit to 74*3 characters.
-
-        global $pubroot;
-        $row_tml
-            = "<div class='look_for_bulletin'>"
-            . "  <a href='{$detail_url}'> <h3> {$vals['title']} </h3> </a>"
-            . "  {$listing_or_seeking} by "
-            . "  <a href='{$cooperator_url}'>{$vals['name']}</a> <br />"
-            . "  eid: <span> {$vals['id']} </span> , "
-            . "  S/L: <span> {$vals['attribute']} </span> , "
-            . "  created: <span> {$vals['created_at']} </span> , "
-            . "  updated: <span> {$vals['updated_at']} </span> , "
-            . "  <p> {$description_omitted}"
-            . "    <a href='{$detail_url}'>(detail)</a></p>"
-            . "</div>"
-            . "<hr /> \n";
-        
-        $tml_text .= $row_tml;
+        $content_tml .= html_text_of_bulletin($row, true, 74*3) // limit to 74*3 characters.
+                     .  "<hr />\n";
     }
-    $tml_text .= "</div>";
+    $content_tml .= "</div>";
     
-    return $tml_text;
+    return $content_tml;
 }
 
 // actual contents

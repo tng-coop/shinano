@@ -53,40 +53,13 @@ $job_entry = db_ask_ro($sql1, ['entry_id' => $request_entry_id], \PDO::FETCH_ASS
 // make content_actual of bulletin
 
 function html_text_of_bulletins_list($job_entry){
-    $key_names = array_keys($job_entry);
-
-    // content
-    if(!(($job_entry)===[])){
-        $tml_text = "";
-        $tml_text = "<div class='bulletin'>";
-
-        // set key_value
-        $vals = []; // values
-        foreach($key_names as $key){
-            $vals[$key] = h($job_entry[$key]);
-        }
-
-        // content of row
-        $listing_or_seeking = ($vals['attribute'] =='L'  ?  'Listing' :
-                               ($vals['attribute']=='S' ?  'Seeking' : 'showing'));
-
-        global $pubroot;
-        $tml_text
-            .= 
-            ("<div class='look_for_seek'>" .
-             "  <a href=''> <h3> {$vals['title']} </h3> </a>" .
-             "  {$listing_or_seeking} by " .
-             "  <a href='{$pubroot}cooperator.php?puid={$vals['public_uid']}'>{$vals['name']}</a> <br />" .
-             "  id: <span> {$vals['id']} </span> , " .
-             "  S/L: <span> {$vals['attribute']} </span> , " .
-             "  created: <span> {$vals['created_at']} </span> , " .
-             "  opened: <span> {$vals['opened_at']} </span> , " .
-             "  closed: <span> {$vals['closed_at']} </span> ," .
-             "  <p><pre style='display: inline;'> {$vals['description']}</pre>" .
-             "</div>" .
-             "<hr /> \n");
-        $tml_text .= "</div>";
+    // detect null
+    if(is_null($job_entry)) {
+        return "not found";
     }
+            
+    // content
+    $tml_text = html_text_of_bulletin($job_entry);;
 
     return $tml_text;
 }
