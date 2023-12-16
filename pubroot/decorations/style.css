@@ -1,14 +1,14 @@
 
 /* style of template framework HTML */
 
-#head_line > .search_form > * {
+#head_line > #head_search > * {
     display: inline;
 }
+
 
 .logout_form {
     display: inline;
 }
-
 .logout_form > .logout_button{
 }
 

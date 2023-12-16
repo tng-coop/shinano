@@ -183,8 +183,8 @@ function html_text_of_npages_a_hrefs
 
     $a_s_tml = "";
     for($iter=1; $iter<=$n_npages; $iter++){
-        $additional_query_string = $additional_query ? "&{$additional_query}" : "";
-        $a_s_tml .= " <a href='{$script_link}?npage={$iter}{$additional_query_string}'>{$iter}</a>";
+        $additional_query_string = $additional_query ? "{$additional_query}&" : "";
+        $a_s_tml .= " <a href='{$script_link}?{$additional_query_string}npage={$iter}'>{$iter}</a>";
     }
     return $a_s_tml;
 }

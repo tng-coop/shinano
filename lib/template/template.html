@@ -21,14 +21,19 @@
       </div>
       <div id="head_search">
         <!-- search -->
-        <form class="search_form" method="GET" action="<?=$v->pub?>search.php">
-          |
-          <input type="text" name="search_text" placeholder="insert text to search" />
-          <input type="checkbox" name="jobp"> Job </input>
-          <input type="checkbox" name="workerp"> Worker </input>
-          <input type="submit" value="search" />
-          |
+        |
+        Search
+        <form id="head_search_form" class="search_form" method="GET">
+          <input type="text" name="search_text" placeholder="insert text to search"
+                 value="<?=h($_GET['search_text'])?>" />
         </form>
+        at
+        <button type="submit" form="head_search_form" formaction="<?=$v->pub?>bulletin_board.php">
+            bulletins</button>
+        <button type="submit" form="head_search_form"
+                onclick="">cooperators</button>
+        |
+
       </div>
       <div id="head_cooperator_menu">
         <!-- account -->
