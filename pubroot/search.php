@@ -11,7 +11,7 @@ if(! $login->user()){
     exit();
 }
 
-// if logged in, prepare cooperators page.
+// if logged in request, prepare bulletins.
 
 // GET's search_text
 $search_text = (! is_null($_GET['search_text'])) ? $_GET['search_text'] : "";
@@ -30,47 +30,7 @@ $bulletins_per_page = 17;
 $offset_from = ($request_npage - 1) * $bulletins_per_page; // npage count from 1
 
 
-// Ask DB.
-
-function search_job_entries($search_pattern_text, $offset_from, $bulletin_per_page){
-    global $data_source_name, $sql_ro_user, $sql_ro_pass;
-    
-    [$job_entries, $n_entries] 
-    = \Tx\with_connection($data_source_name, $sql_ro_user, $sql_ro_pass)(
-        function($conn_ro) use ($search_pattern_text, $bulletin_per_page, $offset_from) {
-            $sql_common 
-                = "  WHERE (   (J.closed_at IS NULL AND J.opened_at IS NOT NULL)" // opened entries
-                . "         OR  J.opened_at > J.closed_at)"                       // opened entries
-                . "    AND (    J.title       LIKE CONCAT('%', :pattern, '%')"
-                . "         OR  J.description LIKE CONCAT('%', :pattern, '%'))"
-                ;
-
-            $sql_n_entries // counter of result searched
-                = "SELECT COUNT(*) as count"
-                . "  FROM job_entry AS J"
-                . "  {$sql_common}"
-                . ";";
-            $stmt = $conn_ro->prepare($sql_n_entries);
-            $stmt->execute([':pattern'=>$search_pattern_text]);
-            $n_entries = $stmt->fetchAll(\PDO::FETCH_ASSOC)[0]['count'];
-
-            $sql_search 
-                = "SELECT U.public_uid, U.name, J.id, J.attribute, J.title, J.description, "
-                . "    J.created_at, J.updated_at, J.opened_at, J.closed_at"
-                . "  FROM user AS U INNER JOIN job_entry AS J"
-                . "    ON U.id = J.user"
-                . "  {$sql_common}"
-                . "  ORDER BY J.opened_at DESC"
-                . "  LIMIT {$bulletin_per_page} OFFSET {$offset_from}"
-                . ";";
-            $stmt = $conn_ro->prepare($sql_search);
-            $stmt->execute([':pattern'=>$search_pattern_text]);
-            $job_entries = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        
-            return [$job_entries, $n_entries];
-        });
-    return [$job_entries, $n_entries];
-}
+// ask DB
 
 [$job_entries, $n_entries] = search_job_entries($search_text, $offset_from, $bulletins_per_page);
 
@@ -125,17 +85,16 @@ function html_text_of_bulletins_list($job_entries){
 // actual contents
 
 $html_bulletins_list = html_text_of_bulletins_list($job_entries);
-
-
 $html_hrefs_npages
     = html_text_of_npages_a_hrefs("search.php", $request_npage, $n_entries, $bulletins_per_page,
                                   http_build_query(['search_text' => $_GET['search_text']]));
 
-$bulletins_list_tml = "<h3>Bulltein Board of Shinano <!-- (==BBS) --> </h3>"
-                  . "<p>Thanks for {$n_entries} bulletins in Shinano. </p>"
-                  . $html_hrefs_npages . "<hr />" 
-                  . $html_bulletins_list . "<hr />"
-                  . $html_hrefs_npages;
+$bulletins_list_tml
+    = "<h3>Bulltein Board of Shinano <!-- (==BBS) --> </h3>"
+    . "<p>In easy search, there is {$n_entries} matchis found. </p>"
+    . $html_hrefs_npages . "<hr />" 
+    . $html_bulletins_list . "<hr />"
+    . $html_hrefs_npages;
 
 // render HTML by template
 

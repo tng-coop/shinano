@@ -11,7 +11,7 @@ if(! $login->user()){
     exit();
 }
 
-// if logged in request, prepare contents.
+// if logged in request, prepare bulletins.
 
 // GET's npage
 if($request_method == "GET") {
@@ -23,23 +23,12 @@ if($request_method == "GET") {
 }
 
 $bulletins_per_page = 17;
-$offset_from = ($request_npage - 1)  * $bulletins_per_page; // npage count from 1
+$offset_from = ($request_npage - 1) * $bulletins_per_page; // npage count from 1
+
 
 // ask DB
 
-$sql1
-    = "SELECT U.name, U.email, U.public_uid, "
-    . "    J.id, J.attribute, J.user, J.title, J.description, J.created_at, J.opened_at, J.closed_at"
-    . "  FROM user as U INNER JOIN job_entry as J"
-    . "    ON U.id = J.user"
-    . "  ORDER BY J.id"
-    . "  LIMIT {$bulletins_per_page} OFFSET {$offset_from}"
-    . ";";
-
-$job_entries = db_ask_ro($sql1, [], \PDO::FETCH_ASSOC);
-
-
-$n_entries = db_ask_ro("SELECT COUNT(*) FROM job_entry;")[0][0]; // WHERE opend cooperator(user) and opend bulletins
+[$job_entries, $n_entries] = search_job_entries("", $offset_from, $bulletins_per_page);
 
 // make content_actual of cooperators
 
@@ -96,15 +85,17 @@ $html_hrefs_npages
     = html_text_of_npages_a_hrefs("bulletin_board.php",
                                   $request_npage, $n_entries, $bulletins_per_page);
 
-$bulletins_list_tml = "<h3>Bulltein Board of Shinano <!-- (==BBS) --> </h3>"
-                  . "<p>Thanks for {$n_entries} bulletins in Shinano. </p>"
-                  . $html_hrefs_npages . "<hr />" 
-                  . $html_bulletins_list . "<hr />"
-                  . $html_hrefs_npages;
+$bulletins_list_tml
+    = "<h3>Bulltein Board of Shinano <!-- (==BBS) --> </h3>"
+    . "<p>Thanks for opened {$n_entries} bulletins in Shinano. </p>"
+    . $html_hrefs_npages . "<hr />" 
+    . $html_bulletins_list . "<hr />"
+    . $html_hrefs_npages;
 
 // render HTML by template
 
 RenderByTemplate("template.html", "Look for Bulletin Board of - Shinano -",
                  $bulletins_list_tml);
+
 
 ?>
