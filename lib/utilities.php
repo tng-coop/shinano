@@ -174,7 +174,8 @@ function url_of_cooperator_detail($puid){
 // npages <a href> s
 
 function html_text_of_npages_a_hrefs
-    ($script_relative_url, $npage_current, $n_entries, $entries_per_page){
+    ($script_relative_url, $npage_current, $n_entries, $entries_per_page, 
+     $additional_query=null){
 
     $n_npages = ceil($n_entries / $entries_per_page);
     global $pubroot;
@@ -182,7 +183,8 @@ function html_text_of_npages_a_hrefs
 
     $a_s_tml = "";
     for($iter=1; $iter<=$n_npages; $iter++){
-        $a_s_tml .= " <a href='{$script_link}?npage={$iter}'>{$iter}</a>";
+        $additional_query_string = $additional_query ? "&{$additional_query}" : "";
+        $a_s_tml .= " <a href='{$script_link}?npage={$iter}{$additional_query_string}'>{$iter}</a>";
     }
     return $a_s_tml;
 }
