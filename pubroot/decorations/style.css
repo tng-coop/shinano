@@ -13,6 +13,21 @@
 }
 
 
+/* posten_content */
+
+p.posten_content {
+    white-space: pre;
+}
+
+ul.posten_meta {
+    padding-left: 2em;
+}
+ul.posten_meta li {
+    display:inline;
+    /*border: 1px solid #cccccc;*/
+    padding: 0em 1em 0em 0em;
+}
+
 /* table */
 
 table  {
