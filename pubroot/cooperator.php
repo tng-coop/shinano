@@ -15,11 +15,8 @@ if(! $login->user()){
 // if logged in, prepare specific cooperator page.
 
 // GET's public_uid
-if(isset($_GET['puid']) && int_string_p($_GET['puid'])){
-    $request_public_uid = intval($_GET['puid']);    
-} else {
-    $request_public_uid = false;
-}
+$request_public_uid = ((isset($_GET['puid']) && int_string_p($_GET['puid']))
+                     ? intval($_GET['puid']) : null);
 
 // deny invalid URL
 if(! $request_public_uid){
@@ -33,36 +30,32 @@ if(! $request_public_uid){
 
 // ask DB
 
-$ret_stmt_user
-    = \Tx\with_connection($data_source_name, $sql_ro_user, $sql_ro_pass)(
-        function($conn_ro) use ($request_public_uid){  
-            $sql1 = "SELECT name,email,public_uid,note,created_at"
-                  . "  FROM user"
-                  . "  WHERE public_uid = :public_uid";
-            $stmt = $conn_ro->prepare($sql1);
-            $stmt->execute(['public_uid' => $request_public_uid]);
-            return $stmt;
-        });
+$sql1
+    = "SELECT name,email,public_uid,note,created_at"
+    . "  FROM user"
+    . "  WHERE public_uid = :public_uid";
+$cooperator_thing = db_ask_ro($sql1, ['public_uid' => $request_public_uid], \PDO::FETCH_ASSOC)[0];
+
 
 $ret_stmt_user_jobs
     = \Tx\with_connection($data_source_name, $sql_ro_user, $sql_ro_pass)(
         function($conn_ro) use ($request_public_uid){  
-            return \TxSnn\view_job_things_by_public_uid($conn_ro, $request_public_uid);
-        });
+            return \TxSnn\view_job_things_by_public_uid($conn_ro, $request_public_uid);});
+$job_entries = $ret_stmt_user_jobs->fetchAll(\PDO::FETCH_ASSOC);
 
 
-// make actual content of cooperators
+// make actual content of cooperator
+function html_text_of_specific_cooperator($cooperator_thing, $job_entries){
+    // detect null
+    if(is_null($cooperator_thing)) {
+        return "not found";
+    }
 
-function html_text_of_specific_cooperator($stmt_of_user, $stmt_of_jobs){
+    // content of cooperator and cooperator's job things
+    $cooperator_info_tml = html_text_of_cooperator($cooperator_thing);
 
-    $user_thing = array_map('h', $stmt_of_user->fetch());
-
-    $jobs = $stmt_of_jobs->fetchAll(\PDO::FETCH_ASSOC);
-    
-    // html of user and user's job things
-    $cooperator_info_tml = html_text_of_cooperator($user_thing);
-    $jobs_table_tml = "<h3>".h("{$user_thing['name']}'s bulletins")."</h3>"
-                    . html_text_of_bulletins_table($jobs, false);
+    $jobs_table_tml = "<h3>".h("{$cooperator_thing['name']}'s bulletins")."</h3>"
+                    . html_text_of_bulletins_table($job_entries, false);
     
     $tml_text = $cooperator_info_tml . "<hr />"
               . $jobs_table_tml;
@@ -71,9 +64,9 @@ function html_text_of_specific_cooperator($stmt_of_user, $stmt_of_jobs){
 }
 
 
-// prepare template
+// prepare content and render by template
 
-$cooperator_tml = html_text_of_specific_cooperator($ret_stmt_user, $ret_stmt_user_jobs);
+$cooperator_tml = html_text_of_specific_cooperator($cooperator_thing, $job_entries);
 
 RenderByTemplate("template.html", "Cooperator - Shinano -",
                  $cooperator_tml);
