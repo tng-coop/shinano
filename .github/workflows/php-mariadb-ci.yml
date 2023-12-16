@@ -59,7 +59,7 @@ jobs:
       run: php -S localhost:8000 -t pubroot &
 
     - name: Install dependencies, Show Playwright version, and Run tests
-      run: docker run --rm --network="host" -v $(pwd):/repo -w /repo/e2e ${{ env.PLAYWRIGHT_IMAGE }} npm ci 
+      run: docker run --rm --network="host" -v $(pwd):/repo -w /repo/e2e ${{ env.PLAYWRIGHT_IMAGE }} npm ci
 
     - name: Install dependencies, Show Playwright version, and Run tests
       run: docker run --rm --network="host" -v $(pwd):/repo -w /repo/e2e ${{ env.PLAYWRIGHT_IMAGE }} npx playwright --version
@@ -75,4 +75,4 @@ jobs:
         path: |
           e2e/playwright-report/
           e2e/test-results/
-        retention-days: 3      
+        retention-days: 3
