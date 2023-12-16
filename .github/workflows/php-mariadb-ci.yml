@@ -52,6 +52,9 @@ jobs:
     - name: Check Database Character Set and Collation
       run: mysql -h 127.0.0.1 -u root  -e "SELECT * FROM INFORMATION_SCHEMA.SCHEMATA;"
 
+    - name: Utilities Test
+      run: php ./test/utilities.php
+
     - name: Basic Features Test
       run: ./devtools/test-basic-features.sh
 
