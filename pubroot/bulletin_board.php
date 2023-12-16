@@ -48,27 +48,28 @@ function html_text_of_bulletins_list($job_entries){
         }
 
         // content of row
-        $listing_or_seeking = ($vals['attribute'] =='L'  ?  'Listing' :
-                               ($vals['attribute']=='S' ?  'Seeking' : 'showing'));
+        $listing_or_seeking = (( $vals['attribute']=='L') ?  'Listing' :
+                               (($vals['attribute']=='S') ?  'Seeking' : 'showing'));
         $detail_url = url_of_bulletin_detail($vals['id']);
-        $description_omitted = mb_strimwidth($vals['description'], 0, 74*3, '...', 'UTF-8' );  // limit to 74*3 characters.
+        $cooperator_url = url_of_cooperator_detail($vals['public_uid']);
+        $description_omitted = mb_strimwidth($vals['description'], 0, 74*3, '...', 'UTF-8'); // limit to 74*3 characters.
 
         global $pubroot;
-        $tml_text
-            .= 
-            ("<div class='look_for_seek'>" .
-             "  <a href='{$detail_url}'> <h3> {$vals['title']} </h3> </a>" .
-             "  {$listing_or_seeking} by " .
-             "  <a href='{$pubroot}cooperator.php?puid={$vals['public_uid']}'>{$vals['name']}</a> <br />" .
-             "  id: <span> {$vals['id']} </span> , " .
-             "  S/L: <span> {$vals['attribute']} </span> , " .
-             "  created: <span> {$vals['created_at']} </span> , " .
-             "  opened: <span> {$vals['opened_at']} </span> , " .
-             "  closed: <span> {$vals['closed_at']} </span> ," .
-             "  <p><pre style='display: inline;'> {$description_omitted}</pre>" .
-             "     <a href='{$detail_url}'>(detail)</a></p>" .
-             "</div>" .
-             "<hr /> \n");
+        $row_tml
+            = "<div class='look_for_bulletin'>"
+            . "  <a href='{$detail_url}'> <h3> {$vals['title']} </h3> </a>"
+            . "  {$listing_or_seeking} by "
+            . "  <a href='{$cooperator_url}'>{$vals['name']}</a> <br />"
+            . "  eid: <span> {$vals['id']} </span> , "
+            . "  S/L: <span> {$vals['attribute']} </span> , "
+            . "  created: <span> {$vals['created_at']} </span> , "
+            . "  updated: <span> {$vals['updated_at']} </span> , "
+            . "  <p> {$description_omitted}"
+            . "    <a href='{$detail_url}'>(detail)</a></p>"
+            . "</div>"
+            . "<hr /> \n";
+        
+        $tml_text .= $row_tml;
     }
     $tml_text .= "</div>";
     
