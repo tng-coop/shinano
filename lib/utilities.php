@@ -343,6 +343,14 @@ function html_text_of_bulletins_table (array $bulletin_array, $edit_menu_p=false
               .  array_reduce($tr_keys, fn($carry, $key) => $carry . " <th>$key</th> ", "")
               .  "</ tr>";
 
+    // hide not-opened entries if-not editmenu.
+    if(! $edit_menu_p){
+        $bulletin_array
+            = array_filter($bulletin_array,
+                           fn($row) => job_entry_opened_p($row['opened_at'], $row['closed_at']));
+    }
+    
+
     // table rows
     foreach($bulletin_array as $row){
         // each row into html injection safe
