@@ -143,36 +143,13 @@ SQL
     };
 }
 
-function open_job_thing(PDO $conn, string $email, int $entry_id){
-    \Tx\block($conn, "open_job_thing ID: " . $entry_id)(
-        function() use($conn, $email, $entry_id) {
-            // raise if invalid user
-            $user_id = user_id_lock_by_email_or_raise('TxSnn.open_job_thing: ', $conn, $email);
-            // rewrite DB
-            $sql1 = "UPDATE job_entry AS J"
-                  . "  SET opened_at = current_timestamp, updated_at = current_timestamp"
-                  . "  WHERE id = :job_entry_id AND user = :user_id;";
-            $stmt = $conn->prepare($sql1);
-            $stmt->execute(array(':job_entry_id'=>$entry_id, ':user_id'=>$user_id));
-            return true;
-        });
+function open_job_thing(PDO $conn, string $email, int $id_on_user){
+    return open_job_things(null)($conn, $email, $id_on_user);
 }
 
-function close_job_thing(PDO $conn, string $email, int $entry_id){
-    \Tx\block($conn, "close_job_thing ID: " . $entry_id)(
-        function() use($conn, $email, $entry_id) {
-            // raise if invalid user
-            $user_id = user_id_lock_by_email_or_raise('TxSnn.close_job_thing: ', $conn, $email);
-            // rewrite DB
-            $sql1 = "UPDATE job_entry AS J"
-                  . "  SET closed_at = current_timestamp, updated_at = current_timestamp"
-                  . "  WHERE id = :job_entry_id AND user = :user_id;";
-            $stmt = $conn->prepare($sql1);
-            $stmt->execute(array(':job_entry_id'=>$entry_id, ':user_id'=>$user_id));
-            return true;
-        });
+function close_job_thing(PDO $conn, string $email, int $id_on_user){
+    return close_job_things(null)($conn, $email, $id_on_user);
 }
-
 
 function update_job_things(PDO $conn, int $entry_id,
                            string $email, string $attribute, string $title, string $description){
@@ -200,17 +177,18 @@ function open_job_seeking(PDO $conn, string $email, int $id_on_user) {
     return open_job_things('S')($conn, $email, $id_on_user);
 }
 
-function open_job_things(string $attribute) {
+function open_job_things($attribute) {
     return function(PDO $conn, string $email, int $id_on_user) use ($attribute) {
         \Tx\block($conn, "open_job_things:" . $attribute)(
             function() use($attribute, $conn, $email, $id_on_user) {
                 $user_id = user_id_lock_by_email_or_raise('TxSnn.open_job_things: ', $conn, $email);
                 $stmt = $conn->prepare(<<<SQL
 UPDATE job_entry AS J SET opened_at = current_timestamp
-       WHERE user = :user_id AND id_on_user = :id_on_user AND attribute = :attribute
+       WHERE user = :user_id AND id_on_user = :id_on_user AND (:n_attribute IS NULL OR attribute = :attribute)
 SQL
                 );
-                $stmt->execute(array(':user_id' => $user_id, ':id_on_user' => $id_on_user, ':attribute' => $attribute));
+                $stmt->execute(array(':user_id' => $user_id, ':id_on_user' => $id_on_user,
+                                     ':n_attribute' => $attribute, ':attribute' => $attribute));
             }
         );
     };
