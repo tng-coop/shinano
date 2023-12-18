@@ -35,7 +35,7 @@
         |
 
       </div>
-      <div id="head_cooperator_menu">
+      <div id="head_cooperator_s_menu">
         <!-- account -->
         |
         <?php 
@@ -48,9 +48,8 @@
             echo($login_tml . " | \n" . $create_tml . " | \n");
         } else {
             echo("Hello! " . $login->user("name") . " | \n" );
-            echo("<a href='{$v->pub}cmenu_account.php'>cooperator's_menu</a>" . " | \n");
+            echo("<a href='{$v->pub}cmenu.php'>cooperator's_menu</a>" . " | \n");
             echo($login_tml . " | \n");
-            echo($create_tml . " | \n");
             global $csrf;
             echo("<form action='{$v->pub}account_logout.php'"
                  .     "method='post' class='logout_form'>\n" .
@@ -60,8 +59,7 @@
         }
         ?>
 
-      </div>
-      
+      </div> <!-- /id: head_cooperator_s_menu -->
     </div> <!-- /id: head_line -->
 
     <hr />
