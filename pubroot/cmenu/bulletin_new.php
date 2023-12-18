@@ -100,15 +100,20 @@ function content_and_process_by_POST($pvs, $messages){
         global $data_source_name, $sql_rw_user, $sql_rw_pass;
         \Tx\with_connection($data_source_name, $sql_rw_user, $sql_rw_pass)(
             function($conn_rw) use($loggedin_email, $post_checks) {
-
-                //$open_or_close = (( $post_checks['open_close']==='open') ? 'open' : 
-                //(($post_checks['open_close']==='close') ? 'close' : 'close')); // old implement
                 $open_or_close = $post_checks['open_close'];
 
-                \TxSnn\add_job_thing_in_open_or_close
-                ($conn_rw, $loggedin_email,
-                 $post_checks['attribute'], $post_checks['title'], $post_checks['description'],
-                 $open_or_close);
+                // add job thing
+                $entry_id = \TxSnn\add_job_things($post_checks['attribute'])
+                ($conn_rw, $loggedin_email, $post_checks['title'], $post_checks['description']);
+
+                // open or close it
+                if($open_or_close =='open') {
+                    \TxSnn\open_job_thing($conn_rw, $loggedin_email, $entry_id);
+                }elseif($open_or_close=='close'){
+                    \TxSnn\close_job_thing($conn_rw, $loggedin_email, $entry_id);
+                }else {
+                    return false;
+                }
                 
                 return true;});
 
