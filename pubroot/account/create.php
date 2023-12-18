@@ -36,7 +36,6 @@ if(empty($_GET) || (! isset($_GET['urltoken']))){
     if(count($emails_or_fail) == 1){
         $email = $emails_or_fail[0]['email'];
         $_SESSION['email_for_account_create'] = $email;
-        print_r($email);
         
     } else {
         RenderByTemplate(

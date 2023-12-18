@@ -42,8 +42,8 @@ function send_email_for_email_varification_of_account_create($email_to, $url){
     return $result_send_email;
 
     // for testing
-    //print_r($message);
-    //return true;
+    // print_r($message);
+    // return true;
 }
 
 // Insert pre_user of DB if email-sending is no problem for system.
@@ -90,12 +90,13 @@ if($request_method == "POST"){
             // send email
 
             $email_sent = send_email_for_email_varification_of_account_create($checked_email, $url);
-             
+
+            /*
             // for test (test for enviroment where email is not sendable such as localhost.)
             print_r("email: {$checked_email} <br />");
             print_r("urltoken: {$urltoken} <br />");
             print_r("url (temporary): <a href={$url}>{$url}</a>");
-            
+            */
 
             if(! $email_sent) {
                 $db_message_tml = "somewhy email sending is failed.";
