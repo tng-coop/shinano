@@ -87,7 +87,7 @@ function content_and_process_by_POST($pvs, $messages){
        \FormCheck\check_radio_value_safe($pvs['open_close'], ['open', 'close']),
        check_title_duplicate_in_each_user($login->user('email'), trim($pvs['title'])) // check duplicated title
     ];
-    
+
     $safe_form_post_p = array_reduce($post_checks, (fn($carry, $item) => $carry&&($item||$item==="")), true);
 
     // prepare Content
@@ -114,11 +114,11 @@ function content_and_process_by_POST($pvs, $messages){
                 }else {
                     return false;
                 }
-                
+
                 return true;});
 
         [$bottom, $post_a_href, $post_sucessed_p] = check_title_duplicate_in_each_user($loggedin_email, $post_checks['title']);
-        
+
         if($post_sucessed_p){
             global $pubroot;
             $title_part = "uploaded";
@@ -141,7 +141,7 @@ function content_and_process_by_POST($pvs, $messages){
         $title_part = "new bulletin";
         $content_html = content_of_edit_bulletin($pvs, $messages);
     }
-    
+
     // return
     return [$title_part, $content_html, $messages];
 }
@@ -152,11 +152,11 @@ function content_of_confirm_bulletin($pvs, $messages){
 
     global $csrf;
     $csrf_html = $csrf->hiddenInputHTML();
-    
+
     $message_listing_or_seeking
     = $pvs['attribute']==='L' ? "as Listing" :
       ($pvs['attribute']==='S' ? "as Seeking" : "as null");
-    
+
     $message_open_or_close
     = $pvs['open_close']==='open'  ? "as Opened" :
       ($pvs['open_close']==='close' ? "as Closed" : "as null");
@@ -181,7 +181,7 @@ function content_of_confirm_bulletin($pvs, $messages){
   <input type="submit" name="step_demand" value="upload">
 </form>
 CONTENT;
-    
+
     return $content_confirm_form_html;
 }
 
@@ -189,14 +189,14 @@ function content_of_edit_bulletin($pvs, $messages){
     global $csrf;
     $csrf_html = $csrf->hiddenInputHTML();
 
-    $title_duplicate_message = 
+    $title_duplicate_message =
         (($messages['title_duplicated_in_each_user']==="") ? "" :
-         ($messages['title_duplicated_url_p']===true)) ? 
+         ($messages['title_duplicated_url_p']===true)) ?
         "\ntitle you put is duplicated at <a href='{$messages['title_duplicated_in_each_user']}'>here</a> " :
         "\n".$messages['title_duplicated_in_each_user'];
-    
+
     $messages_for_title = $messages['title'] . $title_duplicate_message;
-    
+
     $content_edit_bulletin_form_html = <<<CONTENT
 {$messages['csrf']}
 <h3> New Bulletin </h3>
@@ -228,7 +228,7 @@ function content_of_edit_bulletin($pvs, $messages){
 </form>
 
 CONTENT;
-    
+
     return $content_edit_bulletin_form_html;
 }
 
