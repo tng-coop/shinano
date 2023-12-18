@@ -36,7 +36,8 @@ CREATE UNIQUE INDEX job_entry_attribute_opened_created_user
        ON job_entry (attribute, opened_at, created_at, user, id);
 
 
--- pre user used for email authorization
+-- pre_user used for email authorization when create account.
+-- which saves tokens (needed to be temporary).
 CREATE TABLE pre_user  
        ( id            BIGINT AUTO_INCREMENT PRIMARY KEY
        , urltoken      VARCHAR(255) NOT NULL

@@ -22,11 +22,28 @@ function check_if_email_is_not_registerd($email){
     }
 }
 
-function send_email_of_email_echck($email, $url){
-    // todo
+function send_email_for_email_varification_of_account_create($email_to, $url){
+
+    $title = "[Shinano] Account Create step, this email had sent for user varification.";
+
+    $message
+           = "<h3>This is Email varification for Account Creation of Shinano</h3>"
+           . "<p>to finish Account Creation, please access below link<br />"
+           . "Create Account : <a href='{$url}'>{$url}</a></p>"
+           . "<hr />"
+           . "<p> this e-mail is sent by shinano. this email is sending only</p>";
+
+    $headers  = "";
+    $headers .= 'Content-type: text/html; charset=UTF-8' . "\r\n";
+    // $headers .= 'From: Shinano <shinano@tng.coop>' // config email_from
+    
+    $result_send_email = mb_send_mail($email_to, $title, $message, $headers);
+
+    return $result_send_email;
 
     // for testing
-    return true;
+    //print_r($message);
+    //return true;
 }
 
 // Insert pre_user of DB if email-sending is no problem for system.
@@ -71,16 +88,14 @@ if($request_method == "POST"){
             }
             
             // send email
-            // send_email_utf(to, title, content, from,...)
-            // $email_sent = true if OK to send
 
-            $email_sent = send_email_of_email_echck($email, $url);
-            // /* 
+            $email_sent = send_email_for_email_varification_of_account_create($checked_email, $url);
+            /* 
             // for test (test for enviroment where email is not sendable such as localhost.)
-            print_r("email: {$checked_email} <br />");
-            print_r("urltoken: {$urltoken} <br />");
-            print_r("url (temporary): <a href={$url}>{$url}</a>");
-            // */
+            // print_r("email: {$checked_email} <br />");
+            // print_r("urltoken: {$urltoken} <br />");
+            // print_r("url (temporary): <a href={$url}>{$url}</a>");
+            */
 
             if(! $email_sent) {
                 $db_message_tml = "somewhy email sending is failed.";
