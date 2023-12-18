@@ -24,15 +24,15 @@ function check_if_email_is_not_registerd($email){
 
 function send_email_for_email_varification_of_account_create($email_to, $url){
 
-    $title = "[Shinano] Account Create step, this email had sent for user varification.";
+    mb_internal_encoding("UTF-8");
 
+    $title = "[Shinano] Account Create step, this email had sent for user varification.";
     $message
            = "<h3>This is Email varification for Account Creation of Shinano</h3>"
            . "<p>to finish Account Creation, please access below link<br />"
            . "Create Account : <a href='{$url}'>{$url}</a></p>"
            . "<hr />"
            . "<p> this e-mail is sent by shinano. this email is sending only</p>";
-
     $headers  = "";
     $headers .= 'Content-type: text/html; charset=UTF-8' . "\r\n";
     // $headers .= 'From: Shinano <shinano@tng.coop>' // config email_from
@@ -149,7 +149,6 @@ CONTENT_CREATE_ACCOUNT;
 
 RenderByTemplate("template.html", "Account Create - Shinano -",
                  $content_actual);
-
 
 
 ?>
