@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-include_once(__DIR__ . "/../lib/common.php");
-include_once(__DIR__ . "/../lib/form_check.php");
-include_once(__DIR__ . '/../lib/transactions.php');
+include_once(__DIR__ . "/../../lib/common.php");
+include_once(__DIR__ . "/../../lib/form_check.php");
+include_once(__DIR__ . '/../../lib/transactions.php');
 
 // deny not loggedin request
 if(! $login->user()){
@@ -120,8 +120,8 @@ if ($safe_form_post_p && in_array($step_demand, ['update'])) {
     if ($post_successed_p){
         $title_part = "updated";
         $content_html = "Your post is updated at <a href='{$post_a_href}'>here</a> <br />"
-                      . "or back to <a href='{$pubroot}'>index_menu</a> <br />"
-                      . "or back to <a href='{$pubroot}cmenu_bulletins.php'>your bulletins edit</a>";
+                      . "or back to <a href='{$pubroot}cmenu/index.php'>cooperator's menu</a> <br />"
+                      . "or back to <a href='{$pubroot}cmenu/bulletins.php'>your bulletins edit</a>";
     } else {
         $title_part = "something wrong";
         $content_html = "something wrong";

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-include_once(__DIR__ . "/../lib/common.php");
+include_once(__DIR__ . "/../../lib/common.php");
 
 
 
@@ -21,8 +21,8 @@ if($login->user()){
 <h3>Hello! {$session_cooperator['name']}!.<br /> Here is Cooperator's Menu.</h3>
 
 <ul>
-  <li><a href='{$pubroot}cmenu_bulletins.php'>edit your note, edit your bulletins</a></li>
-  <li><a href='{$pubroot}cmenu_bulletin_new.php'>new bulletin</a></li>
+  <li><a href='{$pubroot}cmenu/bulletins.php'>edit your note, edit your bulletins</a></li>
+  <li><a href='{$pubroot}cmenu/bulletin_new.php'>new bulletin</a></li>
 </ul>
 
 CONTENT_CMENU;

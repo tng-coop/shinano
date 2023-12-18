@@ -298,7 +298,8 @@ function tml_bulletin_edit_button(int $job_entry_id){
     global $csrf;
     $token = $csrf->hiddenInputHTML();
 
-    $form_tml = "<form action='cmenu_bulletin_edit.php' method='POST'>"
+    global $pubroot;
+    $form_tml = "<form action='{$pubroot}cmenu/bulletin_edit.php' method='POST'>"
               . "  " . $token
               . "  <input type='hidden' name='step_demand' value='ask_db_edit_post'>"
               . "  <input type='hidden' name='job_entry_id' value='{$job_entry_id}'>"
@@ -311,11 +312,12 @@ function tml_bulletin_swap_open_close_button(int $job_entry_id, $opened_at, $clo
     global $csrf;
     $token = $csrf->hiddenInputHTML();
 
+    global $pubroot;
     [$demand, $demand_text] = (job_entry_opened_p($opened_at, $closed_at) 
                                ? ['let_close', 'Close it']
                                : ['let_open',  'Open it']);
 
-    $form_tml = "<form action='cmenu_bulletin_swap_open_close.php' method='POST'>"
+    $form_tml = "<form action='{$pubroot}cmenu/bulletin_swap_open_close.php' method='POST'>"
               . "  " . $token
               . "  <input type='hidden' name='entry_id' value='{$job_entry_id}'>"
               . "  <button type='submit' name='demand' value='{$demand}'>{$demand_text}</button>"

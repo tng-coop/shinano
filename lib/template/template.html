@@ -48,7 +48,7 @@
             echo($login_tml . " | \n" . $create_tml . " | \n");
         } else {
             echo("Hello! " . $login->user("name") . " | \n" );
-            echo("<a href='{$v->pub}cmenu.php'>cooperator's_menu</a>" . " | \n");
+            echo("<a href='{$v->pub}cmenu/index.php'>cooperator's_menu</a>" . " | \n");
             echo($login_tml . " | \n");
             global $csrf;
             echo("<form action='{$v->pub}account_logout.php'"

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-include_once(__DIR__ . "/../lib/common.php");
-include_once(__DIR__ . "/../lib/form_check.php");
-include_once(__DIR__ . '/../lib/transactions.php');
+include_once(__DIR__ . "/../../lib/common.php");
+include_once(__DIR__ . "/../../lib/form_check.php");
+include_once(__DIR__ . '/../../lib/transactions.php');
 
 
 
@@ -65,8 +65,10 @@ $bulletin_url = url_of_bulletin_detail($_POST['entry_id']);
 $content_html = <<<CONTENT
 <a href='{$bulletin_url}'>entry_id ${_POST['entry_id']}'s bulletin</a> is ${message}.
 <br />
+or back to <a href='{$pubroot}cmenu/index.php'>cooperator's menu</a>
+<br />
+or back to <a href='{$pubroot}cmenu/bulletins.php'>your bulletins edit</a>
 
-or back to <a href='{$pubroot}'>index_menu</a>
 CONTENT;
 
 

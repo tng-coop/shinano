@@ -58,7 +58,7 @@ if($session_cooperator){
 
 <h3>Hello! {$session_cooperator['name']}!</h3>
 <p>
-  access <a href='{$pubroot}cmenu.php'>cooperator menu</a> to edit your bulletin or your information.
+  access <a href='{$pubroot}cmenu/index.php'>cooperator menu</a> to edit your bulletin or your information.
 </p>
 
 CONTENT;
