@@ -80,9 +80,8 @@ if($doing_login_user){
 <h3>Hello, "${doing_login_user['name']}" !!!</h3>
 <pre>
 name: ${doing_login_user['name']}
-id: ${doing_login_user['id']}
+public_uid: ${doing_login_user['public_uid']}
 email: ${doing_login_user['email']}
-passwd_hash: ${doing_login_user['passwd_hash']}
 </pre>
 LOGED_IN_MESSAGE;
     
