@@ -28,7 +28,7 @@ $offset_from = ($request_npage - 1) * $bulletins_per_page; // npage count from 1
 [$job_entries, $n_entries] = search_job_entries($search_text, $offset_from, $bulletins_per_page);
 
 
-// make content_actual of cooperators
+// make content_actual of bulletin board
 function html_text_of_bulletins_list($job_entries){
     // detect null
     if(is_null($job_entries[0])){
@@ -60,9 +60,9 @@ $html_hrefs_npages
 
 $n_entries_tml = ($search_text=="")
                ? "<p>Thanks for opened {$n_entries} bulletins in Shinano. </p>"
-               : "<p>In easy search, there is {$n_entries} matchis found. </p>";
+               : "<p>In easy search, there is {$n_entries} matches found. </p>";
 
-$bulletins_list_tml
+$bulletin_board_tml
     = "<h3>Bulltein Board of Shinano <!-- (==BBS) --> </h3>"
     . $n_entries_tml
     . $html_hrefs_npages . "<hr />" 
@@ -71,8 +71,8 @@ $bulletins_list_tml
 
 // render HTML by template
 
-RenderByTemplate("template.html", "Look for Bulletin Board of - Shinano -",
-                 $bulletins_list_tml);
+RenderByTemplate("template.html", "Bulletin Board of - Shinano -",
+                 $bulletin_board_tml);
 
 
 ?>

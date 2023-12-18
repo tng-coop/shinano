@@ -86,5 +86,45 @@ function search_job_entries($search_pattern_text, $offset_from, $bulletin_per_pa
     return [$job_entries, $n_entries];
 }
 
+// search cooperators
+
+function search_cooperators($search_pattern_text, $offset_from, $cooperators_per_page){
+    global $data_source_name, $sql_ro_user, $sql_ro_pass;
+    
+    [$cooperators, $n_cooperators]
+    = \Tx\with_connection($data_source_name, $sql_ro_user, $sql_ro_pass)(
+        function($conn_ro) use ($search_pattern_text, $cooperators_per_page, $offset_from) {
+            $sql_common
+                = "  WHERE (TRUE)" // opened user
+                . "    AND (    U.name  LIKE CONCAT('%', :pattern, '%')"
+                . "         OR  U.note  LIKE CONCAT('%', :pattern, '%')"
+                . "         OR  U.email LIKE CONCAT('%', :pattern, '%'))"
+                ;
+            $sql_n_cooperators // counter of result searched
+                = "SELECT COUNT(*) as count"
+                . "  FROM user AS U"
+                . "  {$sql_common}"
+                . ";";
+            $stmt = $conn_ro->prepare($sql_n_cooperators);
+            $stmt->execute([':pattern'=>$search_pattern_text]);
+            $n_cooperators = $stmt->fetchAll(\PDO::FETCH_ASSOC)[0]['count'];
+
+            $sql_search // result of searched cooperators
+                = "SELECT U.name, U.email, U.public_uid, U.note, U.created_at"
+                . "  FROM user as U"
+                . "  {$sql_common}"
+                . "  ORDER BY U.created_at DESC"
+                . "  LIMIT {$cooperators_per_page} OFFSET {$offset_from}"
+                . ";";
+            $stmt = $conn_ro->prepare($sql_search);
+            $stmt->execute([':pattern'=>$search_pattern_text]);
+            $cooperators = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+            return [$cooperators, $n_cooperators];
+        });
+
+    return [$cooperators, $n_cooperators];
+}
+
 ?>
 
