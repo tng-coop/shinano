@@ -45,10 +45,20 @@ $job_entry = db_ask_ro($sql1, ['entry_id' => $request_entry_id], \PDO::FETCH_ASS
 
 
 // make actual content of bulletin
-function html_text_of_bulletins_list($job_entry){
+function html_text_of_bulletin_of_page($job_entry){
     // detect null
     if(is_null($job_entry)) {
         return "not found";
+    }
+
+    // detect not opened bulletin
+    global $login;
+    if(! job_entry_opened_p($job_entry['opened_at'], $job_entry['closed_at'])) {
+        if($login->user('id') == $job_entry['user']){
+            return "bulletin is not opened";
+        } else {
+            return "bulletin is not found";
+        }
     }
             
     // content
@@ -60,7 +70,7 @@ function html_text_of_bulletins_list($job_entry){
 
 // prepare content and render by template
 
-$bulletins_list_tml = html_text_of_bulletins_list($job_entry);
+$bulletins_list_tml = html_text_of_bulletin_of_page($job_entry);
 
 RenderByTemplate("template.html", "Look for bulletin - Shinano -",
                  $bulletins_list_tml);
