@@ -10,24 +10,65 @@ include_once(__DIR__ . '/../lib/transactions.php');
 // CSRF
 //$csrf->getToken();
 
+// avoid clickjacking
+header('X-FRAME-OPTIONS: SAMEORIGIN');
+
+
+// fill urltoken by GETed value
+
+$a_href_of_account_create_pre = "${pubroot}account_create_pre.php";
+
+if(empty($_GET) || (! isset($_GET['urltoken']))){
+    header("Location: ${a_href_of_account_create_pre}");
+    exit();
+
+} else {
+    $urltoken = $_GET['urltoken'];
+    
+    // ((flag==0)=>not_registerd_cooperator) and (less than 60 miniutes passed after pre_registerd)
+    $sql = "SELECT email FROM pre_user"
+         . "  WHERE urltoken = (:urltoken)"
+         . "    AND flag = 0"
+         . "    AND date > (current_timestamp - INTERVAL 60 MINUTE)"
+         . ";";
+    $emails_or_fail = db_ask_ro($sql, [':urltoken'=>$urltoken]);
+    
+    if(count($emails_or_fail) == 1){
+        $email = $emails_or_fail[0]['email'];
+        $_SESSION['email_for_account_create'] = $email;
+        print_r($email);
+        
+    } else {
+        RenderByTemplate(
+            'template.html', 'invalid request',
+            "this URL is not available.<br />" .
+            "URL is wrong or time limit has passed or already registered.<br />" .
+            "If your are not already registered, Please re pre_register account from " .
+            "<a href='${a_href_of_account_create_pre}'>first step</a> again.");
+        exit();
+    }
+}
 
 // fill variables by POSTed values
 
-$form_accessors = ["name", "email", "password_first", "password_check"];
-$post_data = array_map(fn($accessor) => $_POST[$accessor], $form_accessors);
-[$post_name, $post_email, $post_password_first, $post_password_check] = $post_data;
+if($request_method == "POST"){
+    $form_accessors = ["name", "password_first", "password_check"];
+    $post_data = array_map(fn($accessor) => $_POST[$accessor], $form_accessors);
+    [$post_name, $post_password_first, $post_password_check] = $post_data;
+}
+
 
 
 // Insert DataBase of new user. If POST is safe and unique_email.
 
+$state_create_account = "creating";
+
 function check_for_user_post($name, $email, $password1, $password2){
     return  [\FormCheck\check_user_name_safe($name), 
-             \FormCheck\check_user_email_safe_and_unique($email),
+             [$_SESSION['email_for_account_create'], ""],
              \FormCheck\check_user_password_safe($password1, $password2)];
 }
 
-
-$state_create_account = "creating";
 
 if($request_method == "POST"){
     // check CSRF
@@ -43,17 +84,27 @@ if($request_method == "POST"){
 
         $safe_form_post_p =
             ($checked_name!=null && $checked_email!=null && $checked_password!=null);
+
+        // unset session
+        unset($_SESSION['email_for_account_create']);
         
         // reigster to user table if good POST.
         if($safe_form_post_p){
             $checked_hashed_password = password_hash($checked_password, PASSWORD_DEFAULT);
 
-            // register user to DB.
+            // register to DB.
             global $data_source_name, $sql_rw_user, $sql_rw_pass;
             \Tx\with_connection($data_source_name, $sql_rw_user, $sql_rw_pass)(
                 function($conn_rw) use($checked_name, $checked_email, $checked_hashed_password) {
-                    \TxSnn\add_user
-                    ($conn_rw, $checked_name, $checked_email, $checked_hashed_password, "");});
+                    // add user
+                    \TxSnn\add_user($conn_rw, $checked_name, $checked_email, $checked_hashed_password, "");
+                    
+                    // disable token
+                    $sql2 = "UPDATE pre_user SET flag = 1 WHERE email = :email;";
+                    $stmt = $conn_rw->prepare($sql2);
+                    $stmt->execute([':email'=>$checked_email]);
+            });
+
             // ask user's public_uid to (newer) DB.
             $new_user_public_uid
             = \Tx\with_connection($data_source_name, $sql_ro_user, $sql_ro_pass)(
@@ -72,13 +123,6 @@ if($request_method == "POST"){
 
 
 
-/*
-   $debug_tml=<<<DEBUG_TML
-   name  : ${checked_name} , ${form_message_name} <br />
-   email : ${checked_email} , ${form_message_email} <br />
-   password: ${checked_password} , ${form_message_password} <br />
-   DEBUG_TML;
- */
 
 // parepare and execute DB and SQL
 
@@ -92,7 +136,8 @@ if($state_create_account=="just_created"){
     // actual content
     $account_create_form_html = <<<ACCOUNT_CREATE_FORM
 ${db_message_tml}
-To create account, name, email and password are needed. <br />
+your E-Mail has checked <br />
+To create account, name and password are additionaly needed. <br />
 <pre> {$csrf_message} </pre>
 <form action="" method="post">
   ${csrf_html}
@@ -100,11 +145,13 @@ To create account, name, email and password are needed. <br />
     <dt> name </dt>
     <dd> <input type="text" name="name" required value="${post_name}"> </input> </dd>
     <dd> <pre>{$form_message_name}</pre> </dd>
+
     <dt> email </dt>
-    <dd> <input type="text" name="email" required value="${post_email}"> </input> </dd>
-    <dd> <pre>{$form_message_email}</pre> </dd>
+    <dd> {$email} </dd>
+
     <dt> password </dt>
     <dd> <input type="password" name="password_first" required value=""> </input> </dd>
+
     <dt> password for check </dt>
     <dd> <input type="password" name="password_check" required value=""> </input> </dd>
     <dd> <pre>{$form_message_password}</pre> </dd>
@@ -118,7 +165,6 @@ ACCOUNT_CREATE_FORM;
 // prepare template
 
 $content_actual = <<<CONTENT_CREATE_ACCOUNT
-${debug_tml}
 <h3> Create Account </h3>
 {$account_create_form_html}
 CONTENT_CREATE_ACCOUNT;
@@ -126,7 +172,5 @@ CONTENT_CREATE_ACCOUNT;
 
 RenderByTemplate("template.html", "Account Create - Shinano -",
                  $content_actual);
-
-
 
 ?>

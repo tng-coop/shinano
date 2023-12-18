@@ -34,3 +34,14 @@ CREATE UNIQUE INDEX job_entry_user_opened_created
 
 CREATE UNIQUE INDEX job_entry_attribute_opened_created_user
        ON job_entry (attribute, opened_at, created_at, user, id);
+
+
+-- pre user used for email authorization
+CREATE TABLE pre_user  
+       ( id            BIGINT AUTO_INCREMENT PRIMARY KEY
+       , urltoken      VARCHAR(255) NOT NULL
+       , email         VARCHAR(255) NOT NULL
+       , date          TIMESTAMP NOT NULL
+       , flag          TINYINT(1) NOT NULL DEFAULT 0 
+       -- flag ... email'd user is ... 0: not_registerd, 1:registerd.
+       );
