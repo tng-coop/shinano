@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-include_once(__DIR__ . "/../lib/common.php");
-include_once(__DIR__ . "/../lib/form_check.php");
-include_once(__DIR__ . '/../lib/transactions.php');
+include_once(__DIR__ . "/../../lib/common.php");
+include_once(__DIR__ . "/../../lib/form_check.php");
+include_once(__DIR__ . '/../../lib/transactions.php');
 
 
 // CSRF
@@ -16,7 +16,7 @@ header('X-FRAME-OPTIONS: SAMEORIGIN');
 
 // fill urltoken by GETed value
 
-$a_href_of_account_create_pre = "${pubroot}account_create_pre.php";
+$a_href_of_account_create_pre = "${pubroot}account/create_pre.php";
 
 if(empty($_GET) || (! isset($_GET['urltoken']))){
     header("Location: ${a_href_of_account_create_pre}");

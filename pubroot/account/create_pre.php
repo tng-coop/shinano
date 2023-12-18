@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-include_once(__DIR__ . "/../lib/common.php");
-include_once(__DIR__ . "/../lib/form_check.php");
-include_once(__DIR__ . '/../lib/transactions.php');
+include_once(__DIR__ . "/../../lib/common.php");
+include_once(__DIR__ . "/../../lib/form_check.php");
+include_once(__DIR__ . '/../../lib/transactions.php');
 
 
 // fill variables by POSTed values
@@ -69,7 +69,7 @@ if($request_method == "POST"){
             //$checked_hashed_password = password_hash($checked_password, PASSWORD_DEFAULT);
             global $pubroot;
             $urltoken = uniqid(bin2hex(random_bytes(32)));
-            $url = "{$pubroot}account_create.php?urltoken={$urltoken}";
+            $url = "{$pubroot}account/create.php?urltoken={$urltoken}";
 
             // register pre_user to DB.
             global $data_source_name, $sql_rw_user, $sql_rw_pass;
@@ -90,12 +90,12 @@ if($request_method == "POST"){
             // send email
 
             $email_sent = send_email_for_email_varification_of_account_create($checked_email, $url);
-            /* 
+             
             // for test (test for enviroment where email is not sendable such as localhost.)
-            // print_r("email: {$checked_email} <br />");
-            // print_r("urltoken: {$urltoken} <br />");
-            // print_r("url (temporary): <a href={$url}>{$url}</a>");
-            */
+            print_r("email: {$checked_email} <br />");
+            print_r("urltoken: {$urltoken} <br />");
+            print_r("url (temporary): <a href={$url}>{$url}</a>");
+            
 
             if(! $email_sent) {
                 $db_message_tml = "somewhy email sending is failed.";

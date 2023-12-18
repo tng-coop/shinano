@@ -37,8 +37,8 @@ if(! $session_cooperator){
 <h3>account login or create</h3>
 <p>
   account
-  <a href="{$pubroot}account_login.php">login</a>
-  <a href="{$pubroot}account_create.php">create</a>
+  <a href="{$pubroot}account/login.php">login</a>
+  <a href="{$pubroot}account/create.php">create</a>
 </p>
 
 CONTENT;

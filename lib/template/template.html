@@ -40,8 +40,8 @@
         |
         <?php 
         global $login;
-        $login_tml = "<a href='{$v->pub}account_login.php'>login</a>";
-        $create_tml = "<a href='{$v->pub}account_create_pre.php'>create</a>";
+        $login_tml = "<a href='{$v->pub}account/login.php'>login</a>";
+        $create_tml = "<a href='{$v->pub}account/create_pre.php'>create</a>";
 
         if(! $login->user()){
             echo("Account" . " | \n");
@@ -51,7 +51,7 @@
             echo("<a href='{$v->pub}cmenu/index.php'>cooperator's_menu</a>" . " | \n");
             echo($login_tml . " | \n");
             global $csrf;
-            echo("<form action='{$v->pub}account_logout.php'"
+            echo("<form action='{$v->pub}account/logout.php'"
                  .     "method='post' class='logout_form'>\n" .
                  $csrf->hiddenInputHTML() . "\n" .
                  "<input type='submit' value='logout' class='logout_button'>\n" .
