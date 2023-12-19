@@ -56,7 +56,9 @@ function html_text_of_bulletin_of_page($job_entry){
     // detect not opened bulletin
     global $login;
     if(! job_entry_opened_p($job_entry['opened_at'], $job_entry['closed_at'])) {
-        if($login->user('id') == $job_entry['user']){
+        global $request_oid;
+        if($login->user('public_uid') == $job_entry['public_uid'] && 
+           $job_entry['eid'] == $request_oid) {
             return "bulletin is not opened";
         } else {
             return "bulletin is not found";
