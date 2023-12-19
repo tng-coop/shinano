@@ -141,5 +141,18 @@ function job_entry_opened_p($opened_at, $closed_at){
     { return false; }
 }
 
+// URL to specific pages
+
+function url_of_bulletin_detail($job_entry_id){
+    // method for detect specific job_entry is going to be changed.
+    global $pubroot;
+    return "{$pubroot}bulletin.php?eid={$job_entry_id}";
+}
+
+function url_of_cooperator_detail($puid){
+    global $pubroot;
+    return "${pubroot}cooperator.php?puid=${puid}";
+}
+
 
 ?>
