@@ -65,8 +65,12 @@ function hd($string): string {
     return htmlspecialchars_decode(strval($string), ENT_QUOTES);
 }
 
-function int_string_p(string $integer_string_maybe){
-    return (is_numeric($integer_string_maybe) && is_int(intval($integer_string_maybe)));
+function int_string_p($integer_string_maybe): bool {
+    if (is_null($integer_string_maybe)) {
+        return false;
+    } else {
+        return (is_numeric($integer_string_maybe) && is_int(intval($integer_string_maybe)));
+    }
 }
 
 function exit_by_error($error_){
@@ -143,10 +147,10 @@ function job_entry_opened_p($opened_at, $closed_at){
 
 // URL to specific pages
 
-function url_of_bulletin_detail($job_entry_id){
+function url_of_bulletin_detail($public_uid, $id_on_user){
     // method for detect specific job_entry is going to be changed.
     global $pubroot;
-    return "{$pubroot}bulletin.php?eid={$job_entry_id}";
+    return "{$pubroot}bulletin.php?puid={$public_uid}&oid={$id_on_user}";
 }
 
 function url_of_cooperator_detail($puid){

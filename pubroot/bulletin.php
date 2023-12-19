@@ -14,18 +14,23 @@ if(! $login->user()){
 
 // if logged in request, prepare contents.
 
-// Note:
-// addressing method for specific job_entry 
-// is going to be changed from jobentry.id into user each own jobentry's id.
 
-// GET's eid
-$request_entry_id = ((isset($_GET['eid']) && int_string_p($_GET['eid']))
-                     ? intval($_GET['eid']) : null);
+
+// GET's values
+
+// oid: each user Own jobentry ID
+$request_oid = ((isset($_GET['oid']) && int_string_p($_GET['oid']))
+                     ? intval($_GET['oid']) : null);
+
+// puid: Public_UID (public user id)
+$request_puid = ((isset($_GET['puid']) && int_string_p($_GET['puid']))
+                 ? intval($_GET['puid']) : null);
+
 
 // deny invalid URL
-if (! $request_entry_id){
+if (! $request_oid || ! $request_puid){
     $invalid_eid_message_tml
-        = "your requesting eid is invalid. <br />"
+        = "your requesting ids are invalid. <br />"
         . "<a href='./bulletin_board.php'>back to BBS</a>";
     RenderByTemplate("template.html", "invalid eid - Shinano -",
                      $invalid_eid_message_tml);
@@ -33,15 +38,12 @@ if (! $request_entry_id){
 }
 
 // ask DB
-
-$sql1
-    = "SELECT U.name, U.email, U.public_uid, "
-    . "    J.id, J.attribute, J.user, J.title, J.description, J.created_at, J.opened_at, J.closed_at"
-    . "  FROM user as U INNER JOIN job_entry as J"
-    . "    ON U.id = J.user"
-    . "  WHERE J.id = :entry_id"
-    . ";";
-$job_entry = db_ask_ro($sql1, ['entry_id' => $request_entry_id], \PDO::FETCH_ASSOC)[0];
+$job_entry = \Tx\with_connection($data_source_name, $sql_ro_user, $sql_ro_pass)(
+    function($conn_ro) use ($request_puid, $request_oid){
+        $stmt = \TxSnn\view_job_thing_by_public_uid_and_id_on_user
+              ($conn_ro, $request_puid, $request_oid);
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
+    });
 
 
 // make actual content of bulletin
@@ -60,7 +62,7 @@ function html_text_of_bulletin_of_page($job_entry){
             return "bulletin is not found";
         }
     }
-            
+
     // content
     $tml_text = html_text_of_bulletin($job_entry);;
 

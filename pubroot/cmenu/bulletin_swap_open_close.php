@@ -20,39 +20,48 @@ if($request_method!="POST"){
     exit();
 }
 
+// deny invalid POST parameters
+print_r($_POST);
+
+if(!isset($_POST['demand']) || !int_string_p($_POST["oid"])) {
+    RenderByTemplate("template.html", "invalid request - Shinano -", "invalid request.");
+    exit();
+}
+
 // deny CSRF unsafe access
 if(!$csrf->checkToken()){
     RenderByTemplate("template.html", "invalid request - Shinano -", "invalid request. token error");
     exit();
 }
 
-
-
 // set variables
 
 $loggedin_email = $login->user('email');
-$job_entry_id = intval($_POST['entry_id']);
+///$public_uid = $login->user('public_uid');
+
+$user_own_id = intval($_POST['oid']);
 
 $demand = $_POST['demand'];
 
 // UPDATE DB
 if ($demand=='let_open') {
     \Tx\with_connection($data_source_name, $sql_rw_user, $sql_rw_pass)(
-        function($conn_rw) use ($loggedin_email, $job_entry_id) {
-            \TxSnn\open_job_thing($conn_rw, $loggedin_email, $job_entry_id);
+        function($conn_rw) use ($loggedin_email, $user_own_id) {
+            \TxSnn\open_job_thing($conn_rw, $loggedin_email, $user_own_id);
             return true;});
 
     $message = "opened now";
 }
 elseif ($demand=='let_close') {
     \Tx\with_connection($data_source_name, $sql_rw_user, $sql_rw_pass)(
-        function($conn_rw) use ($loggedin_email, $job_entry_id) {
-            \TxSnn\close_job_thing($conn_rw, $loggedin_email, $job_entry_id);
+        function($conn_rw) use ($loggedin_email, $user_own_id) {
+            print_r($user_own_id);
+            \TxSnn\close_job_thing($conn_rw, $loggedin_email, $user_own_id);
             return true;});
 
     $message = "closed now";
-
-} else {
+}
+else {
     RenderByTemplate("template.html", "invalid request - Shinano -", "invalid request. step error");
     exit();
 }
@@ -60,10 +69,10 @@ elseif ($demand=='let_close') {
 
 // prepare content
 
-$bulletin_url = url_of_bulletin_detail($_POST['entry_id']);
+$bulletin_url = url_of_bulletin_detail($login->user('public_uid'), $user_own_id);
 
 $content_html = <<<CONTENT
-<a href='{$bulletin_url}'>entry_id ${_POST['entry_id']}'s bulletin</a> is ${message}.
+<a href='{$bulletin_url}'>selected bulletin</a> is ${message}.
 <br />
 or back to <a href='{$pubroot}cmenu/index.php'>cooperator's menu</a>
 <br />

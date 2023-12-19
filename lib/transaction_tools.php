@@ -20,29 +20,30 @@ function db_ask_ro(string $query, ?array $params=null, int $mode = \PDO::FETCH_D
 
 // ask DB about duplication
 
-function select_duplicated_bulletins_from_db(string $email, string $title, string $eid_old='-1'){
-    $sql_sel_dup = "SELECT J.id AS eid , U.email, J.title"
+function select_duplicated_bulletins_from_db(string $email, string $title, string $id_on_user='-1'){
+    $sql_sel_dup = "SELECT J.id_on_user AS eid , U.email, U.public_uid, J.title"
                  . "  FROM user as U INNER JOIN job_entry AS J"
                  . "    ON U.id = J.user"
                  . "  WHERE J.title = :title"
                  . "    AND U.email = :email"
-                 . "    AND J.id != :eid_old"
+                 . "    AND J.id_on_user != :id_on_user"
                  . ";";
 
-    $ret0 = db_ask_ro($sql_sel_dup, [":email"=>$email, ":title"=>$title, "eid_old"=>$eid_old],
+    $ret0 = db_ask_ro($sql_sel_dup, [":email"=>$email, ":title"=>$title, "id_on_user"=>$id_on_user],
                       \PDO::FETCH_ASSOC);
     return $ret0;
 }
 
-function check_title_duplicate_in_each_user(string $email, $title, $eid_old=-1){
+function check_title_duplicate_in_each_user(string $email, $title, $id_on_user=-1){
     // returns [success_p, message, duplicated_url_p];
     if(gettype($title)!=='string' || $title==="") {
         return [null, "invalid title.", false];
     }
-    $duplicated_post = select_duplicated_bulletins_from_db($email, $title, (string)$eid_old);
+    $duplicated_post = select_duplicated_bulletins_from_db($email, $title, (string)$id_on_user);
+
     if($duplicated_post) {
         $dup0 = $duplicated_post[0];
-        $duplicated_url = url_of_bulletin_detail($dup0['eid']);
+        $duplicated_url = url_of_bulletin_detail($dup0['public_uid'], $dup0['eid']);
         return [null, $duplicated_url, true]; // duplicated
     } else {
         return ['not_duplicated', "", false]; // not duplicated
@@ -74,7 +75,7 @@ function search_job_entries($search_pattern_text, $offset_from, $bulletin_per_pa
             $n_entries = $stmt->fetchAll(\PDO::FETCH_ASSOC)[0]['count'];
 
             $sql_search // result of entries searched by text which is sorted and lingth limited.
-                = "SELECT U.public_uid, U.name, J.id, J.attribute, J.title, J.description, "
+                = "SELECT U.public_uid, U.name, J.id_on_user AS eid, J.attribute, J.title, J.description, "
                 . "    J.created_at, J.updated_at, J.opened_at, J.closed_at"
                 . "  FROM user AS U INNER JOIN job_entry AS J"
                 . "    ON U.id = J.user"

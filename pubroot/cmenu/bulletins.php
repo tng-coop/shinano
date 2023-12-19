@@ -65,7 +65,6 @@ SELECT id AS uid,name,email,public_uid,note,created_at
   FROM user
   WHERE id = :id;
 SQL;
-
 $user_info_array = db_ask_ro($sql_user_info, [":id" => $login->user('id')]);
 
 if (!isset($user_info_array[0])){
@@ -77,13 +76,12 @@ $user_info = $user_info_array[0];
 
 // Ask DB about user's job_entry
 
-$sql_job_entries = <<<SQL
-SELECT id AS eid, attribute, user, title, description, created_at, updated_at, opened_at, closed_at 
-  FROM job_entry
-  WHERE user = :user
-SQL;
-
-$job_entries_array = db_ask_ro($sql_job_entries, [":user" => $login->user('id')]);
+$public_uid = $user_info['public_uid'];
+$job_entries_array = \Tx\with_connection($data_source_name, $sql_ro_user, $sql_ro_pass)(
+    function($conn_ro) use ($public_uid) {
+        $stmt = \TxSnn\view_job_things_by_public_uid($conn_ro, $public_uid);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    });
 
 
 // prepare contents

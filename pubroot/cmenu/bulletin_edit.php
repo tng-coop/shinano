@@ -23,14 +23,14 @@ if($request_method!="POST"){
 // fill variables by DataBase or POSTed values
 
 $step_demand = $_POST['step_demand'];
-$job_entry_id = intval($_POST['job_entry_id']);
+$id_on_user = intval($_POST['id_on_user']);
 
 $pvs = array(); // posted values for entry update.
 
 
 if(in_array($step_demand, ['ask_db_edit_post'])) {
     // ask DB about editable job_entry
-    $db_entry_current = select_job_endty_by_entry_id_if_user($job_entry_id, $login->user('id'))[0];
+    $db_entry_current = select_job_entry_by_id_on_user_if_user($id_on_user, $login->user('id'))[0];
 
     // exit if entry is not allowed or not found
     if(is_null($db_entry_current)) {
@@ -87,7 +87,7 @@ if (in_array($step_demand, ['confirm', 'update', 'reedit'])) {
        \FormCheck\check_text_safe($pvs['description'], false, (16384 - 4)),
        \FormCheck\check_radio_value_safe($pvs['attribute'], ['L', 'S']),
        \FormCheck\check_radio_value_safe($pvs['open_close'], ['open', 'close']),
-       check_title_duplicate_in_each_user($login->user('email'), trim($pvs['title']), $job_entry_id) // check duplicated title
+       check_title_duplicate_in_each_user($login->user('email'), trim($pvs['title']), $id_on_user) // check duplicated title
     ];
 
     $safe_form_post_p = array_reduce($post_checks, (fn($carry, $item) => $carry&&($item||$item==="")), true);
@@ -102,20 +102,22 @@ if ($safe_form_post_p && in_array($step_demand, ['update'])) {
     global $data_source_name, $sql_rw_user, $sql_rw_pass;
     $post_successed_p 
     = \Tx\with_connection($data_source_name, $sql_rw_user, $sql_rw_pass)(
-        function($conn_rw) use($job_entry_id, $loggedin_email, $post_checks) {
-            \TxSnn\update_job_things($conn_rw, $job_entry_id,
+        function($conn_rw) use($id_on_user, $loggedin_email, $post_checks) {
+            \TxSnn\update_job_things($conn_rw, $id_on_user,
                                      $loggedin_email, $post_checks['attribute'],
                                      hd($post_checks['title']), hd($post_checks['description']));
 
             $func_open_close = ( $post_checks['open_close']=='open') ?  '\TxSnn\open_job_things' :
                                (($post_checks['open_close']=='close') ? '\TxSnn\close_job_things' :
                                 null);            
-            $func_open_close($post_checks['attribute'])($conn_rw, $loggedin_email, $job_entry_id);
+            $func_open_close($post_checks['attribute'])($conn_rw, $loggedin_email, $id_on_user);
             
             return true;
     });
 
-    [$bottom, $post_a_href, $post_sucessed_p] = check_title_duplicate_in_each_user($loggedin_email, $post_checks['title']);
+    [$bottom, $post_a_href, $post_sucessed_p] =
+        // one entry will be duplicated which is its self entry..
+        check_title_duplicate_in_each_user($loggedin_email, $post_checks['title'], -1);
 
     if ($post_successed_p){
         $title_part = "updated";
@@ -131,13 +133,13 @@ if ($safe_form_post_p && in_array($step_demand, ['update'])) {
 // 2. confirm page
 elseif ($safe_form_post_p && in_array($step_demand, ['confirm'])) {
     $title_part = 'please confirm';
-    $content_html = content_of_confirm_bulletin($pvs, $messages, $job_entry_id);
+    $content_html = content_of_confirm_bulletin($pvs, $messages, $id_on_user);
 }
 // 1 or 0. edit page
 elseif ((in_array($step_demand, ['ask_db_edit_post', 'reedit'])) ||
         ((! $safe_form_post_p) && in_array($step_demand, ['confirm']))) {
     $title_part = 'edit bulletin';
-    $content_html = content_of_edit_bulletin($pvs, $messages, $job_entry_id);
+    $content_html = content_of_edit_bulletin($pvs, $messages, $id_on_user);
 }
 // 0. wrong request
 else {
@@ -149,15 +151,15 @@ else {
 
 // DB Data of current job_entry's id
 
-function select_job_endty_by_entry_id_if_user(int $job_entry_id, int $user_id){
-    $sql_sel_entry = "SELECT J.id AS eid, U.id AS uid, U.email,"
+function select_job_entry_by_id_on_user_if_user(int $id_on_user, int $user_id){
+    $sql_sel_entry = "SELECT J.id_on_user AS eid, U.id AS uid, U.email,"
                    . "    J.title, J.description, J.attribute, J.opened_at, J.closed_at"
                    . "  FROM user as U INNER JOIN job_entry AS J"
-                   . "  WHERE J.id = :job_id"
+                   . "  WHERE J.id_on_user = :id_on_user"
                    . "    AND U.id = :user_id"
                    . ";";
     
-    $ret0 = db_ask_ro($sql_sel_entry, [':job_id'=>$job_entry_id, ':user_id'=>$user_id],
+    $ret0 = db_ask_ro($sql_sel_entry, [':id_on_user'=>$id_on_user, ':user_id'=>$user_id],
                       \PDO::FETCH_ASSOC);
     return $ret0;
 }
@@ -192,7 +194,7 @@ function content_of_confirm_bulletin($pvs, $messages, $entry_id){
 <h3> Confirm your Bulletin </h3>
 <hr />
 <h3>${pvs['title']}</h3>
-<p> job_entry id is {$entry_id} </p>
+<p> your own entry id is {$entry_id} </p>
 <p>${pvs['description']}</p>
 <hr />
 <p>${message_listing_or_seeking}</p>
@@ -200,7 +202,7 @@ function content_of_confirm_bulletin($pvs, $messages, $entry_id){
 
 <form action="" method="POST">
   ${csrf_html}  
-  <input type='hidden' name='job_entry_id' value="${entry_id}" />
+  <input type='hidden' name='id_on_user' value="${entry_id}" />
 
   <input type="hidden" name="title"        value="${pvs['title']}" />
   <input type="hidden" name="description"  value="${pvs['description']}" />
@@ -230,10 +232,10 @@ function content_of_edit_bulletin($pvs, $messages, $entry_id){
 
     $content_html_form = <<<CONTENT_HTML_FORM
 <h3> Edit Bulletin </h3>
-<p> job_entry id is {$entry_id} </p>
+<p> your own entry id is {$entry_id} </p>
 <form action="" method="post">
   ${csrf_html}
-  <input type='hidden' name='job_entry_id' value="${entry_id}" />
+  <input type='hidden' name='id_on_user' value="${entry_id}" />
   <dl>
     <dt> title </dt>
     <dd> <input type="text" name="title" required value="${pvs['title']}"> </input> </dd>

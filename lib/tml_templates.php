@@ -115,7 +115,7 @@ function html_text_of_bulletin(array $bulletin_info, $omit_p=false, $omitted_len
     // content
     $listing_or_seeking = ($vals['attribute'] =='L'  ?  'Listing' :
                            ($vals['attribute']=='S' ?  'Seeking' : 'showing'));
-    $detail_url = url_of_bulletin_detail($vals['id']); // id of job_entry.id
+    $detail_url = url_of_bulletin_detail($vals['public_uid'], $vals['eid']); // specifers of job_entry.id
     $cooperator_url = url_of_cooperator_detail($vals['public_uid']);
 
     $h_n_tml
@@ -149,7 +149,7 @@ function html_text_of_bulletin(array $bulletin_info, $omit_p=false, $omitted_len
 }
 
 
-function tml_bulletin_edit_button(int $job_entry_id){
+function tml_bulletin_edit_button(int $id_on_user){
     global $csrf;
     $token = $csrf->hiddenInputHTML();
 
@@ -157,13 +157,13 @@ function tml_bulletin_edit_button(int $job_entry_id){
     $form_tml = "<form action='{$pubroot}cmenu/bulletin_edit.php' method='POST'>"
               . "  " . $token
               . "  <input type='hidden' name='step_demand' value='ask_db_edit_post'>"
-              . "  <input type='hidden' name='job_entry_id' value='{$job_entry_id}'>"
+              . "  <input type='hidden' name='id_on_user' value='{$id_on_user}'>"
               . "  <input type='submit' value='edit' />"
               . "</form>";
     return $form_tml;
 }
 
-function tml_bulletin_swap_open_close_button(int $job_entry_id, $opened_at, $closed_at){
+function tml_bulletin_swap_open_close_button(int $id_on_user, $opened_at, $closed_at){
     global $csrf;
     $token = $csrf->hiddenInputHTML();
 
@@ -174,7 +174,7 @@ function tml_bulletin_swap_open_close_button(int $job_entry_id, $opened_at, $clo
 
     $form_tml = "<form action='{$pubroot}cmenu/bulletin_swap_open_close.php' method='POST'>"
               . "  " . $token
-              . "  <input type='hidden' name='entry_id' value='{$job_entry_id}'>"
+              . "  <input type='hidden' name='oid' value='{$id_on_user}'>"
               . "  <button type='submit' name='demand' value='{$demand}'>{$demand_text}</button>"
               . "</form>";
     return $form_tml;
@@ -215,7 +215,7 @@ function html_text_of_bulletins_table (array $bulletin_array, $edit_menu_p=false
         }
 
         //
-        $row_tml_formed['a_href'] = "<a href='".url_of_bulletin_detail($row['eid'])."'>A</a>";
+        $row_tml_formed['a_href'] = "<a href='".url_of_bulletin_detail($row['public_uid'], $row['eid'])."'>A</a>";
         $row_tml_formed['open_close'] = job_entry_opened_p($row['opened_at'], $row['closed_at']) ? 'O' : 'C';
 
         // edit menu buttons if edit_menu_p
