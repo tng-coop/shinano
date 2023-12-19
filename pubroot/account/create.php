@@ -10,6 +10,11 @@ include_once(__DIR__ . '/../../lib/transactions.php');
 // CSRF
 //$csrf->getToken();
 
+// initialize variables
+$db_message_tml = "";
+$csrf_message = "";
+[$post_name, $form_message_name, $form_message_password] = ["", "", ""];
+
 // avoid clickjacking
 header('X-FRAME-OPTIONS: SAMEORIGIN');
 

@@ -6,9 +6,15 @@ include_once(__DIR__ . "/../../lib/common.php");
 include_once(__DIR__ . "/../../lib/form_check.php");
 include_once(__DIR__ . '/../../lib/transactions.php');
 
+// initialize variables
+$db_message_tml = "";
+$csrf_message = "";
+[$post_email, $form_message_email, $email_not_registerd_message] = ["", "", ""];
 
 // fill variables by POSTed values
-$post_email = $_POST["email"];
+if($request_method == 'POST'){
+    $post_email = $_POST["email"];
+}
 
 // check if email is already registered as (non pre) user
 
@@ -142,7 +148,6 @@ ACCOUNT_CREATE_FORM;
 // prepare template
 
 $content_actual = <<<CONTENT_CREATE_ACCOUNT
-${debug_tml}
 <h3> E-Mail check for Create Account </h3>
 {$pre_account_create_form_html}
 CONTENT_CREATE_ACCOUNT;

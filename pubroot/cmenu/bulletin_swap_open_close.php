@@ -7,7 +7,6 @@ include_once(__DIR__ . "/../../lib/form_check.php");
 include_once(__DIR__ . '/../../lib/transactions.php');
 
 
-
 // deny not loggedin request
 if(! $login->user()){
     please_login_page();
@@ -21,8 +20,6 @@ if($request_method!="POST"){
 }
 
 // deny invalid POST parameters
-print_r($_POST);
-
 if(!isset($_POST['demand']) || !int_string_p($_POST["oid"])) {
     RenderByTemplate("template.html", "invalid request - Shinano -", "invalid request.");
     exit();
@@ -55,7 +52,6 @@ if ($demand=='let_open') {
 elseif ($demand=='let_close') {
     \Tx\with_connection($data_source_name, $sql_rw_user, $sql_rw_pass)(
         function($conn_rw) use ($loggedin_email, $user_own_id) {
-            print_r($user_own_id);
             \TxSnn\close_job_things(null)($conn_rw, $loggedin_email, $user_own_id);
             return true;});
 
@@ -82,6 +78,8 @@ CONTENT;
 
 
 // Render to HTML by template.
+
+$title_part = "open/close state is swapped";
 
 RenderByTemplate("template.html", "{$title_part} - Shinano -", $content_html);
 

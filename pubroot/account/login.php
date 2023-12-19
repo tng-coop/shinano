@@ -9,13 +9,17 @@ include_once(__DIR__ . '/../../lib/common.php');
 // CSRF
 //$csrf->getToken();
 
+// initialize variables
+$db_message_tml = "";
+$csrf_message = "";
+[$post_email, $form_message_email, $form_message_password] = ["", "", ""];
 
 // fill variables by POSTed values
-
-$form_accessors = ["email", "password"];
-$post_data = array_map(fn($accessor) => $_POST[$accessor], $form_accessors);
-[$post_email, $post_password] = $post_data;
-
+if($request_method == 'POST'){
+    $form_accessors = ["email", "password"];
+    $post_data = array_map(fn($accessor) => $_POST[$accessor], $form_accessors);
+    [$post_email, $post_password] = $post_data;
+}
 
 // login if the safe pair of email (as id) and password are match.
 
@@ -70,7 +74,6 @@ if($request_method == "POST"){
         }
     }
 }
-
 
 // make contents
 
