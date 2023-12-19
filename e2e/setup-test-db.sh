@@ -39,7 +39,7 @@ fi
 # Use the MYSQL_ADMIN variable in the reset script
 bash "reset-dev.sh" "$MYSQL_ADMIN"
 
-# Explanation: 
+# Explanation:
 # The 'reset-dev' operation sets MySQL user passwords using an older, less secure hashing format.
 # This script updates these passwords to the newer, more secure format used in MySQL 5.6.5 and later.
 # It uses the 'ALTER USER' command, which is part of the new syntax introduced in recent MySQL versions.
@@ -62,5 +62,5 @@ $MYSQL_ADMIN shinano_dev -e "GRANT SELECT, INSERT, UPDATE, DELETE ON shinano_dev
 
 
 # Use the MYSQL_ADMIN variable to execute SQL file
-$MYSQL_ADMIN --local-infile=1 shinano_dev < "mockdata-inserts.sql"
 php "mockdata/insert_mockdata.php"
+$MYSQL_ADMIN --local-infile=1 shinano_dev < "mockdata-inserts.sql"

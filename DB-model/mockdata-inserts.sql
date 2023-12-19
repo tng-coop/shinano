@@ -2,7 +2,7 @@
 
 /*
 -- INSERT mocks of user
-LOAD DATA LOCAL INFILE './mockdata/user.csv' 
+LOAD DATA LOCAL INFILE './mockdata/user.csv'
      INTO TABLE user
      FIELDS TERMINATED BY ',' ENCLOSED BY '"'
      LINES TERMINATED BY '\n'
@@ -12,12 +12,9 @@ LOAD DATA LOCAL INFILE './mockdata/user.csv'
 
 
 -- INSERT mocks of job listing
-LOAD DATA LOCAL INFILE './mockdata/job_entry.csv' 
+LOAD DATA LOCAL INFILE './mockdata/job_entry.csv'
      INTO TABLE job_entry
      FIELDS TERMINATED BY ',' ENCLOSED BY '"'
      LINES TERMINATED BY '\n'
      IGNORE 1 ROWS
   (@dummy, attribute, user, title, description, created_at, updated_at, opened_at, closed_at);
-
-
-
