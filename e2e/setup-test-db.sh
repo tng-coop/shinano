@@ -62,5 +62,5 @@ $MYSQL_ADMIN shinano_dev -e "GRANT SELECT, INSERT, UPDATE, DELETE ON shinano_dev
 
 
 # Use the MYSQL_ADMIN variable to execute SQL file
-php "mockdata/insert_mockdata.php"
 $MYSQL_ADMIN --local-infile=1 shinano_dev < "mockdata-inserts.sql"
+php "mockdata/insert_mockdata.php"
