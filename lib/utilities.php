@@ -47,6 +47,10 @@ $data_source_name = get_config('database','dsn');
 // ### url
 $pubroot = get_config('url','url_shinano_pubroot'); # url of shinano's pubroot
 
+// ### email
+$email_from = get_config('email','email_from');
+
+
 // ### request_method
 
 if(is_GET()){

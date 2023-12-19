@@ -41,7 +41,8 @@ function send_email_for_email_varification_of_account_create($email_to, $url){
            . "<p> this e-mail is sent by shinano. this email is sending only</p>";
     $headers  = "";
     $headers .= 'Content-type: text/html; charset=UTF-8' . "\r\n";
-    // $headers .= 'From: Shinano <shinano@tng.coop>' // config email_from
+    global $email_from;
+    $headers .= "From: Shinano {$email_from}" . "\r\n" ; // config email_from
     
     $result_send_email = mb_send_mail($email_to, $title, $message, $headers);
 
