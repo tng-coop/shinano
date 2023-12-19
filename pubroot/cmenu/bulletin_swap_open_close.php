@@ -47,7 +47,7 @@ $demand = $_POST['demand'];
 if ($demand=='let_open') {
     \Tx\with_connection($data_source_name, $sql_rw_user, $sql_rw_pass)(
         function($conn_rw) use ($loggedin_email, $user_own_id) {
-            \TxSnn\open_job_thing($conn_rw, $loggedin_email, $user_own_id);
+            \TxSnn\open_job_things(null)($conn_rw, $loggedin_email, $user_own_id);
             return true;});
 
     $message = "opened now";
@@ -56,7 +56,7 @@ elseif ($demand=='let_close') {
     \Tx\with_connection($data_source_name, $sql_rw_user, $sql_rw_pass)(
         function($conn_rw) use ($loggedin_email, $user_own_id) {
             print_r($user_own_id);
-            \TxSnn\close_job_thing($conn_rw, $loggedin_email, $user_own_id);
+            \TxSnn\close_job_things(null)($conn_rw, $loggedin_email, $user_own_id);
             return true;});
 
     $message = "closed now";

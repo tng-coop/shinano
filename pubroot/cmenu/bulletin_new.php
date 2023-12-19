@@ -15,20 +15,22 @@ if(! $login->user()){
 
 // fill variables by POSTed values
 
-$step_demand = $_POST['step_demand'];
-
-$form_accessors = ["title", "description", "attribute", "open_close"];
-$post_data = array_map(fn($accessor) => h($_POST[$accessor]), $form_accessors);
 $pvs = array(); // posted values
-[$pvs['title'], $pvs['description'], $pvs['attribute'], $pvs['open_close']] = $post_data;
+if($request_method == "POST") {
+    $step_demand = $_POST['step_demand'];
+    
+    $form_accessors = ["title", "description", "attribute", "open_close"];
+    $post_data = array_map(fn($accessor) => h($_POST[$accessor]), $form_accessors);
 
-// according to POSTing, radio button into checked.
-[$pvs['checks_L'], $pvs['checks_S']] = [($pvs['attribute']==='L' ? 'checked' : ''),
-                                        ($pvs['attribute']==='S' ? 'checked' : '')];
+    [$pvs['title'], $pvs['description'], $pvs['attribute'], $pvs['open_close']] = $post_data;
 
-[$pvs['checks_open'] ,$pvs['checks_close']] = [($pvs['open_close']==='open'  ? 'checked' : ''),
-                                               ($pvs['open_close']==='close' ? 'checked' : '')];
+    // according to POSTing, radio button into checked.
+    [$pvs['checks_L'], $pvs['checks_S']] = [($pvs['attribute']==='L' ? 'checked' : ''),
+                                            ($pvs['attribute']==='S' ? 'checked' : '')];
 
+    [$pvs['checks_open'] ,$pvs['checks_close']] = [($pvs['open_close']==='open'  ? 'checked' : ''),
+                                                   ($pvs['open_close']==='close' ? 'checked' : '')];
+}
 
 
 // page and process by the case of GEt or POST.
@@ -103,17 +105,16 @@ function content_and_process_by_POST($pvs, $messages){
                 $open_or_close = $post_checks['open_close'];
 
                 // add job thing
-                [ /* $user_id ,*/ $entry_id] 
+                [ $user_id, $id_on_user] 
                 = \TxSnn\add_job_things($post_checks['attribute'])
                 ($conn_rw, $loggedin_email,
                  hd($post_checks['title']), hd($post_checks['description']));
 
                 // open or close it
-                print_r($open_or_close);
                 if($open_or_close =='open') {
-                    \TxSnn\open_job_thing($conn_rw, $loggedin_email, $entry_id);
+                    \TxSnn\open_job_things(null)($conn_rw, $loggedin_email, $id_on_user);
                 }elseif($open_or_close=='close'){
-                    \TxSnn\close_job_thing($conn_rw, $loggedin_email, $entry_id);
+                    \TxSnn\close_job_things(null)($conn_rw, $loggedin_email, $id_on_user);
                 }else {
                     return false;
                 }

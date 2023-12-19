@@ -20,7 +20,7 @@ function db_ask_ro(string $query, ?array $params=null, int $mode = \PDO::FETCH_D
 
 // ask DB about duplication
 
-function select_duplicated_bulletins_from_db(string $email, string $title, string $id_on_user='-1'){
+function select_duplicated_bulletins_from_db(string $email, string $title, int $id_on_user=-1){
     $sql_sel_dup = "SELECT J.id_on_user AS eid , U.email, U.public_uid, J.title"
                  . "  FROM user as U INNER JOIN job_entry AS J"
                  . "    ON U.id = J.user"
@@ -34,12 +34,12 @@ function select_duplicated_bulletins_from_db(string $email, string $title, strin
     return $ret0;
 }
 
-function check_title_duplicate_in_each_user(string $email, $title, $id_on_user=-1){
+function check_title_duplicate_in_each_user(string $email, string $title, int $id_on_user=-1){
     // returns [success_p, message, duplicated_url_p];
     if(gettype($title)!=='string' || $title==="") {
         return [null, "invalid title.", false];
     }
-    $duplicated_post = select_duplicated_bulletins_from_db($email, $title, (string)$id_on_user);
+    $duplicated_post = select_duplicated_bulletins_from_db($email, $title, $id_on_user);
 
     if($duplicated_post) {
         $dup0 = $duplicated_post[0];

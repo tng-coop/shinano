@@ -103,14 +103,15 @@ if ($safe_form_post_p && in_array($step_demand, ['update'])) {
     $post_successed_p 
     = \Tx\with_connection($data_source_name, $sql_rw_user, $sql_rw_pass)(
         function($conn_rw) use($id_on_user, $loggedin_email, $post_checks) {
+
             \TxSnn\update_job_things($conn_rw, $id_on_user,
                                      $loggedin_email, $post_checks['attribute'],
                                      hd($post_checks['title']), hd($post_checks['description']));
 
-            $func_open_close = ( $post_checks['open_close']=='open') ?  '\TxSnn\open_job_things' :
-                               (($post_checks['open_close']=='close') ? '\TxSnn\close_job_things' :
+            $func_open_close = ( $post_checks['open_close']=='open') ?  '\TxSnn\open_job_thing' :
+                               (($post_checks['open_close']=='close') ? '\TxSnn\close_job_thing' :
                                 null);            
-            $func_open_close($post_checks['attribute'])($conn_rw, $loggedin_email, $id_on_user);
+            $func_open_close($conn_rw, $loggedin_email, $id_on_user);
             
             return true;
     });

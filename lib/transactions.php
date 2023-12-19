@@ -121,13 +121,14 @@ function add_job_things(string $attribute) {
     return function(PDO $conn, string $email, string $title, string $description) use($attribute) {
         return \Tx\block($conn, "add_job_things:" . $attribute)(
             function() use($attribute, $conn, $email, $title, $description) {
-                // add to job_entry
+                // UPDATE user's last entry
                 $user = user_lock_by_email_or_raise('TxSnn.add_job_things: ', $conn, $email);
                 $user_id = $user['id'];
                 $id_on_user = $user['last_thing'] + 1;
                 $upd_last_thing = $conn->prepare('UPDATE user SET last_thing = :id_on_user WHERE id = :user_id');
                 $upd_last_thing->execute(array(':user_id' => $user_id, 'id_on_user' => $id_on_user));
 
+                // INSERT to job_entry
                 $stmt = $conn->prepare(<<<SQL
 INSERT INTO job_entry(user, id_on_user, attribute, title, description, created_at, updated_at)
        VALUES (:user_id, :id_on_user, :attribute, :title, :description, current_timestamp, current_timestamp);
@@ -154,10 +155,10 @@ function update_job_things(PDO $conn, int $id_on_user,
                            string $email, string $attribute, string $title, string $description){
     // attribute:: 'S'eeking or 'L'isting or etc...
     // email: email of logging in account.
-    \Tx\block($conn, "update_job_things ID: " . $entry_id)(
-        function() use($conn, $entry_id, $attribute, $email, $title, $description) {
+    \Tx\block($conn, "update_job_things email: {$email}, id_on_user:{$id_on_user} ")(
+        function() use($conn, $id_on_user, $email, $attribute, $title, $description) {
             // raise if invalid user
-            $user_id = user_id_lock_by_email_or_raise('TxSnn.add_job_things: ', $conn, $email);
+            $user_id = user_id_lock_by_email_or_raise('TxSnn.update_job_things: ', $conn, $email);
             // rewrite DB
             $sql1 = "UPDATE job_entry AS J"
                   . "  SET J.attribute = :attribute , J.title = :title , J.description = :description , J.updated_at = current_timestamp "
