@@ -25,7 +25,7 @@
         Search
         <form id="head_search_form" class="search_form" method="GET">
           <input type="text" name="search_text" placeholder="insert text to search"
-                 value="<?=h($_GET['search_text'])?>" />
+                 value="<?=(isset($_GET['search_text']))?h($_GET['search_text']):""?>" />
         </form>
         at
         <button type="submit" form="head_search_form" formaction="<?=$v->pub?>bulletin_board.php">
