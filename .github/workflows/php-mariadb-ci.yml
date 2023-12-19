@@ -35,10 +35,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Copy config file
-      run: |
-        cp config.ini.CI config.ini
-
     - name: Wait for MariaDB
       run: |
         until mysqladmin ping -h 127.0.0.1 --silent; do
@@ -53,21 +49,21 @@ jobs:
       run: mysql -h 127.0.0.1 -u root  -e "SELECT * FROM INFORMATION_SCHEMA.SCHEMATA;"
 
     - name: Utilities Test
-      run: php ./test/utilities.php
+      run: php ./unittest/utilities.php
 
-    - name: Basic Features Test
-      run: ./devtools/test-basic-features.sh
+    - name: Setup Test Database
+      run: ./e2e/setup-test-db.sh
 
     - name: Start PHP server
       run: php -S localhost:8000 -t pubroot &
 
-    - name: Install dependencies, Show Playwright version, and Run tests
+    - name: Install dependencies
       run: docker run --rm --network="host" -v $(pwd):/repo -w /repo/e2e ${{ env.PLAYWRIGHT_IMAGE }} npm ci
 
-    - name: Install dependencies, Show Playwright version, and Run tests
+    - name: Show Playwright version
       run: docker run --rm --network="host" -v $(pwd):/repo -w /repo/e2e ${{ env.PLAYWRIGHT_IMAGE }} npx playwright --version
 
-    - name: Install dependencies, Show Playwright version, and Run tests
+    - name: Run Playwright Tests
       run: docker run --rm --network="host" -e CI=true -v $(pwd):/repo -w /repo/e2e ${{ env.PLAYWRIGHT_IMAGE }} npx playwright test
 
     - name: Upload Test Artifacts

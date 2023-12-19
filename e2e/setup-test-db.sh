@@ -3,12 +3,15 @@ set -e
 
 # Set script directory
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+cd "$SCRIPT_DIR"
 
 # Check if running in CI environment
 if [ -n "$CI" ]; then
+    cp ../config.ini.CI ../config.ini
     # CI environment - use root and TCP/IP
     MYSQL_ADMIN='mysql -uroot -h 127.0.0.1'
 else
+    bash update-app-config.sh
     # Check if the current user has MySQL admin privileges
     if mysql -e "SHOW GRANTS;" | grep 'ALL PRIVILEGES' > /dev/null 2>&1; then
         # The current user has admin privileges

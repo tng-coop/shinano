@@ -704,3 +704,5 @@ dist
 
 *.pdf
 config.ini
+# Ignore backup files
+config.ini.backup_*
