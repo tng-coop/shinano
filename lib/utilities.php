@@ -57,8 +57,12 @@ if(is_GET()){
 
 // # utility functions
 
-function h($string){
-    return htmlspecialchars(strval($string));
+function h($string): string {
+    return htmlspecialchars(strval($string), ENT_QUOTES, 'UTF-8', false);
+}
+
+function hd($string): string {
+    return htmlspecialchars_decode(strval($string), ENT_QUOTES);
 }
 
 function int_string_p(string $integer_string_maybe){

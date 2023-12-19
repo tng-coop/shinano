@@ -104,7 +104,8 @@ function content_and_process_by_POST($pvs, $messages){
 
                 // add job thing
                 $entry_id = \TxSnn\add_job_things($post_checks['attribute'])
-                ($conn_rw, $loggedin_email, $post_checks['title'], $post_checks['description']);
+                ($conn_rw, $loggedin_email,
+                 hd($post_checks['title']), hd($post_checks['description']));
 
                 // open or close it
                 if($open_or_close =='open') {

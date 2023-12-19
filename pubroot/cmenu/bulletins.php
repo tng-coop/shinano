@@ -41,7 +41,7 @@ function update_user_note_if_note_editted_post(){
         global $data_source_name, $sql_rw_user, $sql_rw_pass;
         \Tx\with_connection($data_source_name, $sql_rw_user, $sql_rw_pass)(
             function($conn_rw) use($user_id, $checked_note_editted) {
-                update_user_note($conn_rw, $user_id, $checked_note_editted);
+                update_user_note($conn_rw, $user_id, hd($checked_note_editted));
             });
         return [$checked_note_editted, ""];
     }
