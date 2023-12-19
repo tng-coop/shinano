@@ -15,7 +15,7 @@ if(! $login->user()){
 
 // GET's search_text and npage
 $search_text
-    = (! is_null($_GET['search_text'])) ? $_GET['search_text'] : "";
+    = (isset($_GET['search_text'])) ? $_GET['search_text'] : "";
 
 $request_npage
     = (isset($_GET['npage']) && int_string_p($_GET['npage'])) ? intval($_GET['npage']) : 1;
