@@ -128,7 +128,6 @@ function add_job_things(string $attribute) {
                 $upd_last_thing = $conn->prepare('UPDATE user SET last_thing = :id_on_user WHERE id = :user_id');
                 $upd_last_thing->execute(array(':user_id' => $user_id, 'id_on_user' => $id_on_user));
 
-                echo "user_id = {$user_id}, id_on_user = {$id_on_user}\n";
                 $stmt = $conn->prepare(<<<SQL
 INSERT INTO job_entry(user, id_on_user, attribute, title, description, created_at, updated_at)
        VALUES (:user_id, :id_on_user, :attribute, :title, :description, current_timestamp, current_timestamp);
