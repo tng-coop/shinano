@@ -31,8 +31,8 @@ COMMIT;
 --
 START TRANSACTION;
 
-INSERT INTO user(email, passwd_hash, public_uid, name, note, created_at, updated_at)
-       VALUES (@email, @passwd_hash, @public_uid, @name, @note, current_timestamp, current_timestamp);
+INSERT INTO user(email, passwd_hash, public_uid, last_thing, name, note, created_at, updated_at)
+       VALUES (@email, @passwd_hash, @public_uid, 0, @name, @note, current_timestamp, current_timestamp);
 
 COMMIT;
 -- --------
@@ -50,8 +50,8 @@ COMMIT;
 --
 START TRANSACTION;
 
-INSERT INTO user(email, passwd_hash, public_uid, name, note, created_at, updated_at)
-       VALUES (@email, @passwd_hash, @public_uid, @name, @note, current_timestamp, current_timestamp);
+INSERT INTO user(email, passwd_hash, public_uid, last_thing, name, note, created_at, updated_at)
+       VALUES (@email, @passwd_hash, @public_uid, 0, @name, @note, current_timestamp, current_timestamp);
 
 COMMIT;
 
@@ -60,77 +60,84 @@ COMMIT;
 
 -- add job listing / seeking
 -- --------
--- candidate 1
---   input params
-SET @attribute = 'L', @email = 'mail@piyomail.com', @title = 'John job listing', @description = 'example job description 1';
---   Two statements transaction
-START TRANSACTION;
-
-SELECT @user_id := id FROM user WHERE email = @email FOR UPDATE;
-INSERT INTO job_entry(attribute, user, title, description, created_at, updated_at)
-       VALUES (@attribute, @user_id, @title, @description, current_timestamp, current_timestamp);
-
-COMMIT;
--- --------
--- candidate 2
---   input params
-SET @attribute = 'L', @email = 'tony@morris.com', @title = 'Tony job listing', @description = 'example job description 2';
---   One INSERT ... SELECT statement
-START TRANSACTION;
-
-INSERT INTO job_entry(attribute, user, title, description, created_at, updated_at)
-       SELECT @attribute, U.id, @title, @description, current_timestamp, current_timestamp FROM user AS U WHERE U.email = @email;
-
-COMMIT;
--- --------
 -- example 1
 --   input params
-SET @attribute = 'S', @email = 'mail@piyomail.com', @title = 'John job seeking', @description = 'example job seeking content 1';
---   Two statements transaction
+SET @attribute = 'L', @email = 'mail@piyomail.com', @title = 'John job listing', @description = 'example job description 1';
+--   multi statements transaction
 START TRANSACTION;
 
-SELECT @user_id := id FROM user WHERE email = @email FOR UPDATE;
-INSERT INTO job_entry(attribute, user, title, description, created_at, updated_at)
-       VALUES (@attribute, @user_id, @title, @description, current_timestamp, current_timestamp);
+SELECT @user_id := id, @last_thing := last_thing FROM user WHERE email = @email FOR UPDATE;
+SET @id_on_user = @last_thing + 1;
+UPDATE user SET last_thing = @id_on_user WHERE id = @user_id;
+INSERT INTO job_entry(user, id_on_user, attribute, title, description, created_at, updated_at)
+       VALUES (@user_id, @id_on_user, @attribute, @title, @description, current_timestamp, current_timestamp);
+
+COMMIT;
+-- --------
+-- example 2
+--   input params
+SET @attribute = 'L', @email = 'tony@morris.com', @title = 'Tony job listing', @description = 'example job description 2';
+--   multi statements transaction
+START TRANSACTION;
+
+SELECT @user_id := id, @last_thing := last_thing FROM user WHERE email = @email FOR UPDATE;
+SET @id_on_user = @last_thing + 1;
+UPDATE user SET last_thing = @id_on_user WHERE id = @user_id;
+INSERT INTO job_entry(user, id_on_user, attribute, title, description, created_at, updated_at)
+       VALUES (@user_id, @id_on_user, @attribute, @title, @description, current_timestamp, current_timestamp);
+
+COMMIT;
+-- --------
+-- example 3
+--   input params
+SET @attribute = 'S', @email = 'mail@piyomail.com', @title = 'John job seeking', @description = 'example job seeking content 1';
+--   multi statements transaction
+START TRANSACTION;
+
+SELECT @user_id := id, @last_thing := last_thing FROM user WHERE email = @email FOR UPDATE;
+SET @id_on_user = @last_thing + 1;
+UPDATE user SET last_thing = @id_on_user WHERE id = @user_id;
+INSERT INTO job_entry(user, id_on_user, attribute, title, description, created_at, updated_at)
+       VALUES (@user_id, @id_on_user, @attribute, @title, @description, current_timestamp, current_timestamp);
 
 COMMIT;
 
 
 -- open job listing / seeking
 -- --------
--- candidate 1
+-- example 1
 --   input params
-SET @attribute = 'L', @email = 'tony@morris.com', @job_entry_id = 2;
+SET @attribute = 'L', @email = 'tony@morris.com', @id_on_user = 1;
 --   Two statements transaction
 START TRANSACTION;
 
 SELECT @user_id := U.id FROM user AS U WHERE U.email = @email FOR UPDATE;
 UPDATE job_entry AS J SET opened_at = current_timestamp
-       WHERE attribute = @attribute AND id = @job_entry_id AND user = @user_id;
+       WHERE user = @user_id AND id_on_user = @id_on_user AND attribute = @attribute;
 
 COMMIT;
 -- --------
--- candidate 2
+-- example 2
 --   input params
-SET @attribute = 'L', @email = 'mail@piyomail.com', @job_entry_id = 1;
+SET @attribute = 'L', @email = 'mail@piyomail.com', @id_on_user = 1;
 --   One UPDATE statement uses a correlation query to specify a specific user from email
 START TRANSACTION;
 
+SELECT @user_id := U.id FROM user AS U WHERE U.email = @email FOR UPDATE;
 UPDATE job_entry AS J SET opened_at = current_timestamp
-       WHERE attribute = @attribute AND id = @job_entry_id
-       AND user = (SELECT U.id FROM user AS U WHERE U.email = @email);
+       WHERE user = @user_id AND id_on_user = @id_on_user AND attribute = @attribute;
 
 COMMIT;
 -- --------
--- example 1
+-- example 3
 --   input params
-SET @attribute = 'S', @email = 'mail@piyomail.com', @job_entry_id = 3;
+SET @attribute = 'S', @email = 'mail@piyomail.com', @id_on_user = 2;
 --   Two statements transaction
 START TRANSACTION;
 
 SELECT @user_id := U.id FROM user AS U WHERE U.email = @email FOR UPDATE;
 UPDATE job_entry AS J SET opened_at = current_timestamp
-       WHERE attribute = @attribute AND id = @job_entry_id AND user = @user_id;
+       WHERE user = @user_id AND id_on_user = @id_on_user AND attribute = @attribute;
 
 COMMIT;
 
@@ -139,37 +146,37 @@ COMMIT;
 -- --------
 -- candidate 1
 --   input params
-SET @attribute = 'L', @email = 'tony@morris.com', @job_entry_id = 2;
+SET @attribute = 'L', @email = 'tony@morris.com', @id_on_user = 1;
 --   Two statements transaction
 START TRANSACTION;
 
 SELECT @user_id := U.id FROM user AS U WHERE U.email = @email FOR UPDATE;
 UPDATE job_entry AS J SET closed_at = current_timestamp
-       WHERE attribute = @attribute AND id = @job_entry_id AND user = @user_id;
+       WHERE user = @user_id AND id_on_user = @id_on_user AND attribute = @attribute;
 
 COMMIT;
 -- --------
 -- candidate 2
 --   input params
-SET @attribute = 'L', @email = 'mail@piyomail.com', @job_entry_id = 1;
+SET @attribute = 'L', @email = 'mail@piyomail.com', @id_on_user = 1;
 --   The UPDATE statement uses a correlation query to specify a specific user from email
 START TRANSACTION;
 
-UPDATE job_entry SET closed_at = current_timestamp
-       WHERE attribute = @attribute AND id = @job_entry_id
-       AND user = (SELECT U.id FROM user AS U WHERE U.email = @email);
+SELECT @user_id := U.id FROM user AS U WHERE U.email = @email FOR UPDATE;
+UPDATE job_entry AS J SET closed_at = current_timestamp
+       WHERE user = @user_id AND id_on_user = @id_on_user AND attribute = @attribute;
 
 COMMIT;
 -- --------
 -- example 1
 --   input params
-SET @attribute = 'S', @email = 'mail@piyomail.com', @job_entry_id = 3;
+SET @attribute = 'S', @email = 'mail@piyomail.com', @id_on_user = 2;
 --   Two statements transaction
 START TRANSACTION;
 
 SELECT @user_id := U.id FROM user AS U WHERE U.email = @email FOR UPDATE;
 UPDATE job_entry AS J SET closed_at = current_timestamp
-       WHERE attribute = @attribute AND id = @job_entry_id AND user = @user_id;
+       WHERE user = @user_id AND id_on_user = @id_on_user AND attribute = @attribute;
 
 COMMIT;
 
