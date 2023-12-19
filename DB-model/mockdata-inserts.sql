@@ -17,4 +17,12 @@ LOAD DATA LOCAL INFILE './mockdata/job_entry.csv'
      FIELDS TERMINATED BY ',' ENCLOSED BY '"'
      LINES TERMINATED BY '\n'
      IGNORE 1 ROWS
-  (@dummy, attribute, user, title, description, created_at, updated_at, opened_at, closed_at);
+  (@dummy, attribute, user, id_on_user , title, description, created_at, updated_at, opened_at, closed_at);
+
+UPDATE user SET last_thing =  1 WHERE id =  1;
+UPDATE user SET last_thing =  2 WHERE id =  3;
+UPDATE user SET last_thing =  1 WHERE id =  5;
+UPDATE user SET last_thing =  1 WHERE id =  7;
+UPDATE user SET last_thing =  3 WHERE id =  4;
+UPDATE user SET last_thing =  1 WHERE id = 11;
+UPDATE user SET last_thing = 11 WHERE id =  2;
