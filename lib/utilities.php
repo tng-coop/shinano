@@ -25,7 +25,7 @@ $config = parse_ini_file(__DIR__ . "/../config.ini", true);
 if ($config === false) {
     // Handle the error - the file may not exist or is not readable
     echo "Error: Unable to read the configuration file.";
-    exit;
+    exit(1); // Exit with error code 1
 }
 
 function get_config(string $k1, string $k2) : string {
