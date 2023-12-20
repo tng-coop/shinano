@@ -35,6 +35,9 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Copy Config File
+      run: cp config.ini.CI config.ini
+
     - name: Wait for MariaDB
       run: |
         until mysqladmin ping -h 127.0.0.1 --silent; do
@@ -47,6 +50,9 @@ jobs:
 
     - name: Check Database Character Set and Collation
       run: mysql -h 127.0.0.1 -u root  -e "SELECT * FROM INFORMATION_SCHEMA.SCHEMATA;"
+
+    - name: Copy Config File
+      run: bash e2e/update-app-config.sh
 
     - name: Utilities Test
       run: php ./unittest/utilities.php

@@ -1,6 +1,9 @@
 #!/bin/bash
+set -e
 
-cd ../
+# set script directory
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+cd "$SCRIPT_DIR/.." 
 
 # Normal behavior when not in CI environment
 
