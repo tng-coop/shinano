@@ -12,13 +12,15 @@ if [ -n "$CI" ]; then
     MYSQL_ADMIN='mysql -uroot -h 127.0.0.1'
 else
     bash update-app-config.sh
-    # Check if the current user has MySQL admin privileges
-    if mysql -e "SHOW GRANTS;" | grep 'ALL PRIVILEGES' > /dev/null 2>&1; then
-        # The current user has admin privileges
-        MYSQL_ADMIN='mysql'
-    else
-        # The current user does not have admin privileges, use root
-        MYSQL_ADMIN='mysql -uroot'
+    if [ -z "$MYSQL_ADMIN" ]; then
+       # Check if the current user has MySQL admin privileges
+       if mysql -e "SHOW GRANTS;" | grep 'ALL PRIVILEGES' > /dev/null 2>&1; then
+           # The current user has admin privileges
+           MYSQL_ADMIN='mysql'
+       else
+           # The current user does not have admin privileges, use root
+           MYSQL_ADMIN='mysql -uroot'
+       fi
     fi
 fi
 $MYSQL_ADMIN -e "SET GLOBAL character_set_server = 'utf8mb4';"
