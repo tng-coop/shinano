@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Check if PHP server is running on localhost:8000
-if ! lsof -i:8000 | grep -q PHP; then
+if ! lsof -n -i:8000 | grep -q PHP; then
     echo "Starting PHP server..."
     # Start the PHP server in the background
     php -S localhost:8000 -t ../pubroot &
