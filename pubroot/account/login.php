@@ -99,7 +99,7 @@ ${db_message_tml}
 <form action="" method="post">
   {$csrf_html}
   <dl>
-    <dt> email or user_id </dt>
+    <dt> email </dt>
     <dd> <input type="text" name="email" required value="${post_email}"> </input> </dd>
     <dd> <pre>{$form_message_email}</pre> </dd>
     <dt> password </dt>
