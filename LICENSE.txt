@@ -1,0 +1,8 @@
+We are considering BSD for the "license".
+But haven't thought much about it yet...
+
+It will not be "proprietary", "freemium" or anything non-copy-left (except possibly public domain).
+
+If you want to do something with this, chances are you can do whatever you want but please let us know!
+info@tng.coop
++81 90 6523 2640
