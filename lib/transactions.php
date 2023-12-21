@@ -76,7 +76,7 @@ function unsafe_update_public_uid(PDO $conn, string $tag, $update_callback) {
             if (!$state_ref) {
                 throw new \Tx\Exception('TxSnn.unsafe_update_public_uid: internal error. wrong system initialization');
             }
-            $last_public_uid = $state_ref[0];
+            $last_public_uid = intval($state_ref[0]);
             [ $public_uid, $result ] = $update_callback($last_public_uid);
             $stmt = $conn->prepare('UPDATE public_uid_state SET last_uid = ?');
             $pstate->fetchAll(); ## UGLY HACK for MySQL!! breaks critical section for Cursor Solid isolation RDBMs

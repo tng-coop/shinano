@@ -118,10 +118,14 @@ function insert_job_entries(){
 
                 $email = user_email_lock_by_id($conn_rw, $r_user_id);
 
-
-                \TxSnn\add_job_things($r_attribute)
-                    ($conn_rw, $email, $r_title, $r_description);
-                //$conn_rw->commit();
+                if(is_null($r_attribute) || is_null($r_title) || is_null($r_description) || is_null($email) ||
+                   gettype($email)!='string'){
+                    echo("invalid data. row_in_CSV:{$i} , email:{$email}\n");
+                } else {
+                    \TxSnn\add_job_things($r_attribute)
+                        ($conn_rw, $email, $r_title, $r_description);
+                    //$conn_rw->commit();
+                }
             });
     }
 
