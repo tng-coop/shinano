@@ -144,23 +144,30 @@ your E-Mail has checked <br />
 To create account, name and password are additionaly needed. <br />
 <pre> {$csrf_message} </pre>
 <form action="" method="post">
-  ${csrf_html}
-  <dl>
-    <dt> name </dt>
-    <dd> <input type="text" name="name" required value="${post_name}"> </input> </dd>
-    <dd> <pre>{$form_message_name}</pre> </dd>
+    {$csrf_html}
+    <div>
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" required value="{$post_name}">
+        <pre>{$form_message_name}</pre>
+    </div>
 
-    <dt> email </dt>
-    <dd> {$email} </dd>
+    <div>
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" readonly value="{$email}">
+    </div>
 
-    <dt> password </dt>
-    <dd> <input type="password" name="password_first" required value=""> </input> </dd>
+    <div>
+        <label for="password_first">Password</label>
+        <input type="password" id="password_first" name="password_first" required autocomplete="new-password">
+    </div>
 
-    <dt> password for check </dt>
-    <dd> <input type="password" name="password_check" required value=""> </input> </dd>
-    <dd> <pre>{$form_message_password}</pre> </dd>
-  </dl>
-  <input type="submit" value="Check for Create Account"> </input>
+    <div>
+        <label for="password_check">Confirm Password</label>
+        <input type="password" id="password_check" name="password_check" required autocomplete="new-password">
+        <pre>{$form_message_password}</pre>
+    </div>
+
+    <button type="submit">Check for Create Account</button>
 </form>
 ACCOUNT_CREATE_FORM;
 }

@@ -9,7 +9,13 @@ cd "$SCRIPT_DIR/.."
 
 # Copying config.ini.CI to config.ini.temp
 cp config.ini.CI config.ini.temp
+
+# Replace 'mysql:host=127.0.0.1' with 'mysql:host=localhost'
 sed -i 's/mysql:host=127.0.0.1/mysql:host=localhost/' config.ini.temp
+
+# Remove 'url_shinano_pubroot=(delete here)' line and add a comment
+sed -i '/^url_shinano_pubroot=/c url_shinano_pubroot=; removed so that server will use the appropriate URL. Great for dev machines!' config.ini.temp
+
 # Comparing config.ini.temp to config.ini
 if ! cmp -s config.ini.temp config.ini; then
     # If they are different, back up config.ini with a date stamp

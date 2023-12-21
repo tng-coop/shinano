@@ -42,12 +42,19 @@ function send_email_for_email_varification_of_account_create($email_to, $url){
     $headers  = "";
     $headers .= 'Content-type: text/html; charset=UTF-8' . "\r\n";
     global $email_from;
-    $headers .= "From: Shinano {$email_from}" . "\r\n" ; // config email_from
-    
+    $headers .= "From: Shinano <{$email_from}>" . "\r\n" ; // config email_from
+ 
+        // Log the arguments passed to mb_send_mail
+        $logMessage = "Sending email to: $email_to\n";
+        $logMessage .= "Title: $title\n";
+        $logMessage .= "Message: $message\n";
+        $logMessage .= "Headers: $headers\n";
+        error_log($logMessage, 0);
+
+        
     $result_send_email = mb_send_mail($email_to, $title, $message, $headers);
 
     return $result_send_email;
-
     // for testing
     // print_r($message);
     // return true;
@@ -118,44 +125,37 @@ if($request_method == "POST"){
 
 // parepare and execute DB and SQL
 
-// make contents
-
-if($state_create_account=="pre_just_created"){
-    $pre_account_create_form_html
-        = "Shinano sent you E-Mail.<br />"
-        . "Please check it.";
-
-}elseif($state_create_account=="pre_creating"){
+// Make contents
+if ($state_create_account == "pre_just_created") {
+    $pre_account_create_form_html = "Shinano sent you E-Mail.<br />Please check it.";
+} elseif ($state_create_account == "pre_creating") {
     // CSRF inserting html
-    $csrf_html = $csrf->hiddenInputHTML();
-    // actual content
+    $csrf_html = $csrf->hiddenInputHTML(); // Ensure this is a hidden input
+
+    // Actual content
     $pre_account_create_form_html = <<<ACCOUNT_CREATE_FORM
-${db_message_tml}
-To create account, Shinano check your e-mail first. <br />
-<pre> {$csrf_message} </pre>
-<form action="" method="post">
-  ${csrf_html}
-  <dl>
-    <dt> email </dt>
-    <dd> <input type="text" name="email" required value="${post_email}"> </input> </dd>
-    <dd> <pre>{$form_message_email}{$email_not_registerd_message}</pre> </dd>
-  </dl>
-  <input type="submit" value="Check for Email"> </input>
-</form>
+    $db_message_tml
+    To create an account, Shinano checks your e-mail first. <br />
+    <pre> {$csrf_message} </pre>
+    <form action="" method="post">
+        $csrf_html
+        <dl>
+            <dt>Email</dt>
+            <dd><input type="email" name="email" required value="$post_email"></dd>
+            <dd><pre>{$form_message_email}{$email_not_registered_message}</pre></dd>
+        </dl>
+        <input type="submit" value="Check for Email">
+    </form>
 ACCOUNT_CREATE_FORM;
 }
 
-
-// prepare template
-
+// Prepare template
 $content_actual = <<<CONTENT_CREATE_ACCOUNT
-<h3> E-Mail check for Create Account </h3>
-{$pre_account_create_form_html}
+<h3>E-Mail check for Create Account</h3>
+$pre_account_create_form_html
 CONTENT_CREATE_ACCOUNT;
 
-
-RenderByTemplate("template.html", "Account Create - Shinano -",
-                 $content_actual);
+RenderByTemplate("template.html", "Account Create - Shinano -", $content_actual);
 
 
 ?>
