@@ -49,7 +49,6 @@
         } else {
             echo("Hello! " . $login->user("name") . " | \n" );
             echo("<a href='{$v->pub}cmenu/index.php'>cooperator's_menu</a>" . " | \n");
-            echo($login_tml . " | \n");
             global $csrf;
             echo("<form action='{$v->pub}account/logout.php'"
                  .     "method='post' class='logout_form'>\n" .
