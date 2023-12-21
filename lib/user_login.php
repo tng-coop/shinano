@@ -1,5 +1,18 @@
 <?php
 
+// Stores user datas.
+// and change login status (such as Login and Logout)
+//
+// Security of user_ligin may ToDo thing.
+//
+// Before Login(...), please certificate user by another security functions.
+// because information only public_uid is danger.
+//
+// $login_user is logging in user, stored as session in server.
+// setLoginUser(...) asks DataBase about user, and set session of $login_user.
+// Login(...) sets $login_user if public_uid's user is exists.
+// Logout(...) to logout.
+// 
 // referenced:
 // 6th chapter of "Postgre SQL 徹底入門"
 // https://www.shoeisha.co.jp/book/detail/9784798164090

@@ -1,10 +1,13 @@
 <?php
 
+// detect safety of POSTs.
+
 declare(strict_types=1);
 
 namespace FormCheck;
 
 include_once(__DIR__ . '/./common.php');
+
 
 // # check for post values
 

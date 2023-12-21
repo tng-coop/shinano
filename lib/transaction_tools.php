@@ -1,5 +1,7 @@
 <?php
 
+// DataBase tools which uses transactions.php
+
 declare(strict_types=1);
 
 include_once(__DIR__ . '/./utilities.php');

@@ -1,14 +1,20 @@
 <?php
 
+// this file gives tools to avoid CSRF attack.
+// calling hiddenInputHTML(), generate <hidden ... /> tag which has token for each sessions.
+// insert its tag to the POST types of forms.
+// once server gets POST request, read token by checkToken() to detect valid request,
+// block impresonation requests.
+//
+// please use CSRF varify to the pages which has risk of impersonation.
+// // note: $csrf is instance of CSRF
+// detect safety: $csrf->checkToken(); 
+// generate token: $csrf->hiddenInputHTML();
+//
 // referenced:
 // 6th chapter of "Postgre SQL 徹底入門"
 // https://www.shoeisha.co.jp/book/detail/9784798164090
-//
-// CSRF attack is 
-//
-//
-//
-//
+
 
 declare(strict_types=1);
 
