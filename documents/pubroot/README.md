@@ -1,6 +1,6 @@
 
+this is the document mentioned to commit id `54ce7e5`.
 
-this is the document of commit id :xxxxx .  
 this content will be old after newer version.
 
 
@@ -9,9 +9,7 @@ this content will be old after newer version.
 `pubroot` is directory opened to to Internet. its word is omittion of `public_root`.
 
 
-
 # Structure of pubroot
-
 
 ### structure
 
