@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test('login', async ({ page }) => {
+test('Login and See Initial Page for a Coorperator', async ({ page }) => {
   await page.goto('/');
   await page.locator('#head_cooperator_s_menu').getByRole('link', { name: 'login' }).click()
   await page.locator('input[name="email"]').fill('Tng_0001@tng.coop');
