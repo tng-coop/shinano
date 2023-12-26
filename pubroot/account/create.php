@@ -30,7 +30,7 @@ if(empty($_GET) || (! isset($_GET['urltoken']))){
 } else {
     $urltoken = $_GET['urltoken'];
     
-    // ((flag==0)=>not_registerd_cooperator) and (less than 60 miniutes passed after pre_registerd)
+    // ((flag==0)=>not_registered_cooperator) and (less than 60 miniutes passed after pre_registered)
     $sql = "SELECT email FROM pre_user"
          . "  WHERE urltoken = (:urltoken)"
          . "    AND flag = 0"

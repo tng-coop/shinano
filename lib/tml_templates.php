@@ -18,21 +18,7 @@ class TemplateAndConfigs{
 
         $this->_document_root = realpath(__DIR__ . "/../");
         $this->_URL = get_url();
-        // Check if $pubroot is empty and adjust $this->pub accordingly
-        if (empty($pubroot)) {
-            // Parse the URL to get the base part
-            $parsed_url = parse_url($this->_URL);
-            $base_url = $parsed_url['scheme'] . "://" . $parsed_url['host'];
-            if (isset($parsed_url['port'])) {
-                $base_url .= ":" . $parsed_url['port']. "/";
-            }
-            $this->pub = $base_url;
-        } else {
-            $this->pub = $pubroot;
-        }
-        // Log the values of these properties
-error_log("URL: " . $this->_URL);
-error_log("Public root: " . $this->pub);
+        $this->pub = $pubroot;
     }
 
     // template

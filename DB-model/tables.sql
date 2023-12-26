@@ -48,5 +48,5 @@ CREATE TABLE pre_user
        , email         VARCHAR(255) NOT NULL
        , date          TIMESTAMP NOT NULL
        , flag          TINYINT(1) NOT NULL DEFAULT 0
-       -- flag ... email'd user is ... 0: not_registerd, 1:registerd.
+       -- flag ... email'd user is ... 0: not_registered, 1:registered.
        );

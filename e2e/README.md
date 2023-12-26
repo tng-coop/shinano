@@ -42,6 +42,7 @@ To set up the necessary software for the Shinano project:
 sudo apt install php-cli
 sudo apt install mariadb-client
 sudo apt-get install php-pdo php-mysql
+sudo apt-get install php-mbstring
 ```
 
 #### Usage

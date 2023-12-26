@@ -51,8 +51,6 @@ case $SERVER_MODE in
         ;;
     docker)
         MYSQL_ADMIN='mysql -uroot -h 127.0.0.1'
-        # Remove 'url_shinano_pubroot=(delete here)' line and add a comment
-        sed -i '/^url_shinano_pubroot=/c url_shinano_pubroot=; removed so that server will use the appropriate URL. Great for dev machines!' ../config.ini.temp
         docker compose up -d
         ;;
     local)

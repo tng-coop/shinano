@@ -9,7 +9,7 @@ include_once(__DIR__ . '/../../lib/transactions.php');
 // initialize variables
 $db_message_tml = "";
 $csrf_message = "";
-[$post_email, $form_message_email, $email_not_registerd_message] = ["", "", ""];
+[$post_email, $form_message_email, $email_not_registered_message] = ["", "", ""];
 
 // fill variables by POSTed values
 if($request_method == 'POST'){
@@ -18,7 +18,7 @@ if($request_method == 'POST'){
 
 // check if email is already registered as (non pre) user
 
-function check_if_email_is_not_registerd($email){
+function check_if_email_is_not_registered($email){
     $user_exists = db_ask_ro("SELECT id,email FROM user WHERE email = :email",
                              [':email'=>$email], \PDO::FETCH_ASSOC);
     if(count($user_exists)!=0){
@@ -72,11 +72,11 @@ if($request_method == "POST"){
     } else {
         // check POSTed form's values
         [[$checked_email, $form_message_email],
-         [$email_not_registerd_check, $email_not_registerd_message]]
+         [$email_not_registered_check, $email_not_registered_message]]
         = [\FormCheck\check_user_email_safe($post_email),
-           check_if_email_is_not_registerd($post_email)];
+           check_if_email_is_not_registered($post_email)];
 
-        $safe_form_post_p = ($checked_email!=null && $email_not_registerd_check==true);
+        $safe_form_post_p = ($checked_email!=null && $email_not_registered_check==true);
         
         // reigster to user table if good POST.
         if($safe_form_post_p){
