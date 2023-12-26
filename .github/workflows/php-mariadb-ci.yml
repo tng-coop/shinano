@@ -18,6 +18,11 @@ jobs:
       PLAYWRIGHT_IMAGE: mcr.microsoft.com/playwright:v1.40.0-jammy
 
     services:
+      maildev:
+        image: maildev/maildev
+        ports:
+          - 1080:1080
+          - 1025:1025
       mariadb:
         image: mariadb:10.3
         env:
@@ -35,15 +40,8 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Copy Config File
-      run: cp config.ini.CI config.ini
-
-    - name: Wait for MariaDB
-      run: |
-        until mysqladmin ping -h 127.0.0.1 --silent; do
-          echo 'waiting for db'
-          sleep 1
-        done
+    - name: Show PHP Version
+      run: php -v
 
     - name: Check MariaDB Server Version
       run: mysql -h 127.0.0.1 -u root -e "SELECT VERSION();"
@@ -52,16 +50,13 @@ jobs:
       run: mysql -h 127.0.0.1 -u root  -e "SELECT * FROM INFORMATION_SCHEMA.SCHEMATA;"
 
     - name: Copy Config File
-      run: bash e2e/update-app-config.sh
+      run: cp config.ini.CI config.ini
 
     - name: Utilities Test
       run: php ./unittest/utilities.php
 
-    - name: Setup Test Database
-      run: ./e2e/setup-test-db.sh
-
-    - name: Start PHP server
-      run: php -S localhost:8000 -t pubroot &
+    - name: Setup E2E Tests
+      run: ./e2e/setup-e2e-tests.sh
 
     - name: Install dependencies
       run: docker run --rm --network="host" -v $(pwd):/repo -w /repo/e2e ${{ env.PLAYWRIGHT_IMAGE }} npm ci
@@ -71,6 +66,7 @@ jobs:
 
     - name: Run Playwright Tests
       run: docker run --rm --network="host" -e CI=true -v $(pwd):/repo -w /repo/e2e ${{ env.PLAYWRIGHT_IMAGE }} npx playwright test
+      
 
     - name: Upload Test Artifacts
       uses: actions/upload-artifact@v3
@@ -80,4 +76,5 @@ jobs:
         path: |
           e2e/playwright-report/
           e2e/test-results/
+          e2e/php_server*.log
         retention-days: 3

@@ -4,3 +4,5 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 /artifacts/
+/php_server_*.log
+/php_server_*.pid
