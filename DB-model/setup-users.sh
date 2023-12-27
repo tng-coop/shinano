@@ -46,8 +46,6 @@ fi
 
 # Commands to be executed
 sql_commands=$(cat <<SQL
-CREATE SCHEMA IF NOT EXISTS shinano_dev;
-
 CREATE USER IF NOT EXISTS '$readonly_user'@localhost;
 SET PASSWORD FOR '$readonly_user'@localhost = '$readonly_password';
 GRANT SELECT ON shinano_dev.* TO '$readonly_user'@localhost;

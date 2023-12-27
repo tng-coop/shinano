@@ -18,6 +18,8 @@ Examples:
   $0 mysql -uroot      # Run as MySQL root user
   $0 cat               # Print SQL commands without executing
 
+Note: If the IS_MAYFIRST environment variable is set, this script will not perform any operations.
+
 EOF
 }
 
@@ -38,6 +40,13 @@ fi
 
 set -x
 $admin_mysql < drop-dev-tables.sql
-$admin_mysql < drop-dev-db.sql
-./setup-users.sh "$admin_mysql"
+# Send the SQL commands directly to MySQL
+echo "DROP SCHEMA IF EXISTS shinano_dev;" | $admin_mysql
+echo "CREATE SCHEMA IF NOT EXISTS shinano_dev;" | $admin_mysql
+# Run setup-users.sh only if IS_MAYFIRST is not set
+if [[ -z "${IS_MAYFIRST}" ]]; then
+  echo "DROP USER IF EXISTS sdev_ro@localhost;" | $admin_mysql
+  echo "DROP USER IF EXISTS sdev_rw@localhost;" | $admin_mysql
+  ./setup-users.sh "$admin_mysql"
+fi
 $admin_mysql shinano_dev < tables.sql

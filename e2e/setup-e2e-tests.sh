@@ -8,8 +8,10 @@ set -e
 # Define a usage() function
 usage() {
     echo "Usage: $0 [server_mode]"
-    echo "  server_mode: Optional. Can be 'gha' for GitHub Actions, 'docker' for Docker, or 'local' for a local server. Defaults based on environment."
+    echo "  server_mode: Optional. Can be 'gha' for GitHub Actions, 'docker' for Docker,"
+    echo "  'local' for a local server, or 'mayfirst' for May First server. Defaults based on environment."
 }
+
 
 # Check for help argument
 if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
@@ -21,6 +23,15 @@ fi
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 cd "$SCRIPT_DIR"
 
+# Check if user is tng and host is claudette, then define IS_MAYFIRST flag
+if [[ "$USER" == "tng" && "$HOSTNAME" == "claudette" ]]; then
+    export IS_MAYFIRST=1  # Define the flag
+else
+    unset IS_MAYFIRST  # Ensure the flag is not defined
+fi
+
+
+
 bash ../config.d/copy-config.sh
 
 php_server_ip=$(php read_config.php development php_server_ip)
@@ -30,7 +41,7 @@ if [ -z "$php_server_ip" ]; then
     exit 1
 fi
 
-php_server_port=$(php read_config.php development php_server_port) 
+php_server_port=$(php read_config.php development php_server_port)
 
 if [ -z "$php_server_port" ]; then
     echo "Error: php_server_port is not defined."
@@ -45,9 +56,12 @@ if [ -z "$SERVER_MODE" ]; then
     if [ -n "$CI" ]; then
         # GitHub Actions mode
         SERVER_MODE='gha'
-    elif command -v docker > /dev/null 2>&1; then
+        elif command -v docker > /dev/null 2>&1; then
         # Docker server mode
         SERVER_MODE='docker'
+        elif [ -n "$IS_MAYFIRST" ]; then
+        # May First server mode
+        SERVER_MODE='mayfirst'
     else
         # Default to Local server mode
         SERVER_MODE='local'
@@ -58,16 +72,17 @@ echo "Server mode is set to $SERVER_MODE."
 
 # Configure MYSQL_ADMIN based on the selected server mode
 case $SERVER_MODE in
+    mayfirst)
+        MYSQL_ADMIN='mysql -usdev_rw -pKis0Shinan0DevRW -h 127.0.0.1'
+    ;;
     gha)
         MYSQL_ADMIN='mysql -uroot -h 127.0.0.1'
-        ;;
+    ;;
     docker)
         MYSQL_ADMIN='mysql -uroot -h 127.0.0.1'
         docker compose up -d
-        ;;
+    ;;
     local)
-        # Replace 'mysql:host=127.0.0.1' with 'mysql:host=localhost'
-        sed -i 's/mysql:host=127.0.0.1/mysql:host=localhost/' ..config.ini.temp
         if [ -z "$MYSQL_ADMIN" ]; then
             # Check if the current user has MySQL admin privileges
             if mysql -e "SHOW GRANTS;" | grep 'ALL PRIVILEGES' > /dev/null 2>&1; then
@@ -76,11 +91,11 @@ case $SERVER_MODE in
                 MYSQL_ADMIN='mysql -uroot'
             fi
         fi
-        ;;
+    ;;
     *)
         echo "Error: Unknown server mode '$SERVER_MODE'."
         exit 1
-        ;;
+    ;;
 esac
 
 until mysqladmin ping -h 127.0.0.1 --silent; do
@@ -92,8 +107,12 @@ done
 
 # The rest of your existing script follows here...
 
-$MYSQL_ADMIN -e "SET GLOBAL character_set_server = 'utf8mb4';"
-$MYSQL_ADMIN -e "SET GLOBAL collation_server = 'utf8mb4_general_ci';"
+# Check if IS_MAYFIRST is not defined
+if [[ ! -v IS_MAYFIRST ]]; then
+    # These commands will only run if NOT mayfirst
+    $MYSQL_ADMIN -e "SET GLOBAL character_set_server = 'utf8mb4';"
+    $MYSQL_ADMIN -e "SET GLOBAL collation_server = 'utf8mb4_general_ci';"
+fi
 
 DBMODEL_DIR="$SCRIPT_DIR/../DB-model"
 cd "$DBMODEL_DIR"
@@ -103,7 +122,7 @@ eval "$(php export-database-config.php | grep '^export ')"
 
 # Validate imported user and password variables
 if [ -z "$readonly_user" ] || [ -z "$readwrite_user" ] || \
-   [ -z "$readonly_password" ] || [ -z "$readwrite_password" ]; then
+[ -z "$readonly_password" ] || [ -z "$readwrite_password" ]; then
     exit 1
 fi
 
@@ -121,27 +140,32 @@ bash "reset-dev.sh" "$MYSQL_ADMIN"
 #   - Their corresponding passwords are in 'readonly_password' and 'readwrite_password'.
 # The 'ALTER USER' command updates the user passwords to the new, secure format.
 # 'FLUSH PRIVILEGES;' applies these changes immediately.
-$MYSQL_ADMIN -e "ALTER USER '$readwrite_user'@'localhost' IDENTIFIED BY '$readwrite_password'; FLUSH PRIVILEGES;"
-$MYSQL_ADMIN -e "ALTER USER '$readonly_user'@'localhost' IDENTIFIED BY '$readonly_password'; FLUSH PRIVILEGES;"
-$MYSQL_ADMIN -e "DROP USER IF EXISTS '$readwrite_user'@'%';"
-$MYSQL_ADMIN -e "DROP USER IF EXISTS '$readonly_user'@'%';"
-$MYSQL_ADMIN -e "CREATE USER '$readwrite_user'@'%' IDENTIFIED BY '$readwrite_password';"
-$MYSQL_ADMIN -e "CREATE USER '$readonly_user'@'%' IDENTIFIED BY '$readonly_password';"
-$MYSQL_ADMIN shinano_dev -e "GRANT SELECT ON shinano_dev.* TO '$readonly_user'@'%';"
-$MYSQL_ADMIN shinano_dev -e "GRANT SELECT, INSERT, UPDATE, DELETE ON shinano_dev.* TO '$readwrite_user'@'%';"
-
-
+if [ -z "$IS_MAYFIRST" ]; then
+    $MYSQL_ADMIN -e "ALTER USER '$readwrite_user'@'localhost' IDENTIFIED BY '$readwrite_password'; FLUSH PRIVILEGES;"
+    $MYSQL_ADMIN -e "ALTER USER '$readonly_user'@'localhost' IDENTIFIED BY '$readonly_password'; FLUSH PRIVILEGES;"
+    $MYSQL_ADMIN -e "DROP USER IF EXISTS '$readwrite_user'@'%';"
+    $MYSQL_ADMIN -e "DROP USER IF EXISTS '$readonly_user'@'%';"
+    $MYSQL_ADMIN -e "CREATE USER '$readwrite_user'@'%' IDENTIFIED BY '$readwrite_password';"
+    $MYSQL_ADMIN -e "CREATE USER '$readonly_user'@'%' IDENTIFIED BY '$readonly_password';"
+    $MYSQL_ADMIN shinano_dev -e "GRANT SELECT ON shinano_dev.* TO '$readonly_user'@'%';"
+    $MYSQL_ADMIN shinano_dev -e "GRANT SELECT, INSERT, UPDATE, DELETE ON shinano_dev.* TO '$readwrite_user'@'%';"
+fi
 
 # Use the MYSQL_ADMIN variable to execute SQL file
 php "mockdata/insert_mockdata.php"
 $MYSQL_ADMIN --local-infile=1 shinano_dev < "mockdata-inserts.sql"
+
+if [ -n "$IS_MAYFIRST" ]; then
+    echo "This is MayFirst env so we will end here (won't run PHP and Playwright)"
+    exit 0
+fi
 
 # install playwright (but not if in GitHub Actions)
 cd "$SCRIPT_DIR"
 if [ -z "$CI" ]; then
     npm ci
     npx playwright install
-fi  
+fi
 
 # Define log and PID file paths within the e2e directory
 pid_file="$SCRIPT_DIR/php_server_${php_server_port}.pid"
