@@ -17,10 +17,26 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
     exit 0
 fi
 
-
 # Set script directory
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 cd "$SCRIPT_DIR"
+
+bash ../config.d/copy-config.sh
+
+php_server_ip=$(php read_config.php development php_server_ip)
+
+if [ -z "$php_server_ip" ]; then
+    echo "Error: php_server_ip is not defined."
+    exit 1
+fi
+
+php_server_port=$(php read_config.php development php_server_port) 
+
+if [ -z "$php_server_port" ]; then
+    echo "Error: php_server_port is not defined."
+    exit 1
+fi
+
 
 # Accept SERVER_MODE as a command line argument. If not provided, determine automatically.
 SERVER_MODE=${1:-}
@@ -39,10 +55,6 @@ if [ -z "$SERVER_MODE" ]; then
 fi
 
 echo "Server mode is set to $SERVER_MODE."
-
-
-# Copying config.ini.CI to config.ini.temp
-cp ../config.ini.CI ../config.ini.temp
 
 # Configure MYSQL_ADMIN based on the selected server mode
 case $SERVER_MODE in
@@ -70,23 +82,6 @@ case $SERVER_MODE in
         exit 1
         ;;
 esac
-(
-    cd "$SCRIPT_DIR/../"
-    set -e
-    # Comparing config.ini.temp to config.ini
-    if ! cmp -s config.ini.temp config.ini; then
-        # If they are different, back up config.ini with a date stamp
-        # if config.ini exists say hi
-        if [ -f config.ini ]; then
-            cp config.ini config.ini.backup_$(date +%Y%m%d_%H%M%S)
-        fi
-        # Move config.ini.temp to config.ini
-        mv config.ini.temp config.ini
-    else
-        # If they are the same, remove the temp file
-        rm config.ini.temp
-    fi
-)
 
 until mysqladmin ping -h 127.0.0.1 --silent; do
     echo 'waiting for db'
@@ -148,44 +143,32 @@ if [ -z "$CI" ]; then
     npx playwright install
 fi  
 
-port=8000
 # Define log and PID file paths within the e2e directory
-pid_file="$SCRIPT_DIR/php_server_8000.pid"
-log_file="$SCRIPT_DIR/php_server_8000.log"
-error_log_file="$SCRIPT_DIR/php_server_8000_error.log"
-
-# Function to stop the server
-stop_server() {
-    if [ -f $pid_file ]; then
-        kill -9 $(cat $pid_file) >> $log_file 2>> $error_log_file
-        echo "PHP server stopped." >> $log_file 2>> $error_log_file
-        rm -f $pid_file
-    else
-        echo "Error: PID file not found." >> $log_file 2>> $error_log_file
-    fi
-}
+pid_file="$SCRIPT_DIR/php_server_${php_server_port}.pid"
+log_file="$SCRIPT_DIR/php_server_${php_server_port}.log"
+error_log_file="$SCRIPT_DIR/php_server_${php_server_port}_error.log"
 
 # Redirect all output of this script to log files
 exec > >(tee -a $log_file) 2> >(tee -a $error_log_file >&2)
 
 # Check if port is already in use and restart server if needed
-if lsof -i :$port > /dev/null; then
-    echo "Port $port is already in use. Attempting to restart the server."
-    if [ -f $pid_file ]; then
-        stop_server
+if lsof -i :"$php_server_port" > /dev/null; then
+    echo "Port $php_server_port is already in use. Attempting to restart the server."
+    if [ -f "$pid_file" ]; then
+        bash stop-dev-php-server.sh
     else
         echo "No PID file found. Trying to kill the process using the port directly."
-        pid=$(lsof -t -i:$port -sTCP:LISTEN)
+        pid=$(lsof -t -i:"$php_server_port" -sTCP:LISTEN)
         if [ ! -z "$pid" ]; then
-            kill -9 $pid
-            echo "Killed process $pid that was using port $port."
+            kill -9 "$pid"
+            echo "Killed process $pid that was using port $php_server_port."
         fi
     fi
 fi
 
 
 # Start PHP server and redirect stdout and stderr to log files
-php -S localhost:$port -t ../pubroot > $log_file 2> $error_log_file &
+php -c php.ini -S "$php_server_ip":"$php_server_port" -t ../pubroot > "$log_file" 2> "$error_log_file" &
 php_server_pid=$!
-echo $php_server_pid > $pid_file
-echo "PHP server started on port $port with PID $php_server_pid."
+echo $php_server_pid > "$pid_file"
+echo "PHP server started on port $php_server_port with PID $php_server_pid."

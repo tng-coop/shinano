@@ -56,7 +56,7 @@ jobs:
       run: php ./unittest/utilities.php
 
     - name: Setup E2E Tests
-      run: ./e2e/setup-e2e-tests.sh
+      run:  bash -vx ./e2e/setup-e2e-tests.sh
 
     - name: Install dependencies
       run: docker run --rm --network="host" -v $(pwd):/repo -w /repo/e2e ${{ env.PLAYWRIGHT_IMAGE }} npm ci
