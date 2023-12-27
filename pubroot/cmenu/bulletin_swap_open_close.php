@@ -68,7 +68,7 @@ else {
 $bulletin_url = url_of_bulletin_detail($login->user('public_uid'), $user_own_id);
 
 $content_html = <<<CONTENT
-<a href='{$bulletin_url}'>selected bulletin</a> is ${message}.
+<a href='{$bulletin_url}'>selected bulletin</a> is {$message}.
 <br />
 or back to <a href='{$pubroot}cmenu/index.php'>cooperator's menu</a>
 <br />

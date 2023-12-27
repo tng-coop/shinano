@@ -11,7 +11,11 @@ include_once(__DIR__ . '/./csrf.php');
 // # wrap Template and Configs
 
 class TemplateAndConfigs{
-
+    public $_document_root;
+    public $_URL;
+    public $pub;
+    public $page_title;
+    public $content_actual;
     // config and config values
     function __construct(){
         global $pubroot;

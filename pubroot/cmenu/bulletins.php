@@ -49,7 +49,7 @@ function update_user_note_if_note_editted_post(){
 }
 
 function update_user_note($conn_rw, int $user_id, string $note_new){
-    \Tx\block($conn_rw, "update_user_note: of ${user_id}")(
+    \Tx\block($conn_rw, "update_user_note: of {$user_id}")(
         function() use($conn_rw, $user_id, $note_new){
             $stmt = $conn_rw->prepare("UPDATE user SET note = :note WHERE id = :id;");
             $stmt->execute([':note' => $note_new, ':id' => $user_id]);
@@ -96,7 +96,7 @@ function cooperator_note_edit_form(string $note){
               . "  <input type='submit' name='note_edit_submit' value='renew note'>"
               .    $csrf_html
               . "  <input type='hidden' name='user_note_edit_area' value='submitted'>"
-              . "  <textarea name='user_note_edit_text' cols='72' rows='5'>${note}</textarea>"
+              . "  <textarea name='user_note_edit_text' cols='72' rows='5'>{$note}</textarea>"
               . "  <pre>{$note_edit_message}</pre>"
               . "</form>";
     return  $form_tml;

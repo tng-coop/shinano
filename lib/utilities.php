@@ -161,7 +161,7 @@ function url_of_bulletin_detail($public_uid, $id_on_user){
 
 function url_of_cooperator_detail($puid){
     global $pubroot;
-    return "${pubroot}cooperator.php?puid=${puid}";
+    return "{$pubroot}cooperator.php?puid={$puid}";
 }
 
 

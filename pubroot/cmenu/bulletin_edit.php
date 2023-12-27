@@ -170,7 +170,7 @@ function select_job_entry_by_id_on_user_if_user(int $id_on_user, int $user_id){
 // Render to HTML by template.
 
 $content_html = <<<CONTENT
-${content_html}
+{$content_html}
 CONTENT;
 
 RenderByTemplate("template.html", "{$title_part} - Shinano -", $content_html);
@@ -194,21 +194,21 @@ function content_of_confirm_bulletin($pvs, $messages, $entry_id){
     $content_confirm_form_html = <<<CONTENT
 <h3> Confirm your Bulletin </h3>
 <hr />
-<h3>${pvs['title']}</h3>
+<h3>{$pvs['title']}</h3>
 <p> your own entry id is {$entry_id} </p>
-<p>${pvs['description']}</p>
+<p>{$pvs['description']}</p>
 <hr />
-<p>${message_listing_or_seeking}</p>
-<p>${message_open_or_close}</p>
+<p>{$message_listing_or_seeking}</p>
+<p>{$message_open_or_close}</p>
 
 <form action="" method="POST">
-  ${csrf_html}  
-  <input type='hidden' name='id_on_user' value="${entry_id}" />
+  {$csrf_html}  
+  <input type='hidden' name='id_on_user' value="{$entry_id}" />
 
-  <input type="hidden" name="title"        value="${pvs['title']}" />
-  <input type="hidden" name="description"  value="${pvs['description']}" />
-  <input type="hidden" name="attribute"    value="${pvs['attribute']}" />
-  <input type="hidden" name="open_close"   value="${pvs['open_close']}" />
+  <input type="hidden" name="title"        value="{$pvs['title']}" />
+  <input type="hidden" name="description"  value="{$pvs['description']}" />
+  <input type="hidden" name="attribute"    value="{$pvs['attribute']}" />
+  <input type="hidden" name="open_close"   value="{$pvs['open_close']}" />
 
   <input type="submit" name="step_demand" value="reedit">
   <input type="submit" name="step_demand" value="update">
@@ -235,15 +235,15 @@ function content_of_edit_bulletin($pvs, $messages, $entry_id){
 <h3> Edit Bulletin </h3>
 <p> your own entry id is {$entry_id} </p>
 <form action="" method="post">
-  ${csrf_html}
-  <input type='hidden' name='id_on_user' value="${entry_id}" />
+  {$csrf_html}
+  <input type='hidden' name='id_on_user' value="{$entry_id}" />
   <dl>
     <dt> title </dt>
-    <dd> <input type="text" name="title" required value="${pvs['title']}"> </input> </dd>
+    <dd> <input type="text" name="title" required value="{$pvs['title']}"> </input> </dd>
     <dd> <pre>{$messages_for_title}</pre> </dd>
 
     <dt> description </dt>
-    <dd> <textarea name="description" cols="72" rows="13" required>${pvs['description']}</textarea> </dd>
+    <dd> <textarea name="description" cols="72" rows="13" required>{$pvs['description']}</textarea> </dd>
     <dd> <pre>{$messages['description']}</pre> </dd>
 
     <dt> attribute </dt>

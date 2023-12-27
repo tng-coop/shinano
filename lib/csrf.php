@@ -76,7 +76,7 @@ class CSRF{
     public function hiddenInputHTML(){
         $h_token_name = h(self::TOKEN_NAME);
         $h_token = h(self::getToken());
-        return "<input type='hidden' name='${h_token_name}' value='${h_token}' />";
+        return "<input type='hidden' name='{$h_token_name}' value='{$h_token}' />";
     }
 }
 

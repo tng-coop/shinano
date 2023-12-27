@@ -168,18 +168,18 @@ function content_of_confirm_bulletin($pvs, $messages){
     $content_confirm_form_html = <<<CONTENT
 <h3> Confirm your Bulletin </h3>
 <hr />
-<h3>${pvs['title']}</h3>
-<pre>${pvs['description']}</pre>
+<h3>{$pvs['title']}</h3>
+<pre>{$pvs['description']}</pre>
 <hr />
-<p>${message_listing_or_seeking}</p>
-<p>${message_open_or_close}</p>
+<p>{$message_listing_or_seeking}</p>
+<p>{$message_open_or_close}</p>
 
 <form action="" method="POST">
-  ${csrf_html}
-  <input type="hidden" name="title"       value="${pvs['title']}" />
-  <input type="hidden" name="description" value="${pvs['description']}" />
-  <input type="hidden" name="attribute"   value="${pvs['attribute']}" />
-  <input type="hidden" name="open_close"  value="${pvs['open_close']}" />
+  {$csrf_html}
+  <input type="hidden" name="title"       value="{$pvs['title']}" />
+  <input type="hidden" name="description" value="{$pvs['description']}" />
+  <input type="hidden" name="attribute"   value="{$pvs['attribute']}" />
+  <input type="hidden" name="open_close"  value="{$pvs['open_close']}" />
 
   <input type="submit" name="step_demand" value="edit">
   <input type="submit" name="step_demand" value="upload">
@@ -205,15 +205,15 @@ function content_of_edit_bulletin($pvs, $messages){
 {$messages['csrf']}
 <h3> New Bulletin </h3>
 <form action="" method="POST">
-  ${csrf_html}
+  {$csrf_html}
   <dl>
 
     <dt> title </dt>
-    <dd> <input type="text" name="title" required value="${pvs['title']}"> </input> </dd>
+    <dd> <input type="text" name="title" required value="{$pvs['title']}"> </input> </dd>
     <dd> <pre>{$messages_for_title}</pre> </dd>
 
     <dt> description </dt>
-    <dd> <textarea name="description" cols="72" rows="13" required>${pvs['description']}</textarea> </dd>
+    <dd> <textarea name="description" cols="72" rows="13" required>{$pvs['description']}</textarea> </dd>
     <dd> <pre>{$messages['description']}</pre> </dd>
 
     <dt> attribute </dt>

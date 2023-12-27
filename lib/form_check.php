@@ -52,7 +52,7 @@ function check_user_name_safe($name){
     
     // name's format check.
     global $preg_str_of_marks;
-    if(preg_match("/^[${preg_str_of_marks}0-9]+$/" , $name)){ // mark and number only
+    if(preg_match("/^[{$preg_str_of_marks}0-9]+$/" , $name)){ // mark and number only
         $form_check_message .= "name constructed only by marks and numbers is not allowed. \n";
     }
     if(strlen($name) < 5 || strlen($name) > 64) {
@@ -155,7 +155,7 @@ function check_user_password_safe($password1, $password2){
     global $preg_str_of_marks;
     if(!(preg_match('/[a-zA-Z]/', $password1) &&
          preg_match('/[0-9]/', $password1) &&
-         //preg_match("/[${preg_str_of_marks}]/", $password1) 
+         //preg_match("/[{$preg_str_of_marks}]/", $password1) 
          true)){
         $form_check_message .= "password needs more than 1 each of [a-z] or [A-Z], [0-9], marks\n";
     }

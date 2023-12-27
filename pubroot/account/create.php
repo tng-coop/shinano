@@ -21,10 +21,10 @@ header('X-FRAME-OPTIONS: SAMEORIGIN');
 
 // fill urltoken by GETed value
 
-$a_href_of_account_create_pre = "${pubroot}account/create_pre.php";
+$a_href_of_account_create_pre = "{$pubroot}account/create_pre.php";
 
 if(empty($_GET) || (! isset($_GET['urltoken']))){
-    header("Location: ${a_href_of_account_create_pre}");
+    header("Location: {$a_href_of_account_create_pre}");
     exit();
 
 } else {
@@ -48,7 +48,7 @@ if(empty($_GET) || (! isset($_GET['urltoken']))){
             "this URL is not available.<br />" .
             "URL is wrong or time limit has passed or already registered.<br />" .
             "If your are not already registered, Please re pre_register account from " .
-            "<a href='${a_href_of_account_create_pre}'>first step</a> again.");
+            "<a href='{$a_href_of_account_create_pre}'>first step</a> again.");
         exit();
     }
 }
@@ -139,7 +139,7 @@ if($state_create_account=="just_created"){
     $csrf_html = $csrf->hiddenInputHTML();
     // actual content
     $account_create_form_html = <<<ACCOUNT_CREATE_FORM
-${db_message_tml}
+{$db_message_tml}
 your E-Mail has checked <br />
 To create account, name and password are additionaly needed. <br />
 <pre> {$csrf_message} </pre>
