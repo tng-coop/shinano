@@ -5,6 +5,7 @@ declare(strict_types=1);
 include_once(__DIR__ . "/../../lib/common.php");
 include_once(__DIR__ . "/../../lib/form_check.php");
 include_once(__DIR__ . '/../../lib/transactions.php');
+include_once(__DIR__ . '/../../lib/mb_send_mail_compat.php');
 
 // initialize variables
 $db_message_tml = "";
@@ -52,7 +53,10 @@ function send_email_for_email_varification_of_account_create($email_to, $url){
         error_log($logMessage, 0);
 
         
-    $result_send_email = mb_send_mail($email_to, $title, $message, $headers);
+    $cps = function($mail) {
+        $mail->isHTML(true); // Set the email format to HTML
+    }; 
+    $result_send_email = mb_send_mail_compat($email_to, $title, $message, $headers, $cps);
 
     return $result_send_email;
     // for testing

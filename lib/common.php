@@ -33,7 +33,3 @@ function redirect_page(string $url_redirect){
                      "Invalid URL. redirect in 5 second." .
                      "to <a href='{$url_redirect}'>here</a>");
 }
-
-
-?>
-

@@ -16,7 +16,8 @@ $csrf_message = "";
 [$post_name, $form_message_name, $form_message_password] = ["", "", ""];
 
 // avoid clickjacking
-header('X-FRAME-OPTIONS: SAMEORIGIN');
+// TODO: check if this is needed.
+//header('X-FRAME-OPTIONS: SAMEORIGIN');
 
 
 // fill urltoken by GETed value
@@ -67,7 +68,7 @@ if($request_method == "POST"){
 
 $state_create_account = "creating";
 
-function check_for_user_post($name, $email, $password1, $password2){
+function check_for_user_post($name, $password1, $password2){
     return  [\FormCheck\check_user_name_safe($name), 
              [$_SESSION['email_for_account_create'], ""],
              \FormCheck\check_user_password_safe($password1, $password2)];
@@ -81,10 +82,11 @@ if($request_method == "POST"){
         
     } else {
         // check POSTed form's values
+        // TODO really necessary?
         [[$checked_name, $form_message_name],
          [$checked_email, $form_message_email],
          [$checked_password, $form_message_password]]
-        = check_for_user_post($post_name, $post_email, $post_password_check, $post_password_first);
+        = check_for_user_post($post_name, $post_password_check, $post_password_first);
 
         $safe_form_post_p =
             ($checked_name!=null && $checked_email!=null && $checked_password!=null);

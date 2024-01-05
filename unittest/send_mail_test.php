@@ -10,7 +10,7 @@ $title = "やあ hello.";
 $message = "こんにちは、りょうしは如何？\nhellow how are you?";
 $headers = "From: from@example.com";
 
-$result_send_mail = mb_send_mail($send_to, $title, $message, $headers);
+$result_send_mail = mb_send_mail_compat($send_to, $title, $message, $headers);
  
 if($result_send_mail){
     echo "メール送信成功！";
