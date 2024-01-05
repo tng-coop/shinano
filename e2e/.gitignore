@@ -6,3 +6,4 @@ node_modules/
 /artifacts/
 /php_server_*.log
 /php_server_*.pid
+/auto-converted-php-config.json

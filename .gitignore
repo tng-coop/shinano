@@ -706,3 +706,6 @@ dist
 config.ini
 # Ignore backup files
 config.ini.backup_*
+
+/vendor/
+/composer.phar

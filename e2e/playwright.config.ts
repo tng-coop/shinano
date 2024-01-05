@@ -1,5 +1,11 @@
 import { defineConfig, devices } from '@playwright/test';
+import config from './auto-converted-php-config.json';
+// Extracting the IP address and port from the JSON configuration
+const phpServerIp = config.development.php_server_ip;
+const phpServerPort = config.development.php_server_port;
 
+// Constructing the base URL
+const baseURL = `http://${phpServerIp}:${phpServerPort}/`;
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -10,6 +16,7 @@ import { defineConfig, devices } from '@playwright/test';
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
+  globalSetup: './global-setup', // Path to your global setup file
   testDir: './tests',
   /* Run tests in files in parallel */
   fullyParallel: true,
@@ -26,8 +33,7 @@ export default defineConfig({
     /* Base URL to use in actions like `await page.goto('/')`. */
     // baseURL: 'http://127.0.0.1:3000',
     // baseURL: process.env.CI ? 'http://127.0.0.1:8000' : 'http://localhost:8000',
-    baseURL: 'http://localhost:8000',
-
+    baseURL,
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
   },

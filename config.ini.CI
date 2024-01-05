@@ -12,6 +12,7 @@ url_shinano_pubroot=http://localhost:8000/
 
 [email]
 email_from=shinano@tng.coop
+use_smtp=true
 
 [development]
 php_server_ip=localhost

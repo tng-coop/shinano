@@ -21,6 +21,8 @@ fi
 
 # Set script directory
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+cd "$SCRIPT_DIR/../"
+composer install
 cd "$SCRIPT_DIR"
 
 # Check if user is tng and host is claudette, then define IS_MAYFIRST flag
@@ -33,6 +35,7 @@ fi
 
 
 bash ../config.d/copy-config.sh
+php convert-php-ini-to-json.php > auto-converted-php-config.json
 
 php_server_ip=$(php read_config.php development php_server_ip)
 
@@ -176,13 +179,13 @@ error_log_file="$SCRIPT_DIR/php_server_${php_server_port}_error.log"
 exec > >(tee -a $log_file) 2> >(tee -a $error_log_file >&2)
 
 # Check if port is already in use and restart server if needed
-if lsof -i :"$php_server_port" > /dev/null; then
+if lsof -n -i :"$php_server_port" > /dev/null; then
     echo "Port $php_server_port is already in use. Attempting to restart the server."
     if [ -f "$pid_file" ]; then
         bash stop-dev-php-server.sh
     else
         echo "No PID file found. Trying to kill the process using the port directly."
-        pid=$(lsof -t -i:"$php_server_port" -sTCP:LISTEN)
+        pid=$(lsof -n -t -i:"$php_server_port" -sTCP:LISTEN)
         if [ ! -z "$pid" ]; then
             kill -9 "$pid"
             echo "Killed process $pid that was using port $php_server_port."

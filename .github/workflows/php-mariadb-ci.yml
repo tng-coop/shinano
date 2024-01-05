@@ -43,6 +43,9 @@ jobs:
     - name: Show PHP Version
       run: php -v
 
+    - name: Show PHP Composer Version
+      run: composer -v
+
     - name: Check MariaDB Server Version
       run: mysql -h 127.0.0.1 -u root -e "SELECT VERSION();"
 
