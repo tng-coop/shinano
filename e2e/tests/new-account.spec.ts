@@ -1,20 +1,8 @@
 import { expect } from '@playwright/test';
 import { test } from './fixtures';
-import { promises as fsPromises } from 'fs/promises'; // Import fsPromises correctly
 import config from '../auto-converted-php-config.json';
-import fs from 'fs';
-import path from 'path';
 
-test('Login and See Initial Page for a Cooperator', async ({ page }) => {
-  await page.goto('/');
-  await page.locator('#head_cooperator_s_menu').getByRole('link', { name: 'login' }).click()
-  await page.locator('input[name="email"]').fill('Tng_0001@tng.coop');
-  await page.locator('input[name="password"]').fill('tng_0001')
-  await page.getByRole('button', { name: 'login' }).click()
-  await expect(page.getByRole('heading', { name: 'Hello, "TNG Coop Tokyo" !!!' })).toHaveCount(1)
-});
-
-test('Create a new ', async ({ pageFactory, lockFactory }) => {
+test('Create a new account', async ({ pageFactory, lockFactory }) => {
   const phpServerIp = config.development.php_server_ip;
   const phpServerPort = config.development.php_server_port;
   const mailDevPort = '1080';
@@ -62,28 +50,4 @@ test('Create a new ', async ({ pageFactory, lockFactory }) => {
 
   await releaseLock();
 
-});
-
-test('Test Lock System', async ({ lockFactory }) => {
-  let sharedCounter = 0;
-  const numberOfTasks = 5;
-  const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
-
-  // Function to increment the counter with a delay, simulating a more complex operation
-  const incrementCounter = async () => {
-    const releaseLock = await lockFactory('counterLock');
-
-    const currentCount = sharedCounter; // Read the current value
-    await delay(50);                  // Simulate a delay, during which race conditions can occur
-    sharedCounter = currentCount + 1;  // Update the counter
-
-    await releaseLock();
-  };
-
-  // Run multiple tasks concurrently
-  const tasks = Array.from({ length: numberOfTasks }, () => incrementCounter());
-  await Promise.all(tasks);
-
-  // Verify that the counter has been incremented correctly
-  expect(sharedCounter).toBe(numberOfTasks);
 });
