@@ -4,10 +4,8 @@ import config from '../auto-converted-php-config.json';
 
 test('Create a new account', async ({ pageFactory, lockFactory }) => {
   const phpServerIp = config.development.php_server_ip;
-  const phpServerPort = config.development.php_server_port;
   const mailDevPort = '1080';
   const mailDevURL = `http://${phpServerIp}:${mailDevPort}/`;
-  const phpServerURL = `http://${phpServerIp}:${phpServerPort}/`;
   const page = await pageFactory();
   const page2 = await pageFactory();
   const pageM = await pageFactory();
@@ -15,7 +13,7 @@ test('Create a new account', async ({ pageFactory, lockFactory }) => {
   const releaseLock = await lockFactory('email');
   await pageM.goto(mailDevURL);
   await pageM.getByRole('link', { name: '' }).dblclick();
-  await page.goto('/');
+  await page.goto('./');
   await page.locator('#content_actual').getByRole('link', { name: 'create' }).click();
   await page.locator('input[name="email"]').click();
   await page.locator('input[name="email"]').fill('yasu@yasuaki.com');
@@ -23,7 +21,7 @@ test('Create a new account', async ({ pageFactory, lockFactory }) => {
   await pageM.getByRole('link', { name: '[Shinano] Account Create step' }).click()
   // Locate the iframe and then the link within it
   const frame = await pageM.frameLocator('iframe').first();
-  const link = await frame.getByRole('link', { name: phpServerURL });
+  const link = await frame.getByRole('link');
 
   // Get the href attribute from the link
   const url = await link.getAttribute('href');
@@ -38,10 +36,10 @@ test('Create a new account', async ({ pageFactory, lockFactory }) => {
   await page.getByLabel('Confirm Password').fill('asdfQWER12#$');
   await page.getByRole('button', { name: 'Check for Create Account' }).click();
 
-  await page.goto('/');
+  await page.goto('./');
   await expect(page.getByRole('heading', { name: 'Hello! Yasuaki Kudo' })).toHaveCount(1)
 
-  await page2.goto('/');
+  await page2.goto('./');
   await page2.locator('#head_cooperator_s_menu').getByRole('link', { name: 'login' }).click()
   await page2.locator('input[name="email"]').fill('yasu@yasuaki.com');
   await page2.locator('input[name="password"]').fill('asdfQWER12#$');

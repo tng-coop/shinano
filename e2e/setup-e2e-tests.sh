@@ -22,7 +22,27 @@ fi
 # Set script directory
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 cd "$SCRIPT_DIR/../"
-composer install
+
+# Function to run composer install
+run_composer_install() {
+    $1 install
+}
+
+# Check if composer is available in the system path
+if command -v composer &> /dev/null; then
+    # Use the system path composer
+    run_composer_install composer
+else
+    # Composer is not found in the system path, try ~/bin/composer
+    if [ -f ~/bin/composer ]; then
+        # Use composer from ~/bin
+        run_composer_install ~/bin/composer
+    else
+        echo "Composer is not installed."
+        exit 1
+    fi
+fi
+
 cd "$SCRIPT_DIR"
 
 # Check if user is tng and host is claudette, then define IS_MAYFIRST flag

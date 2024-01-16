@@ -5,7 +5,8 @@ const phpServerIp = config.development.php_server_ip;
 const phpServerPort = config.development.php_server_port;
 
 // Constructing the base URL
-const baseURL = `http://${phpServerIp}:${phpServerPort}/`;
+const fallbackBaseURL = `http://${phpServerIp}:${phpServerPort}/`;
+
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -33,9 +34,9 @@ export default defineConfig({
     /* Base URL to use in actions like `await page.goto('/')`. */
     // baseURL: 'http://127.0.0.1:3000',
     // baseURL: process.env.CI ? 'http://127.0.0.1:8000' : 'http://localhost:8000',
-    baseURL,
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || fallbackBaseURL,
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
+    trace: 'on',
   },
 
   /* Configure projects for major browsers */

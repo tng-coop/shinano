@@ -67,10 +67,19 @@ jobs:
     - name: Show Playwright version
       run: docker run --rm --network="host" -v $(pwd):/repo -w /repo/e2e ${{ env.PLAYWRIGHT_IMAGE }} npx playwright --version
 
+    - name: List contents of e2e directory before tests
+      run: tree -I node_modules
+      working-directory: e2e
+      if: always()
+
     - name: Run Playwright Tests
       run: docker run --rm --network="host" -e CI=true -v $(pwd):/repo -w /repo/e2e ${{ env.PLAYWRIGHT_IMAGE }} npx playwright test
-      
 
+    - name: List contents of e2e directory after tests
+      run: tree -I node_modules
+      working-directory: e2e
+      if: always()
+      
     - name: Upload Test Artifacts
       uses: actions/upload-artifact@v3
       if: always()

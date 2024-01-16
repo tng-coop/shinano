@@ -7,3 +7,6 @@ node_modules/
 /php_server_*.log
 /php_server_*.pid
 /auto-converted-php-config.json
+/dev.mayfirst.ini
+ssh-pid.txt
+*.lock

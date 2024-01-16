@@ -22,6 +22,9 @@ HOSTNAME=$(hostname)
 if [[ "$CURRENT_USER" == "yasu" && "$HOSTNAME" == "ubuntu" ]]; then
     # Copy the development config file for 'yasu' to the project root
     cp "${SCRIPT_DIR}/dev.yasu.ini" "${PROJECT_ROOT}/config.ini.temp"
+elif [[ "$CURRENT_USER" == "tng" && "$HOSTNAME" == "claudette" ]]; then
+    # Copy the development config file for 'yasu' to the project root
+    cp "${SCRIPT_DIR}/dev.mayfirst.ini" "${PROJECT_ROOT}/config.ini.temp"
 else
     cp "${PROJECT_ROOT}/config.ini.CI" "${PROJECT_ROOT}/config.ini.temp"
     echo "Warning: No special condition was hit so just copied the default config. You may need to manually create 'config.ini'."
