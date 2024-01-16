@@ -47,6 +47,6 @@ echo "CREATE SCHEMA IF NOT EXISTS shinano_dev;" | $admin_mysql
 if [[ -z "${IS_MAYFIRST}" ]]; then
   echo "DROP USER IF EXISTS sdev_ro@localhost;" | $admin_mysql
   echo "DROP USER IF EXISTS sdev_rw@localhost;" | $admin_mysql
-  ./setup-users.sh "$admin_mysql"
+  bash setup-users.sh "$admin_mysql"
 fi
 $admin_mysql shinano_dev < tables.sql
