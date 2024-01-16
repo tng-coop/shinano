@@ -18,6 +18,7 @@ function mb_send_mail_compat($to, $subject, $message, $headers, $continuation = 
         }
 
         // Basic email setup
+        $mail->setFrom('shinano@tng.coop', 'shinano'); 
         $mail->addAddress($to);
         $mail->Subject = $subject;
         $mail->Body = $message;
