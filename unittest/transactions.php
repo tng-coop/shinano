@@ -11,7 +11,7 @@ if ($config === false) {
     exit;
 }
 
-$dsn = 'mysql:host=localhost;dbname=shinano_dev';
+$dsn = $config['database']['dsn'];
 
 function check_record1(PDO $conn, string $sql, $pred) {
     $stmt = $conn->query($sql);
