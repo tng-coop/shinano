@@ -79,7 +79,7 @@ function unsafe_update_public_uid(PDO $conn, string $tag, $update_callback) {
             $last_public_uid = intval($state_ref[0]);
             [ $public_uid, $result ] = $update_callback($last_public_uid);
             $stmt = $conn->prepare('UPDATE public_uid_state SET last_uid = ?');
-            $pstate->fetchAll(); ## UGLY HACK for MySQL!! breaks critical section for Cursor Solid isolation RDBMs
+            ## $pstate->fetchAll(); ## UGLY HACK for MySQL!! breaks critical section for Cursor Solid isolation RDBMs
             $stmt->execute(array($public_uid));
             return $result;
         });
