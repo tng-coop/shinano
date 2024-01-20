@@ -1,0 +1,4 @@
+DROP TABLE IF EXISTS job_entry;
+DROP TABLE IF EXISTS "user";
+DROP TABLE IF EXISTS public_uid_state;
+DROP TABLE IF EXISTS pre_user;
