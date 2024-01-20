@@ -22,9 +22,7 @@ function with_connection(string $data_source_name, string $sql_user, string $sql
                                mysqlドライバでは prepared-statement の leak を防ぐ仕組みは担保されているか? */
                             PDO::ATTR_PERSISTENT => true,
                             PDO::ATTR_TIMEOUT => 600,
-                            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                            /* default is buffering all result of query*/
-                            PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => false)
+                            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION)
                         );
         try {
             return $tx($conn);
@@ -100,7 +98,7 @@ function add_user(PDO $conn, string $name, string $email, string $passwd_hash, s
     \Tx\block($conn, "add_user")(
         function() use($conn, $email, $passwd_hash, $public_uid, $name, $note) {
             $stmt = $conn->prepare(<<<SQL
-INSERT INTO user(email, passwd_hash, public_uid, last_thing, name, note, created_at, updated_at)
+INSERT INTO "user"(email, passwd_hash, public_uid, last_thing, name, note, created_at, updated_at)
     VALUES (:email, :passwd_hash, :public_uid, 0, :name, :note, current_timestamp, current_timestamp)
 SQL
             );
@@ -125,12 +123,12 @@ function add_job_things(string $attribute) {
                 $user = user_lock_by_email_or_raise('TxSnn.add_job_things: ', $conn, $email);
                 $user_id = $user['id'];
                 $id_on_user = $user['last_thing'] + 1;
-                $upd_last_thing = $conn->prepare('UPDATE user SET last_thing = :id_on_user WHERE id = :user_id');
+                $upd_last_thing = $conn->prepare('UPDATE "user" SET last_thing = :id_on_user WHERE id = :user_id');
                 $upd_last_thing->execute(array(':user_id' => $user_id, 'id_on_user' => $id_on_user));
 
                 // INSERT to job_entry
                 $stmt = $conn->prepare(<<<SQL
-INSERT INTO job_entry(user, id_on_user, attribute, title, description, created_at, updated_at)
+INSERT INTO job_entry("user", id_on_user, attribute, title, description, created_at, updated_at)
        VALUES (:user_id, :id_on_user, :attribute, :title, :description, current_timestamp, current_timestamp);
 SQL
                 );
@@ -144,11 +142,31 @@ SQL
 }
 
 function open_job_thing(PDO $conn, string $email, int $id_on_user){
-    return open_job_things(null)($conn, $email, $id_on_user);
+    \Tx\block($conn, "open_job_thing")(
+        function() use($conn, $email, $id_on_user) {
+            $user_id = user_id_lock_by_email_or_raise('TxSnn.open_job_things: ', $conn, $email);
+            $stmt = $conn->prepare(<<<SQL
+UPDATE job_entry AS J SET opened_at = current_timestamp
+       WHERE "user" = :user_id AND id_on_user = :id_on_user
+SQL
+            );
+            $stmt->execute(array(':user_id' => $user_id, ':id_on_user' => $id_on_user));
+        }
+    );
 }
 
 function close_job_thing(PDO $conn, string $email, int $id_on_user){
-    return close_job_things(null)($conn, $email, $id_on_user);
+    \Tx\block($conn, "close_job_thing")(
+        function() use($conn, $email, $id_on_user) {
+            $user_id = user_id_lock_by_email_or_raise('TxSnn.close_job_things: ', $conn, $email);
+            $stmt = $conn->prepare(<<<SQL
+UPDATE job_entry AS J SET closed_at = current_timestamp
+       WHERE "user" = :user_id AND id_on_user = :id_on_user
+SQL
+            );
+            $stmt->execute(array(':user_id' => $user_id, ':id_on_user' => $id_on_user));
+        }
+    );
 }
 
 function update_job_things(PDO $conn, int $id_on_user,
@@ -184,11 +202,10 @@ function open_job_things($attribute) {
                 $user_id = user_id_lock_by_email_or_raise('TxSnn.open_job_things: ', $conn, $email);
                 $stmt = $conn->prepare(<<<SQL
 UPDATE job_entry AS J SET opened_at = current_timestamp
-       WHERE user = :user_id AND id_on_user = :id_on_user AND (:n_attribute IS NULL OR attribute = :attribute)
+       WHERE "user" = :user_id AND id_on_user = :id_on_user AND attribute = :attribute
 SQL
                 );
-                $stmt->execute(array(':user_id' => $user_id, ':id_on_user' => $id_on_user,
-                                     ':n_attribute' => $attribute, ':attribute' => $attribute));
+                $stmt->execute(array(':user_id' => $user_id, ':id_on_user' => $id_on_user, ':attribute' => $attribute));
             }
         );
     };
@@ -209,11 +226,10 @@ function close_job_things($attribute) {
                 $user_id = user_id_lock_by_email_or_raise('TxSnn.close_job_things: ', $conn, $email);
                 $stmt = $conn->prepare(<<<SQL
 UPDATE job_entry AS J SET closed_at = current_timestamp
-       WHERE user = :user_id AND id_on_user = :id_on_user AND (:n_attribute IS NULL OR attribute = :attribute)
+       WHERE "user" = :user_id AND id_on_user = :id_on_user AND attribute = :attribute
 SQL
                 );
-                $stmt->execute(array(':user_id' => $user_id, ':id_on_user' => $id_on_user,
-                                     ':n_attribute' => $attribute, ':attribute' => $attribute));
+                $stmt->execute(array(':user_id' => $user_id, ':id_on_user' => $id_on_user, ':attribute' => $attribute));
             }
         );
     };
@@ -228,7 +244,7 @@ function user_id_lock_by_email_or_raise(string $prefix, PDO $conn, string $email
 }
 
 function user_id_lock_by_email(PDO $conn, string $email) {
-    $stmt = $conn->prepare('SELECT id FROM user WHERE email = ? FOR UPDATE');
+    $stmt = $conn->prepare('SELECT id FROM "user" WHERE email = ? FOR UPDATE');
     $stmt->execute(array($email));
     // カーソル位置で user テーブルのレコードをロック
     $aref = $stmt->fetch(PDO::FETCH_NUM);
@@ -247,7 +263,7 @@ function user_lock_by_email_or_raise(string $prefix, PDO $conn, string $email) {
 }
 
 function user_lock_by_email(PDO $conn, string $email) {
-    $stmt = $conn->prepare('SELECT id, last_thing FROM user WHERE email = ? FOR UPDATE');
+    $stmt = $conn->prepare('SELECT id, last_thing FROM "user" WHERE email = ? FOR UPDATE');
     $stmt->execute(array($email));
     // カーソル位置で user テーブルのレコードをロック
     $aref = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -258,7 +274,7 @@ function user_lock_by_email(PDO $conn, string $email) {
 }
 
 function user_public_uid_get_by_email(PDO $conn, string $email){
-    $stmt = $conn->prepare('SELECT public_uid FROM user WHERE email = ?');
+    $stmt = $conn->prepare('SELECT public_uid FROM "user" WHERE email = ?');
     $stmt->execute(array($email));
     $aref = $stmt->fetch(PDO::FETCH_NUM);
     if ($aref) {
@@ -270,7 +286,7 @@ function user_public_uid_get_by_email(PDO $conn, string $email){
 function view_job_things_by_public_uid(PDO $conn, int $public_uid) {
     $stmt = $conn->prepare(<<<SQL
 SELECT U.public_uid, U.name, J.attribute, J.title, J.description, J.created_at, J.updated_at, J.opened_at, J.closed_at, J.id_on_user AS eid
-       FROM user as U INNER JOIN job_entry AS J
+       FROM "user" as U INNER JOIN job_entry AS J
        ON U.id = J.user
        WHERE U.public_uid = ?
        ORDER BY J.attribute, J.opened_at IS NULL ASC, J.created_at ASC;
@@ -283,7 +299,7 @@ SQL
 function view_job_thing_by_public_uid_and_id_on_user(PDO $conn, int $public_uid, int $id_on_user) {
     $stmt = $conn->prepare(<<<SQL
 SELECT U.public_uid, U.name, J.attribute, J.title, J.description, J.created_at, J.updated_at, J.opened_at, J.closed_at, J.id_on_user AS eid
-       FROM user as U INNER JOIN job_entry AS J
+       FROM "user" as U INNER JOIN job_entry AS J
        ON U.id = J.user
        WHERE U.public_uid = ?
          AND J.id_on_user = ?
@@ -297,7 +313,7 @@ SQL
 function view_job_things_by_email(PDO $conn, string $email) {
     $stmt = $conn->prepare(<<<SQL
 SELECT U.public_uid, U.name, J.attribute, J.title, J.description, J.created_at, J.updated_at, J.opened_at, J.closed_at, J.id_on_user AS eid
-       FROM user as U INNER JOIN job_entry AS J
+       FROM "user" as U INNER JOIN job_entry AS J
        ON U.id = J.user
        WHERE U.email = ?
        ORDER BY J.attribute, J.opened_at IS NULL ASC, J.created_at ASC;
@@ -310,9 +326,9 @@ SQL
 function search_job_things(PDO $conn, string $search_pat) {
     $stmt = $conn->prepare(<<<SQL
 SELECT U.public_uid, U.name, J.attribute, J.title, J.description, J.created_at, J.updated_at, J.opened_at, J.closed_at
-       FROM user as U INNER JOIN job_entry AS J
+       FROM "user" as U INNER JOIN job_entry AS J
        ON U.id = J.user
-       WHERE J.title LIKE CONCAT('%', ?, '%')
+       WHERE J.title LIKE CONCAT('%', ? :: TEXT, '%')
        ORDER BY J.attribute, J.user, J.opened_at IS NULL ASC, J.created_at ASC;
 SQL
     );
